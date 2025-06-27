@@ -310,7 +310,7 @@ console.log('status-handler');
       },
       customer: {
         billing: {
-          city: 'Temple city',
+          city: 'Temple city Madhurai',
           country_code: 'DE',
           house_no: '2,musterer',
           street: 'kaiserlautern',
@@ -327,7 +327,7 @@ console.log('status-handler');
         currency: 'EUR',
       },
       custom: {
-        input1: 'accesskey',
+        input1: 'ctCart',
         inputval1: JSON.stringify(ctCart),
       },
     };
