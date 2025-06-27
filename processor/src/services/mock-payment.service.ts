@@ -271,9 +271,6 @@ console.log('status-handler');
     const ctCart = await this.ctCartService.getCart({
       id: getCartIdFromContext(),
     });
-    console.log('ctCart');
-    log.info('ctCart');
-    console.log(ctCart);
     const ctPayment = await this.ctPaymentService.createPayment({
       amountPlanned: await this.ctCartService.getPaymentAmount({
         cart: ctCart,
@@ -331,7 +328,7 @@ console.log('status-handler');
       },
       custom: {
         input1: 'accesskey',
-        inputval1: ctCart,
+        inputval1: ctCart.id,
       },
     };
 
@@ -344,10 +341,7 @@ console.log('status-handler');
     },
     body: JSON.stringify(novalnetPayload),
   });
-console.log('handle-novalnetResponse');
-    log.info('handle-novalnetResponse');
-    console.log(novalnetResponse);
-    log.info(novalnetResponse);
+
     
     const pspReference = randomUUID().toString();
     const updatedPayment = await this.ctPaymentService.updatePayment({
