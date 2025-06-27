@@ -331,7 +331,7 @@ console.log('status-handler');
       },
       custom: {
         input1: 'accesskey',
-        inputval1: 'cartt',
+        inputval1: ctCart,
       },
     };
 
