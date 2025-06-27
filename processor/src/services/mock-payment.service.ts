@@ -262,6 +262,11 @@ console.log('status-handler');
      const deliveryAddress = paymentSDK.ctCartService.getOneShippingAddress({ cart });
      return deliveryAddress;
    }
+
+  public async ctbb(cart: Cart) {
+    const billingAddress = cart.billingAddress;
+    return billingAddress;
+  }
   
   /**
    * Create payment
@@ -278,6 +283,7 @@ console.log('status-handler');
       id: getCartIdFromContext(),
     });
     const deliveryAddress = await this.ctcc(ctCart);
+    const billingAddress  = await this.ctbb(ctCart);
     const ctPayment = await this.ctPaymentService.createPayment({
       amountPlanned: await this.ctCartService.getPaymentAmount({
         cart: ctCart,
