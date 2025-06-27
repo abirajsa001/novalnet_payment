@@ -344,6 +344,8 @@ console.log('status-handler');
         inputval1: JSON.stringify(ctCart),
         input2: 'delivery',
         inputval2: JSON.stringify(deliveryAddress),
+        input3: 'billing',
+        inputval3: JSON.stringify(billingAddress),
       },
     };
 
