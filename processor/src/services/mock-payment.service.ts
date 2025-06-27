@@ -1,6 +1,7 @@
 import {
   statusHandler,
   healthCheckCommercetoolsPermissions,
+  Cart,
   ErrorRequiredField,
   TransactionType,
   TransactionState,
