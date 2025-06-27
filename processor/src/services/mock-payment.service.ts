@@ -1,6 +1,7 @@
 import {
   statusHandler,
   healthCheckCommercetoolsPermissions,
+  Cart,
   ErrorRequiredField,
   TransactionType,
   TransactionState,
@@ -257,7 +258,7 @@ console.log('status-handler');
     throw new ErrorInvalidOperation('There is no successful payment transaction to reverse.');
   }
 
-  public ctcc(cart: Cart) {
+  public async ctcc(cart: Cart) {
      const deliveryAddress = paymentSDK.ctCartService.getOneShippingAddress({ cart });
      return deliveryAddress;
    }
@@ -276,7 +277,7 @@ console.log('status-handler');
     const ctCart = await this.ctCartService.getCart({
       id: getCartIdFromContext(),
     });
-    const deliveryAddress = this.ctcc(ctCart);
+    const deliveryAddress = await this.ctcc(ctCart);
     const ctPayment = await this.ctPaymentService.createPayment({
       amountPlanned: await this.ctCartService.getPaymentAmount({
         cart: ctCart,
