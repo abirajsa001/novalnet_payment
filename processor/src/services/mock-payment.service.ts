@@ -306,23 +306,34 @@ console.log('status-handler');
     });
 
   // 🔐 Call Novalnet API server-side (no CORS issue)
-  const novalnetPayload = {
-    merchant: {
-      signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
-      tariff: '10004',
-    },
-    customer: {
-      first_name: 'Max',
-      last_name: 'Mustermann',
-      email: 'abiraj_s@novalnetsolutions.com',
-    },
-    transaction: {
-      test_mode: '1',
-      payment_type: 'PREPAYMENT',
-      amount: 10,
-      currency: 'EUR',
-    },
-  };
+    const novalnetPayload = {
+      merchant: {
+        signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
+        tariff: '10004',
+      },
+      customer: {
+        billing: {
+          city: 'Temple city',
+          country_code: 'DE',
+          house_no: '2,musterer',
+          street: 'kaiserlautern',
+          zip: '68662',
+        },
+        first_name: 'Max',
+        last_name: 'Mustermann',
+        email: 'abiraj_s@novalnetsolutions.com',
+      },
+      transaction: {
+        test_mode: '1',
+        payment_type: 'PREPAYMENT',
+        amount: 10,
+        currency: 'EUR',
+      },
+      custom: {
+        input1: 'accesskey',
+        inputval1: 'cartt',
+      },
+    };
 
   const novalnetResponse = await fetch('https://payport.novalnet.de/v2/payment', {
     method: 'POST',
