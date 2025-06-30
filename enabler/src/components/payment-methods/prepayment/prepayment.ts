@@ -25,8 +25,6 @@ export class PrepaymentBuilder implements PaymentComponentBuilder {
 
 export class Prepayment extends BaseComponent {
   private showPayButton: boolean;
-  private poNumberId = "purchaseOrderForm-poNumber";
-  private invoiceMemoId = "purchaseOrderForm-invoiceMemo";
 
   constructor(baseOptions: BaseOptions, componentOptions: ComponentOptions) {
     super(PaymentMethod.prepayment, baseOptions, componentOptions);
@@ -36,28 +34,20 @@ export class Prepayment extends BaseComponent {
   mount(selector: string) {
     document
       .querySelector(selector)
-      .insertAdjacentHTML("afterbegin", this._getTemplate());
+      ?.insertAdjacentHTML("afterbegin", this._getTemplate());
 
     if (this.showPayButton) {
       document
         .querySelector("#purchaseOrderForm-paymentButton")
-        .addEventListener("click", (e) => {
+        ?.addEventListener("click", (e) => {
           e.preventDefault();
           this.submit();
         });
     }
-
-    this.addFormFieldsEventListeners();
   }
 
   async submit() {
-    // here we would call the SDK to submit the payment
     this.sdk.init({ environment: this.environment });
-
-    const isFormValid = this.validateAllFields();
-    if (!isFormValid) {
-      return;
-    }
 
     try {
       const requestData: PaymentRequestSchemaDTO = {
@@ -75,13 +65,13 @@ export class Prepayment extends BaseComponent {
         },
         body: JSON.stringify(requestData),
       });
+
       const data = await response.json();
       if (data.paymentReference) {
-        this.onComplete &&
-          this.onComplete({
-            isSuccess: true,
-            paymentReference: data.paymentReference,
-          });
+        this.onComplete?.({
+          isSuccess: true,
+          paymentReference: data.paymentReference,
+        });
       } else {
         this.onError("Some error occurred. Please try again.");
       }
@@ -90,17 +80,22 @@ export class Prepayment extends BaseComponent {
     }
   }
 
-
-   private _getTemplate() {
+  private _getTemplate() {
     return this.showPayButton
       ? `
-    <div class="${styles.wrapper}">
-      <p>Pay easily with Invoice and transfer the shopping amount within the specified date.</p>
-      <button class="${buttonStyles.button} ${buttonStyles.fullWidth} ${styles.submitButton}" id="purchaseOrderForm-paymentButton">Pay</button>
-    </div>
+      <div class="${styles.wrapper}">
+        <p>Pay easily with Invoice and transfer the shopping amount within the specified date.</p>
+        <button class="${buttonStyles.button} ${buttonStyles.fullWidth} ${styles.submitButton}" id="purchaseOrderForm-paymentButton">Pay</button>
+      </div>
     `
       : "";
   }
 
- 
+  showValidation() {
+    // no-op since there are no fields
+  }
+
+  isValid() {
+    return true; // Always valid since no fields exist
+  }
 }
