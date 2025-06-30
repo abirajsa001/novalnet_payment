@@ -1,18 +1,18 @@
+// src/components/prepayment.ts
 import {
   ComponentOptions,
   PaymentComponent,
   PaymentComponentBuilder,
   PaymentMethod,
-} from "../../../payment-enabler/payment-enabler";
-import { BaseComponent } from "../../base";
-import inputFieldStyles from "../../../style/inputField.module.scss";
-import styles from "../../../style/style.module.scss";
-import buttonStyles from "../../../style/button.module.scss";
+} from "../payment-enabler/payment-enabler";
+import { BaseComponent } from "../base";
+import buttonStyles from "../style/button.module.scss";
+import styles from "../style/style.module.scss";
 import {
   PaymentOutcome,
   PaymentRequestSchemaDTO,
-} from "../../../dtos/mock-payment.dto";
-import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
+} from "../dtos/mock-payment.dto";
+import { BaseOptions } from "../payment-enabler/payment-enabler-mock";
 
 export class PrepaymentBuilder implements PaymentComponentBuilder {
   public componentHasSubmit = true;
@@ -28,18 +28,18 @@ export class Prepayment extends BaseComponent {
 
   constructor(baseOptions: BaseOptions, componentOptions: ComponentOptions) {
     super(PaymentMethod.prepayment, baseOptions, componentOptions);
-    this.showPayButton = componentOptions?.showPayButton ?? false;
+    this.showPayButton = componentOptions?.showPayButton ?? true;
   }
 
   mount(selector: string) {
     document
       .querySelector(selector)
-      ?.insertAdjacentHTML("afterbegin", this._getTemplate());
+      .insertAdjacentHTML("afterbegin", this._getTemplate());
 
     if (this.showPayButton) {
       document
         .querySelector("#purchaseOrderForm-paymentButton")
-        ?.addEventListener("click", (e) => {
+        .addEventListener("click", (e) => {
           e.preventDefault();
           this.submit();
         });
@@ -81,21 +81,11 @@ export class Prepayment extends BaseComponent {
   }
 
   private _getTemplate() {
-    return this.showPayButton
-      ? `
+    return `
       <div class="${styles.wrapper}">
-        <p>Pay easily with Invoice and transfer the shopping amount within the specified date.</p>
+        <p>Pay with Invoice (Prepayment).</p>
         <button class="${buttonStyles.button} ${buttonStyles.fullWidth} ${styles.submitButton}" id="purchaseOrderForm-paymentButton">Pay</button>
       </div>
-    `
-      : "";
-  }
-
-  showValidation() {
-    // no-op since there are no fields
-  }
-
-  isValid() {
-    return true; // Always valid since no fields exist
+    `;
   }
 }
