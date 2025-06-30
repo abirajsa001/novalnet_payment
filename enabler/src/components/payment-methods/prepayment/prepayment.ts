@@ -63,8 +63,6 @@ export class Prepayment extends BaseComponent {
       const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
           type: this.paymentMethod,
-          poNumber: this.getInput(this.poNumberId).value.trim(),
-          invoiceMemo: this.getInput(this.invoiceMemoId).value.trim(),
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
@@ -92,13 +90,6 @@ export class Prepayment extends BaseComponent {
     }
   }
 
-  showValidation() {
-    this.validateAllFields();
-  }
-
-  isValid() {
-    return this.validateAllFields();
-  }
 
   private _getTemplate() {
     const payButton = this.showPayButton
@@ -111,72 +102,5 @@ export class Prepayment extends BaseComponent {
     `;
   }
 
-  private addFormFieldsEventListeners = () => {
-    this.handleFieldValidation(this.poNumberId);
-    this.handleFieldFocusOut(this.invoiceMemoId);
-  };
-
-  private getInput(field: string): HTMLInputElement {
-    return document.querySelector(`#${field}`) as HTMLInputElement;
-  }
-
-  private validateAllFields(): boolean {
-    let isValid = true;
-    if (!this.isFieldValid(this.poNumberId)) {
-      isValid = false;
-      this.showErrorIfInvalid(this.poNumberId);
-    }
-
-    return isValid;
-  }
-
-  private isFieldValid(field: string): boolean {
-    const input = this.getInput(field);
-    return input.value.replace(/\s/g, "").length > 0;
-  }
-
-  private showErrorIfInvalid(field: string) {
-    if (!this.isFieldValid(field)) {
-      const input = this.getInput(field);
-      input.parentElement.classList.add(inputFieldStyles.error);
-      input.parentElement
-        .querySelector(`#${field} + .${inputFieldStyles.errorField}`)
-        .classList.remove(styles.hidden);
-    }
-  }
-
-  private hideErrorIfValid = (field: string) => {
-    if (this.isFieldValid(field)) {
-      const input = this.getInput(field);
-      input.parentElement.classList.remove(inputFieldStyles.error);
-      input.parentElement
-        .querySelector(`#${field} + .${inputFieldStyles.errorField}`)
-        .classList.add(styles.hidden);
-    }
-  };
-
-  private handleFieldValidation(field: string) {
-    const input = this.getInput(field);
-    input.addEventListener("input", () => {
-      this.manageLabelClass(input);
-      this.hideErrorIfValid(field);
-    });
-    input.addEventListener("focusout", () => {
-      this.showErrorIfInvalid(field);
-      this.manageLabelClass(input);
-    });
-  }
-
-  private handleFieldFocusOut(field: string) {
-    const input = this.getInput(field);
-    input.addEventListener("focusout", () => {
-      this.manageLabelClass(input);
-    });
-  }
-
-  private manageLabelClass = (input: HTMLInputElement) => {
-    input.value.length > 0
-      ? input.parentElement.classList.add(inputFieldStyles.containValue)
-      : input.parentElement.classList.remove(inputFieldStyles.containValue);
-  };
+ 
 }
