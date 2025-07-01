@@ -216,8 +216,6 @@ describe('mock-payment.service', () => {
       data: {
         paymentMethod: {
           type: PaymentMethodType.PREPAYMENT,
-          poNumber: '123456',
-          invoiceMemo: 'This is a test invoice',
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       },
