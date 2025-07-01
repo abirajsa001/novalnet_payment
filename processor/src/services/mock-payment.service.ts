@@ -286,16 +286,23 @@ const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
       // 🔐 Call Novalnet API server-side (no CORS issue)
     const novalnetPayload = {
       merchant: {
-        signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
-        tariff: '10004',
+        signature: getConfig()?.novalnetPrivateKey ?? '',
+        tariff: getConfig()?.novalnetTariff ?? '',
       },
       customer: {
         billing: {
-          city: 'Temple city Madhurai',
-          country_code: 'DE',
-          house_no: '2,musterer',
-          street: 'kaiserlautern',
-          zip: '68662',
+          city: billingAddress?.city ?? '',
+          country_code: billingAddress?.country ?? '',
+          house_no: billingAddress?.streetName ?? '',
+          street: billingAddress?.streetName ?? '',
+          zip: billingAddress?.postalCode ?? '',
+        },
+	billing: {
+          city: deliveryAddress?.city ?? '',
+          country_code: deliveryAddress?.country ?? '',
+          house_no: deliveryAddress?.streetName ?? '',
+          street: deliveryAddress?.streetName ?? '',
+          zip: deliveryAddress?.postalCode ?? '',
         },
         first_name: 'Max',
         last_name: 'Mustermann',
@@ -304,8 +311,8 @@ const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
       transaction: {
         test_mode: '1',
         payment_type: 'PREPAYMENT',
-        amount: 10,
-        currency: 'EUR',
+        amount: parsedCart?.taxedPrice?.totalGross?.centAmount ?? '',
+        currency: parsedCart?.taxedPrice?.totalGross?.currencyCode ?? '',
       },
 	custom: {
 	  input1: 'accesskey',
