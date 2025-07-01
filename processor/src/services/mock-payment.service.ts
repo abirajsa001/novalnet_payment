@@ -28,7 +28,6 @@ import { CreatePaymentRequest, MockPaymentServiceOptions } from './types/mock-pa
 import { PaymentMethodType, PaymentOutcome, PaymentResponseSchemaDTO } from '../dtos/mock-payment.dto';
 import { getCartIdFromContext, getPaymentInterfaceFromContext } from '../libs/fastify/context/context';
 import { randomUUID } from 'crypto';
-import { launchpadPurchaseOrderCustomType } from '../custom-types/custom-types';
 import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/transaction.dto';
 import { log } from '../libs/logger';
 
@@ -372,18 +371,6 @@ const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
         interactionId: pspReference,
         state: this.convertPaymentResultCode(request.data.paymentOutcome),
       },
-      ...(request.data.paymentMethod.type === PaymentMethodType.PREPAYMENT && {
-        customFields: {
-          type: {
-            key: launchpadPurchaseOrderCustomType.key,
-            typeId: 'type',
-          },
-          fields: {
-            [launchpadPurchaseOrderCustomType.purchaseOrderNumber]: request.data.paymentMethod.poNumber,
-            [launchpadPurchaseOrderCustomType.invoiceMemo]: request.data.paymentMethod.invoiceMemo,
-          },
-        },
-      }),
     });
 
     return {
