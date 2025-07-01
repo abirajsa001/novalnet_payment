@@ -1,12 +1,11 @@
-import {
+ import {
   ComponentOptions,
   PaymentComponent,
   PaymentComponentBuilder,
-  PaymentMethod,
-} from "../../../payment-enabler/payment-enabler";
+  PaymentMethod
+} from '../../../payment-enabler/payment-enabler';
 import { BaseComponent } from "../../base";
-import inputFieldStyles from "../../../style/inputField.module.scss";
-import styles from "../../../style/style.module.scss";
+import styles from '../../../style/style.module.scss';
 import buttonStyles from "../../../style/button.module.scss";
 import {
   PaymentOutcome,
@@ -25,8 +24,6 @@ export class PrepaymentBuilder implements PaymentComponentBuilder {
 
 export class Prepayment extends BaseComponent {
   private showPayButton: boolean;
-  private poNumberId = "purchaseOrderForm-poNumber";
-  private invoiceMemoId = "purchaseOrderForm-invoiceMemo";
 
   constructor(baseOptions: BaseOptions, componentOptions: ComponentOptions) {
     super(PaymentMethod.prepayment, baseOptions, componentOptions);
@@ -46,29 +43,42 @@ export class Prepayment extends BaseComponent {
           this.submit();
         });
     }
-
-    this.addFormFieldsEventListeners();
   }
 
   async submit() {
     // here we would call the SDK to submit the payment
     this.sdk.init({ environment: this.environment });
-
-    const isFormValid = this.validateAllFields();
-    if (!isFormValid) {
-      return;
-    }
-
+    console.log('submit-triggered');
     try {
-      const requestData: PaymentRequestSchemaDTO = {
+      // start original
+      const requestDatas: PaymentRequestSchemaDTO = {
         paymentMethod: {
           type: this.paymentMethod,
-          poNumber: this.getInput(this.poNumberId).value.trim(),
-          invoiceMemo: this.getInput(this.invoiceMemoId).value.trim(),
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
-
+     
+      const responses = await fetch(this.processorUrl + "/test", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Session-Id": this.sessionId,
+        },
+        body: JSON.stringify(requestDatas),
+      });
+      console.log('responses-dataa');
+    console.log(responses);
+      
+      
+      const requestData: PaymentRequestSchemaDTO = {
+        paymentMethod: {
+          type: this.paymentMethod,
+        },
+        paymentOutcome: PaymentOutcome.AUTHORIZED,
+      };
+      console.log('requestData');
+    console.log(requestData);
+     
       const response = await fetch(this.processorUrl + "/payments", {
         method: "POST",
         headers: {
@@ -77,7 +87,10 @@ export class Prepayment extends BaseComponent {
         },
         body: JSON.stringify(requestData),
       });
+      console.log('responseData-newdata');
+      console.log(response);
       const data = await response.json();
+      console.log(data);
       if (data.paymentReference) {
         this.onComplete &&
           this.onComplete({
@@ -87,112 +100,20 @@ export class Prepayment extends BaseComponent {
       } else {
         this.onError("Some error occurred. Please try again.");
       }
+
     } catch (e) {
       this.onError("Some error occurred. Please try again.");
     }
   }
 
-  showValidation() {
-    this.validateAllFields();
-  }
-
-  isValid() {
-    return this.validateAllFields();
-  }
-
   private _getTemplate() {
-    const payButton = this.showPayButton
-      ? `<button class="${buttonStyles.button} ${buttonStyles.fullWidth} ${styles.submitButton}" id="purchaseOrderForm-paymentButton">Pay</button>`
-      : "";
-    return `
+    return this.showPayButton
+      ? `
     <div class="${styles.wrapper}">
-      <form class="${styles.paymentForm}">
-        <div class="${inputFieldStyles.inputContainer}">
-          <label class="${inputFieldStyles.inputLabel}" for="purchaseOrderForm-poNumber">
-            PO Number <span aria-hidden="true"> *</span>
-          </label>
-          <input class="${inputFieldStyles.inputField}" type="text" id="purchaseOrderForm-poNumber" name="poNumber" value="">
-          <span class="${styles.hidden} ${inputFieldStyles.errorField}">Invalid PO number</span>
-        </div>
-        <div class="${inputFieldStyles.inputContainer}">
-          <label class="${inputFieldStyles.inputLabel}" for="purchaseOrderForm-invoiceMemo">
-            Invoice memo
-          </label>
-          <input class="${inputFieldStyles.inputField}" type="text" id="purchaseOrderForm-invoiceMemo" name="invoiceMemo" value="">
-          <span class="${styles.hidden} ${inputFieldStyles.errorField}">Invalid Invoice memo</span>
-        </div>
-        ${payButton}
-      </form>
-      </div>
-    `;
+      <p>Pay easily with Prepayment and transfer the shopping amount within the specified date.</p>
+      <button class="${buttonStyles.button} ${buttonStyles.fullWidth} ${styles.submitButton}" id="purchaseOrderForm-paymentButton">Pay</button>
+    </div>
+    `
+      : "";
   }
-
-  private addFormFieldsEventListeners = () => {
-    this.handleFieldValidation(this.poNumberId);
-    this.handleFieldFocusOut(this.invoiceMemoId);
-  };
-
-  private getInput(field: string): HTMLInputElement {
-    return document.querySelector(`#${field}`) as HTMLInputElement;
-  }
-
-  private validateAllFields(): boolean {
-    let isValid = true;
-    if (!this.isFieldValid(this.poNumberId)) {
-      isValid = false;
-      this.showErrorIfInvalid(this.poNumberId);
-    }
-
-    return isValid;
-  }
-
-  private isFieldValid(field: string): boolean {
-    const input = this.getInput(field);
-    return input.value.replace(/\s/g, "").length > 0;
-  }
-
-  private showErrorIfInvalid(field: string) {
-    if (!this.isFieldValid(field)) {
-      const input = this.getInput(field);
-      input.parentElement.classList.add(inputFieldStyles.error);
-      input.parentElement
-        .querySelector(`#${field} + .${inputFieldStyles.errorField}`)
-        .classList.remove(styles.hidden);
-    }
-  }
-
-  private hideErrorIfValid = (field: string) => {
-    if (this.isFieldValid(field)) {
-      const input = this.getInput(field);
-      input.parentElement.classList.remove(inputFieldStyles.error);
-      input.parentElement
-        .querySelector(`#${field} + .${inputFieldStyles.errorField}`)
-        .classList.add(styles.hidden);
-    }
-  };
-
-  private handleFieldValidation(field: string) {
-    const input = this.getInput(field);
-    input.addEventListener("input", () => {
-      this.manageLabelClass(input);
-      this.hideErrorIfValid(field);
-    });
-    input.addEventListener("focusout", () => {
-      this.showErrorIfInvalid(field);
-      this.manageLabelClass(input);
-    });
-  }
-
-  private handleFieldFocusOut(field: string) {
-    const input = this.getInput(field);
-    input.addEventListener("focusout", () => {
-      this.manageLabelClass(input);
-    });
-  }
-
-  private manageLabelClass = (input: HTMLInputElement) => {
-    input.value.length > 0
-      ? input.parentElement.classList.add(inputFieldStyles.containValue)
-      : input.parentElement.classList.remove(inputFieldStyles.containValue);
-  };
 }
