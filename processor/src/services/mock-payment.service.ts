@@ -284,46 +284,45 @@ console.log('status-handler');
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
       // 🔐 Call Novalnet API server-side (no CORS issue)
-    const novalnetPayload = {
-      merchant: {
-        signature: String(getConfig()?.novalnetPrivateKey ?? '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc'),
-        tariff: String(getConfig()?.novalnetTariff ?? '10004'),
-      },
-      customer: {
-        billing: {
-          city: String(billingAddress?.city ?? 'demo'),
-          country_code: String(billingAddress?.country ?? 'US'),
-          house_no: String(billingAddress?.streetName ?? '10'),
-          street: String(billingAddress?.streetName ?? 'teststreet'),
-          zip: String(billingAddress?.postalCode ?? '12345'),
-        },
-	shipping: {
-          city: String(deliveryAddress?.city ?? 'demoshipping'),
-          country_code: String(deliveryAddress?.country ?? 'US'),
-          house_no: String(deliveryAddress?.streetName ?? '11'),
-          street: String(deliveryAddress?.streetName ?? 'testshippingstreet'),
-          zip: String(deliveryAddress?.postalCode ?? '12345'),
-        },
-        first_name: 'Max',
-        last_name: 'Mustermann',
-        email: 'abiraj_s@novalnetsolutions.com',
-      },
-      transaction: {
-        test_mode: '1',
-        payment_type: 'PREPAYMENT',
-        amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? '12345'),
-        currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'EUR'),
-      },
-	custom: {
-	  input1: 'accesskey',
-	  inputval1: String(billingAddress?.firstName ?? 'empty'),
-	  input2: 'transaction amount',
-	  inputval2: String(parsedCart?.taxedPrice?.totalTax?.centAmount ?? 'empty'),
-	  input3: 'config',
-	  inputval3: String(getConfig()?.novalnetPrivateKey ?? 'empty'),
-	}
-	    
-    };
+	const novalnetPayload = {
+	  merchant: {
+	    signature: String(getConfig()?.novalnetPrivateKey ?? '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc'),
+	    tariff: String(getConfig()?.novalnetTariff ?? '10004'),
+	  },
+	  customer: {
+	    billing: {
+	      city: String(billingAddress?.city ?? 'demo'),
+	      country_code: String(billingAddress?.country ?? 'US'),
+	      house_no: String(billingAddress?.streetName ?? '10'),
+	      street: String(billingAddress?.streetName ?? 'teststreet'),
+	      zip: String(billingAddress?.postalCode ?? '12345'),
+	    },
+	    shipping: {
+	      city: String(deliveryAddress?.city ?? 'demoshipping'),
+	      country_code: String(deliveryAddress?.country ?? 'US'),
+	      house_no: String(deliveryAddress?.streetName ?? '11'),
+	      street: String(deliveryAddress?.streetName ?? 'testshippingstreet'),
+	      zip: String(deliveryAddress?.postalCode ?? '12345'),
+	    },
+	    first_name: 'Max',
+	    last_name: 'Mustermann',
+	    email: 'abiraj_s@novalnetsolutions.com',
+	  },
+	  transaction: {
+	    test_mode: '1',
+	    payment_type: 'PREPAYMENT',
+	    amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? '12345'),
+	    currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'EUR'),
+	  },
+	  custom: {
+	    input1: 'accesskey',
+	    inputval1: String(billingAddress?.firstName ?? 'empty'),
+	    input2: 'transaction amount',
+	    inputval2: String(parsedCart?.taxedPrice?.totalTax?.centAmount ?? 'empty'),
+	    input3: 'config',
+	    inputval3: String(getConfig()?.novalnetPrivateKey ?? 'empty'),
+	  }
+	};
 
 	const novalnetResponse = await fetch('https://payport.novalnet.de/v2/payment', {
 		method: 'POST',
