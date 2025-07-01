@@ -373,18 +373,6 @@ const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
         interactionId: pspReference,
         state: this.convertPaymentResultCode(request.data.paymentOutcome),
       },
-      ...(request.data.paymentMethod.type === PaymentMethodType.PREPAYMENT && {
-        customFields: {
-          type: {
-            key: launchpadPurchaseOrderCustomType.key,
-            typeId: 'type',
-          },
-          fields: {
-            [launchpadPurchaseOrderCustomType.purchaseOrderNumber]: request.data.paymentMethod.poNumber,
-            [launchpadPurchaseOrderCustomType.invoiceMemo]: request.data.paymentMethod.invoiceMemo,
-          },
-        },
-      }),
     });
 
     return {
