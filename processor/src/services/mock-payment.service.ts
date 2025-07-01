@@ -278,7 +278,6 @@ console.log('status-handler');
    * @returns Promise with mocking data containing operation status and PSP reference
    */
   public async createPayment(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
-    this.validatePaymentMethod(request);
     const ctCart = await this.ctCartService.getCart({
       id: getCartIdFromContext(),
     });
@@ -475,11 +474,4 @@ const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
     }
   }
 
-  private validatePaymentMethod(request: CreatePaymentRequest): void {
-    const { paymentMethod } = request.data;
-
-    if (paymentMethod.type === PaymentMethodType.PREPAYMENT && !paymentMethod.poNumber) {
-      throw new ErrorRequiredField('poNumber');
-    }
-  }
 }
