@@ -26,28 +26,6 @@ export async function createLaunchpadPurchaseOrderNumberCustomType(): Promise<vo
         key: launchpadPurchaseOrderCustomType.key,
         name: { en: 'Additional fields to store purchase order information' },
         resourceTypeIds: ['payment'],
-        fieldDefinitions: [
-          {
-            type: {
-              name: 'String',
-            },
-            name: launchpadPurchaseOrderCustomType.purchaseOrderNumber,
-            label: {
-              en: 'Purchase Order Number',
-            },
-            required: true,
-          },
-          {
-            type: {
-              name: 'String',
-            },
-            name: launchpadPurchaseOrderCustomType.invoiceMemo,
-            label: {
-              en: 'Invoce Memo',
-            },
-            required: false,
-          },
-        ],
       },
     })
     .execute();
