@@ -282,21 +282,28 @@ console.log('status-handler');
     });
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
-const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
+    const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
       // 🔐 Call Novalnet API server-side (no CORS issue)
     const novalnetPayload = {
       merchant: {
-        signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
-        tariff: '10004',
+        signature: getConfig()?.novalnetPrivateKey ?? '',
+        tariff: getConfig()?.novalnetTariff ?? '',
       },
       customer: {
         billing: {
-          city: 'Temple city Madhurai',
-          country_code: 'DE',
-          house_no: '2,musterer',
-          street: 'kaiserlautern',
-          zip: '68662',
+          city: billingAddress?.city ?? '',
+          country_code: billingAddress?.country ?? '',
+          house_no: "2,musterer",
+          street: billingAddress?.streetName ?? '',
+          zip: billingAddress?.postalCode ?? '',
         },
+	shipping: {
+	  city: deliveryAddress?.city ?? '',
+          country_code: deliveryAddress?.country ?? '',
+          house_no: "2,musterer",
+          street: deliveryAddress?.streetName ?? '',
+          zip: deliveryAddress?.postalCode ?? '',	
+	}      
         first_name: 'Max',
         last_name: 'Mustermann',
         email: 'abiraj_s@novalnetsolutions.com',
@@ -304,18 +311,17 @@ const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
       transaction: {
         test_mode: '1',
         payment_type: 'PREPAYMENT',
-        amount: 10,
-        currency: 'EUR',
+        amount: parsedCart?.taxedPrice?.totalGross?.centAmount ?? '',
+        currency: parsedCart?.taxedPrice?.totalGross?.currencyCode ?? '',
       },
 	custom: {
 	  input1: 'accesskey',
 	  inputval1: String(billingAddress?.firstName ?? 'empty'),
 	  input2: 'transaction amount',
-	  inputval2: String(parsedCart?.taxedPrice?.totalTax?.centAmount ?? 'empty'),
+	  inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
 	  input3: 'config',
 	  inputval3: String(getConfig()?.novalnetPrivateKey ?? 'empty'),
 	}
-	    
     };
 
 	const novalnetResponse = await fetch('https://payport.novalnet.de/v2/payment', {
