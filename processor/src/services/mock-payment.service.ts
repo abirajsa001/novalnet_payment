@@ -282,27 +282,27 @@ console.log('status-handler');
     });
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
-const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
+    const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
       // 🔐 Call Novalnet API server-side (no CORS issue)
     const novalnetPayload = {
       merchant: {
-        signature: getConfig()?.novalnetPrivateKey ?? '',
-        tariff: getConfig()?.novalnetTariff ?? '',
+        signature: String(getConfig()?.novalnetPrivateKey ?? ''),
+        tariff: String(getConfig()?.novalnetTariff ?? ''),
       },
       customer: {
         billing: {
-          city: billingAddress?.city ?? '',
-          country_code: billingAddress?.country ?? '',
-          house_no: billingAddress?.streetName ?? '',
-          street: billingAddress?.streetName ?? '',
-          zip: billingAddress?.postalCode ?? '',
+          city: String(billingAddress?.city ?? ''),
+          country_code: String(billingAddress?.country ?? ''),
+          house_no: String(billingAddress?.streetName ?? ''),
+          street: String(billingAddress?.streetName ?? ''),
+          zip: String(billingAddress?.postalCode ?? ''),
         },
 	billing: {
-          city: deliveryAddress?.city ?? '',
-          country_code: deliveryAddress?.country ?? '',
-          house_no: deliveryAddress?.streetName ?? '',
-          street: deliveryAddress?.streetName ?? '',
-          zip: deliveryAddress?.postalCode ?? '',
+          city: String(deliveryAddress?.city ?? ''),
+          country_code: String(deliveryAddress?.country ?? ''),
+          house_no: String(deliveryAddress?.streetName ?? ''),
+          street: String(deliveryAddress?.streetName ?? ''),
+          zip: String(deliveryAddress?.postalCode ?? ''),
         },
         first_name: 'Max',
         last_name: 'Mustermann',
@@ -311,8 +311,8 @@ const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
       transaction: {
         test_mode: '1',
         payment_type: 'PREPAYMENT',
-        amount: parsedCart?.taxedPrice?.totalGross?.centAmount ?? '',
-        currency: parsedCart?.taxedPrice?.totalGross?.currencyCode ?? '',
+        amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? ''),
+        currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? ''),
       },
 	custom: {
 	  input1: 'accesskey',
