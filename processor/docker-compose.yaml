@@ -12,19 +12,3 @@ services:
       - start
     ports:
       - 9000:9000
-
-  processor:
-    image: node:20
-    volumes:
-      - ./processor:/home/node/app
-    working_dir: /home/node/app
-    depends_on:
-      - jwt-server
-    env_file:
-      - ./processor/.env
-    environment:
-      - CTP_JWKS_URL=http://jwt-server:9000/jwt/.well-known/jwks.json
-      - CTP_JWT_ISSUER=https://issuer.com
-    command: /bin/sh -c 'npm install && npm run watch'
-    ports:
-      - 8080:8080
