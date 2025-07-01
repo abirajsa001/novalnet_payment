@@ -297,7 +297,7 @@ console.log('status-handler');
           street: String(billingAddress?.streetName ?? ''),
           zip: String(billingAddress?.postalCode ?? ''),
         },
-	billing: {
+	shipping: {
           city: String(deliveryAddress?.city ?? ''),
           country_code: String(deliveryAddress?.country ?? ''),
           house_no: String(deliveryAddress?.streetName ?? ''),
