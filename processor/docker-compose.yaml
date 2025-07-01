@@ -12,3 +12,20 @@ services:
       - start
     ports:
       - 9000:9000
+
+processor:
+  image: node:20
+  working_dir: /app
+  volumes:
+    - ./processor:/app
+  depends_on:
+    - jwt-server
+  ports:
+    - 8080:8080
+  env_file:
+    - ./processor/.env
+  environment:
+    - CTP_JWKS_URL=http://jwt-server:9000/jwt/.well-known/jwks.json
+    - CTP_JWT_ISSUER=https://issuer.com
+  command: >
+    sh -c "npm install && npx ts-node src/main.ts"
