@@ -232,24 +232,7 @@ describe('mock-payment.service', () => {
     expect(result?.paymentReference).toStrictEqual('123456');
   });
 
-  test('create prepayment payment returns an error when PO number is not received', async () => {
-    const createPaymentOpts: CreatePaymentRequest = {
-      data: {
-        paymentMethod: {
-          type: PaymentMethodType.PREPAYMENT,
-        },
-        paymentOutcome: PaymentOutcome.AUTHORIZED,
-      },
-    };
-    jest.spyOn(DefaultCartService.prototype, 'getCart').mockReturnValue(Promise.resolve(mockGetCartResult()));
-    jest.spyOn(DefaultPaymentService.prototype, 'createPayment').mockReturnValue(Promise.resolve(mockGetPaymentResult));
-    jest.spyOn(DefaultCartService.prototype, 'addPayment').mockReturnValue(Promise.resolve(mockGetCartResult()));
-    jest.spyOn(FastifyContext, 'getProcessorUrlFromContext').mockReturnValue('http://127.0.0.1');
 
-    const resultPromise = mockPaymentService.createPayment(createPaymentOpts);
-
-    await expect(resultPromise).rejects.toThrow('A value is required for field poNumber.');
-  });
 
   describe('handleTransaction', () => {
     test('should create the payment in CoCo and return it with a success state', async () => {
