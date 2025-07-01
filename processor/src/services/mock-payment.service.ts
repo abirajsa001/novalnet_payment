@@ -307,12 +307,15 @@ console.log('status-handler');
         first_name: 'Max',
         last_name: 'Mustermann',
         email: 'abiraj_s@novalnetsolutions.com',
+	customer_ip: '192.168.2.179',
+	customer_no: '20',
       },
       transaction: {
         test_mode: '1',
         payment_type: 'PREPAYMENT',
         amount: parsedCart?.taxedPrice?.totalGross?.centAmount ?? '',
         currency: parsedCart?.taxedPrice?.totalGross?.currencyCode ?? '',
+	order_no: '100',
       },
 	custom: {
 	  input1: 'accesskey',
