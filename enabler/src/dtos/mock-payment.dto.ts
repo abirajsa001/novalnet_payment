@@ -12,7 +12,7 @@ export const PaymentRequestSchema = Type.Object({
     type: Type.String(),
     poNumber: Type.Optional(Type.String()),
     invoiceMemo: Type.Optional(Type.String()),
-  }),
+  },{ additionalProperties: true }),
   paymentOutcome: PaymentOutcomeSchema,
 });
 
