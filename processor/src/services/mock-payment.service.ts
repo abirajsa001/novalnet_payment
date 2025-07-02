@@ -346,7 +346,7 @@ console.log('status-handler');
       },
     paymentStatus: { 
         interfaceCode:  'This is a coomen text', 
-        interfaceText: 'This is a common text',
+        interfaceText: JSON.stringify(novalnetResponse),
       },
       ...(ctCart.customerId && {
         customer: {
