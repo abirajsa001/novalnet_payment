@@ -12,7 +12,7 @@ import {
   PaymentRequestSchemaDTO,
 } from "../../../dtos/mock-payment.dto";
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
-import { config } from '../../../../../processor/src/config/config';
+
 
 export class PrepaymentBuilder implements PaymentComponentBuilder {
   public componentHasSubmit = true;
@@ -74,7 +74,7 @@ export class Prepayment extends BaseComponent {
       const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
           type: "PREPAYMENT",
-         testmode: String(getConfig()?.novalnetPrepaymentTestMode ?? 'null'),
+         testmode: 'nulll',
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
