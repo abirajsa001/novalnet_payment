@@ -321,6 +321,8 @@ console.log('status-handler');
 	    inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
 	    input3: 'customerEmail',
 	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
+	    input4: 'Payment-Method',
+	    inputval4: String(request.data.paymentMethod.type ?? "Payment-Method not available"),
 	  }
 	};
 
