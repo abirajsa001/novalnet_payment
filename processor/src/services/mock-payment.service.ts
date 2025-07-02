@@ -352,7 +352,7 @@ console.log('status-handler');
       },
     paymentStatus: { 
         interfaceCode:  'This is a coomen text', 
-        interfaceText: JSON.stringify(novalnetResponse),
+        interfaceText: novalnetResponse,
       },
       ...(ctCart.customerId && {
         customer: {
