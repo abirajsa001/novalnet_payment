@@ -328,15 +328,30 @@ console.log('status-handler');
 	  }
 	};
 
-	const novalnetResponse = await fetch('https://payport.novalnet.de/v2/payment', {
-		method: 'POST',
-		headers: {
-		  'Content-Type': 'application/json',
-		  'Accept': 'application/json',
-		  'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
-		},
-		body: JSON.stringify(novalnetPayload),
-	 });
+	let responseString = 'Unknown error';
+	
+	try {
+	  const novalnetResponse = await fetch('https://payport.novalnet.de/v2/payment', {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/json',
+	      'Accept': 'application/json',
+	      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
+	    },
+	    body: JSON.stringify(novalnetPayload),
+	  });
+	
+	  const contentType = novalnetResponse.headers.get('content-type') || '';
+	
+	  if (contentType.includes('application/json')) {
+	    const json = await novalnetResponse.json();
+	    responseString = JSON.stringify(json);
+	  } else {
+	    responseString = await novalnetResponse.text(); // fallback for plain text
+	  }
+	} catch (error) {
+	  responseString = `Error parsing response: ${(error as Error).message}`;
+	}
 
        //  const responseData = await novalnetResponse.json(); 
 	// const responseString = JSON.stringify(responseData);
@@ -350,7 +365,7 @@ console.log('status-handler');
       },
     paymentStatus: { 
         interfaceCode:  'This is a coomen text', 
-        interfaceText: novalnetResponse,
+        interfaceText: responseString,
       },
       ...(ctCart.customerId && {
         customer: {
