@@ -315,12 +315,12 @@ console.log('status-handler');
 	    currency: 'EUR',
 	  },
 	  custom: {
-	    input1: 'accesskey',
-	    inputval1: String(billingAddress?.firstName ?? 'empty'),
+	    input1: 'currencyCode',
+	    inputval1: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'empty'),
 	    input2: 'transaction amount',
-	    inputval2: String(parsedCart?.taxedPrice?.totalTax?.centAmount ?? 'empty'),
-	    input3: 'config',
-	    inputval3: String(getConfig()?.novalnetPrivateKey ?? 'empty'),
+	    inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
+	    input3: 'customerEmail',
+	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
 	  }
 	};
 
