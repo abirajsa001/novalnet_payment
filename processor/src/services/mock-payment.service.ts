@@ -311,8 +311,8 @@ console.log('status-handler');
 	  transaction: {
 	    test_mode: '1',
 	    payment_type: 'PREPAYMENT',
-	    amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? '12345'),
-	    currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'EUR'),
+	    amount: '123',
+	    currency: 'EUR',
 	  },
 	  custom: {
 	    input1: 'accesskey',
