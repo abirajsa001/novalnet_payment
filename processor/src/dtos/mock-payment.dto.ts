@@ -22,7 +22,6 @@ export const PaymentRequestSchema = Type.Object({
     type: Type.Enum(PaymentMethodType),
     poNumber: Type.Optional(Type.String()),
     invoiceMemo: Type.Optional(Type.String()),
-    testmode: Type.Optional(Type.String()),
   }),
   paymentOutcome: PaymentOutcomeSchema,
 });
