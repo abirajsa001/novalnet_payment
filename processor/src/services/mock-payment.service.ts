@@ -325,9 +325,6 @@ console.log('status-handler');
 	    inputval4: String(request.data.paymentMethod.type ?? "Payment-Method not available"),
 	    input5: 'Test Mode',
 	    inputval5: String(getConfig()?.novalnetPrepaymentTestMode ?? '10004'),
-	    input7: 'customerId',
-	    inputval7: String(ctCart?.customerId ?? "No Customer"),
-
 	  }
 	};
 
@@ -341,8 +338,8 @@ console.log('status-handler');
 		body: JSON.stringify(novalnetPayload),
 	 });
 
-        // const responseData = await novalnetResponse.json(); 
-	// const responseString = JSON.stringify(responseData);
+         const responseData = await novalnetResponse.json(); 
+	 const responseString = JSON.stringify(responseData);
 
     const ctPayment = await this.ctPaymentService.createPayment({
       amountPlanned: await this.ctCartService.getPaymentAmount({
@@ -353,7 +350,7 @@ console.log('status-handler');
       },
     paymentStatus: { 
         interfaceCode:  'This is a coomen text', 
-        interfaceText: 'responseString',
+        interfaceText: responseString,
       },
       ...(ctCart.customerId && {
         customer: {
