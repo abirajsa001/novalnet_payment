@@ -9,6 +9,14 @@ deployAs:
         - key: NOVALNET_TEST_MODE
           description: Novalnet unique identifier.
           required: true
+  - name: prepayment
+    applicationType: service
+    endpoint: /prepayment
+    configuration:
+      standardConfiguration:
+        - key: NOVALNET__PREPAYMENT_TEST_MODE
+          description: Novalnet unique identifier.
+          required: true          
   - name: processor
     applicationType: service
     endpoint: /
