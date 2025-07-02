@@ -14,7 +14,7 @@ deployAs:
     endpoint: /prepayment
     configuration:
       standardConfiguration:
-        - key: NOVALNET__PREPAYMENT_TEST_MODE
+        - key: NOVALNET_PREPAYMENT_TEST_MODE
           description: Novalnet unique identifier.
           required: true          
   - name: processor
