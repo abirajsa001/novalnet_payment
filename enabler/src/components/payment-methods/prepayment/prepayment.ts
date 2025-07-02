@@ -73,7 +73,8 @@ export class Prepayment extends BaseComponent {
       
       const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
-          type: this.paymentMethod,
+          type: "PREPAYMENT",
+         testmode: String(getConfig()?.novalnetPrepaymentTestMode ?? 'null'),
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
