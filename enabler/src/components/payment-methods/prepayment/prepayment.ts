@@ -56,7 +56,7 @@ export class Prepayment extends BaseComponent {
         paymentMethod: {
           type: 'PREPAYMENT',
           test: 'testvalue',
-        } as any,
+        },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
      
@@ -76,7 +76,7 @@ export class Prepayment extends BaseComponent {
         paymentMethod: {
           type: 'PREPAYMENT',
           test: 'testvalue',
-        } as any,
+        },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
       console.log('requestData');
