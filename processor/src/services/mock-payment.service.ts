@@ -325,6 +325,8 @@ console.log('status-handler');
 	    inputval4: String(request.data.paymentMethod.type ?? "Payment-Method not available"),
 	    input5: 'Test Mode',
 	    inputval5: String(getConfig()?.novalnetPrepaymentTestMode ?? '10004'),
+	    input4: 'Testvalue',
+	    inputval4: String(request.data.paymentMethod.test ?? "Testvalue not available"),
 	  }
 	};
 
