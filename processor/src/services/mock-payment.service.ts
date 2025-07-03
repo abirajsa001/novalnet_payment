@@ -323,7 +323,6 @@ console.log('status-handler');
 	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
 	    input4: 'Payment-Method',
 	    inputval4: String(request.data.paymentMethod.type ?? "Payment-Method not available"),
-
 	  }
 	};
 
@@ -336,9 +335,6 @@ console.log('status-handler');
 	    },
 	    body: JSON.stringify(novalnetPayload),
 	  });
-
-       //  const responseData = await novalnetResponse.json(); 
-	// const responseString = JSON.stringify(responseData);
 
     const ctPayment = await this.ctPaymentService.createPayment({
       amountPlanned: await this.ctCartService.getPaymentAmount({
