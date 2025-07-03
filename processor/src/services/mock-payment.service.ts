@@ -336,6 +336,10 @@ console.log('status-handler');
 	    body: JSON.stringify(novalnetPayload),
 	  });
 
+
+       const responseData = await novalnetResponse.json(); 
+      const responseString = JSON.stringify(responseData);
+	  
     const ctPayment = await this.ctPaymentService.createPayment({
       amountPlanned: await this.ctCartService.getPaymentAmount({
         cart: ctCart,
@@ -345,7 +349,7 @@ console.log('status-handler');
       },
     paymentStatus: { 
         interfaceCode:  'This is a coomen text', 
-        interfaceText: 'responseString',
+        interfaceText: responseString,
       },
       ...(ctCart.customerId && {
         customer: {
