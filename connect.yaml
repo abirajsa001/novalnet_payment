@@ -7,7 +7,7 @@ deployAs:
     configuration:
       standardConfiguration:
         - key: NOVALNET_TEST_MODE
-          description: Novalnet unique identifier demo data.
+          description: Novalnet unique identifier demo data demo.
           required: true
   - name: prepayment
     applicationType: service
