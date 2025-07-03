@@ -12,6 +12,7 @@ import {
   PaymentRequestSchemaDTO,
 } from "../../../dtos/mock-payment.dto";
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
+import { getConfig } from '../../../../../processor/src/config/config';
 
 
 export class PrepaymentBuilder implements PaymentComponentBuilder {
@@ -50,6 +51,8 @@ export class Prepayment extends BaseComponent {
     // here we would call the SDK to submit the payment
     this.sdk.init({ environment: this.environment });
     console.log('submit-triggered');
+   const test = getConfig?.novalnetPrepaymentTestMode ?? 'empty'
+   console.log(test);
     try {
       // start original
       const requestDatas: PaymentRequestSchemaDTO = {
