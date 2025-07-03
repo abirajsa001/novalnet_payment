@@ -64,12 +64,12 @@ services:
   prepayment:
     image: node:20
     volumes:
-      - ./invoice:/home/node/app
+      - ./prepayment:/home/node/app
     working_dir: /home/node/app
     depends_on:
       - jwt-server
     env_file:
-      - ./invoice/.env
+      - ./prepayment/.env
     environment:
       - CTP_JWKS_URL=http://jwt-server:9000/jwt/.well-known/jwks.json
       - CTP_JWT_ISSUER=https://issuer.com
