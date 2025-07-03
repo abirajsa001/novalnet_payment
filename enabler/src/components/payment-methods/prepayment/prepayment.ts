@@ -51,8 +51,7 @@ export class Prepayment extends BaseComponent {
     // here we would call the SDK to submit the payment
     this.sdk.init({ environment: this.environment });
     console.log('submit-triggered');
-   const test = getConfig?.novalnetPrepaymentTestMode ?? 'empty'
-   console.log(test);
+
     try {
       // start original
       const requestDatas: PaymentRequestSchemaDTO = {
