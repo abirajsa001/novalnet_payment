@@ -7,7 +7,7 @@ import path from 'path';
 export default defineConfig({
     resolve: {
     alias: {
-      '@processor': path.resolve(__dirname, '../processor/src'),
+      '@prepayment': path.resolve(__dirname, '../prepayment/src'),
     },
   },
   plugins: [
