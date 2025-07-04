@@ -3,6 +3,11 @@ import { defineConfig } from "vite";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 export default defineConfig({
+    resolve: {
+    alias: {
+      '@processor': path.resolve(__dirname, '../processor/src'),
+    },
+  },
   plugins: [
     cssInjectedByJsPlugin({
       injectCodeFunction: function injectCodeCustomRunTimeFunction(
