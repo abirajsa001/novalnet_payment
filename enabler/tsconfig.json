@@ -22,7 +22,7 @@
   },
     "baseUrl": ".", 
     "paths": {
-      "@processor/*": ["../processor/src/*"],
+      "@prepayment/*": ["../prepayment/src/*"],
   },
   "include": [
     "src", "decs.d.ts"]
