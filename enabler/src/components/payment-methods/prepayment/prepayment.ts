@@ -13,8 +13,6 @@ import {
 } from "../../../dtos/mock-payment.dto";
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
 
-import { getConfig } from '@prepayment/config/config';
-
 export class PrepaymentBuilder implements PaymentComponentBuilder {
   public componentHasSubmit = true;
   constructor(private baseOptions: BaseOptions) {}
