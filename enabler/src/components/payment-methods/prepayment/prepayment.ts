@@ -12,8 +12,6 @@ import {
   PaymentRequestSchemaDTO,
 } from "../../../dtos/mock-payment.dto";
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
-import { getConfig } from '../../../processor/src/config/config.js';
-
 
 
 export class PrepaymentBuilder implements PaymentComponentBuilder {
