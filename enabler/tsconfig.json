@@ -20,6 +20,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
+    "baseUrl": ".", 
+    "paths": {
+      "@processor/*": ["../processor/src/*"],
+  },
   "include": [
     "src", "decs.d.ts"]
 }
