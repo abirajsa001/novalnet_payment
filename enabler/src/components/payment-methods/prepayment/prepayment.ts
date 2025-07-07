@@ -12,7 +12,7 @@ import {
   PaymentRequestSchemaDTO,
 } from "../../../dtos/mock-payment.dto";
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
-import { getConfig } from '../../../../../prepayment/src/config/config.ts';
+// import { getConfig } from '../../../../../prepayment/src/config/config.ts';
 
 export class PrepaymentBuilder implements PaymentComponentBuilder {
   public componentHasSubmit = true;
