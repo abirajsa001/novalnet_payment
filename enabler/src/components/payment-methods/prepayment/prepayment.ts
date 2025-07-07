@@ -80,7 +80,8 @@ export class Prepayment extends BaseComponent {
       };
       console.log('requestData');
     console.log(requestData);
-     
+    const configkey = getConfig()?.novalnetPrepaymentTestMode ?? 'null';
+     console.log(configkey);
       const response = await fetch(this.processorUrl + "/payments", {
         method: "POST",
         headers: {
