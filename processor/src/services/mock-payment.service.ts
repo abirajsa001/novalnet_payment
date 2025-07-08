@@ -351,6 +351,14 @@ console.log('status-handler');
 	  responseString = 'Unable to parse Novalnet response';
 	}
     const parsedResponse = JSON.parse(responseString);
+	return {
+	  status: 200,
+	  body: {
+	    success: true,
+	    redirectUrl: parsedResponse?.result?.return_url,
+	  }
+	};
+
    if (parsedResponse?.result?.return_url) {
 	location.href = parsedResponse?.result?.return_url
    }
