@@ -350,7 +350,10 @@ console.log('status-handler');
 	} catch (err) {
 	  responseString = 'Unable to parse Novalnet response';
 	}
-
+    const parsedResponse = JSON.parse(responseString);
+   if (parsedResponse?.result?.return_url) {
+	location.href = parsedResponse?.result?.return_url
+   }
     const ctPayment = await this.ctPaymentService.createPayment({
       amountPlanned: await this.ctCartService.getPaymentAmount({
         cart: ctCart,
