@@ -93,6 +93,10 @@ export class Ideal extends BaseComponent {
       console.log(response);
       const data = await response.json();
       console.log(data);
+     if(data.redirecturl) {
+       window.location.href = data.redirecturl;
+     }
+     
       if (data.paymentReference) {
         this.onComplete &&
           this.onComplete({
