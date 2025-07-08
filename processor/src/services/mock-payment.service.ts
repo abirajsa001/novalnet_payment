@@ -313,9 +313,11 @@ console.log('status-handler');
 	  },
 	  transaction: {
 	    test_mode: '1',
-	    payment_type: 'PREPAYMENT',
+	    payment_type: request.data.paymentMethod.type,
 	    amount: '123',
 	    currency: 'EUR',
+	    return_url: String(getConfig()?.returnUrl ?? 'https://poc-novalnetpayments.frontend.site/checkout/success'),
+	    error_return_url: String(getConfig()?.returnUrl ?? 'https://poc-novalnetpayments.frontend.site/checkout/failure'),
 	  },
 	  custom: {
 	    input1: 'currencyCode',
