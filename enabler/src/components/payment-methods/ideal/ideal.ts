@@ -55,7 +55,7 @@ export class Ideal extends BaseComponent {
       // start original
       const requestDatas: PaymentRequestSchemaDTO = {
         paymentMethod: {
-          type: 'IDEAL',
+          type: this.paymentMethod,
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
@@ -74,11 +74,11 @@ export class Ideal extends BaseComponent {
       
       const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
-          type: 'IDEAL',
+          type: this.paymentMethod,
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
-      console.log('requestData');
+      console.log('requestDataIdeal');
     console.log(requestData);
 
       const response = await fetch(this.processorUrl + "/payments", {
@@ -89,7 +89,7 @@ export class Ideal extends BaseComponent {
         },
         body: JSON.stringify(requestData),
       });
-      console.log('responseData-newdata');
+      console.log('responseData-newdataIdeal');
       console.log(response);
       const data = await response.json();
       console.log(data);
