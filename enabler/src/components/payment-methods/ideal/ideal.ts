@@ -55,7 +55,7 @@ export class Ideal extends BaseComponent {
       // start original
       const requestDatas: PaymentRequestSchemaDTO = {
         paymentMethod: {
-          type: this.paymentMethod,
+          type: 'IDEAL',
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
@@ -74,7 +74,7 @@ export class Ideal extends BaseComponent {
       
       const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
-          type: this.paymentMethod,
+          type: 'IDEAL',
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
