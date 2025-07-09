@@ -1,5 +1,6 @@
 import { SessionHeaderAuthenticationHook } from '@commercetools/connect-payments-sdk';
-import { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest } from 'fastify';
+import crypto from 'crypto';
 import {
   PaymentRequestSchema,
   PaymentRequestSchemaDTO,
@@ -14,13 +15,19 @@ type PaymentRoutesOptions = {
   sessionHeaderAuthHook: SessionHeaderAuthenticationHook;
 };
 
+// 🔁 Helper to reverse string
+function reverseString(str: string): string {
+  return str.split('').reverse().join('');
+}
+
+// 🚀 Main route plugin
 export const paymentRoutes = async (
   fastify: FastifyInstance,
   opts: FastifyPluginOptions & PaymentRoutesOptions
 ) => {
-  log.info('before-payment-routes');
+  log.info('Initializing payment routes...');
 
-  // ✅ /test route — Novalnet request and response
+  // 🔁 Novalnet Test Route (calls Novalnet API)
   fastify.post('/test', async (request, reply) => {
     log.info('Received payment request in /test');
 
@@ -46,8 +53,8 @@ export const paymentRoutes = async (
         payment_type: 'PREPAYMENT',
         amount: 10,
         currency: 'EUR',
-        return_url: 'https://yourdomain.com/checkout/success',
-        error_return_url: 'https://yourdomain.com/checkout/failure',
+        return_url: 'https://your-domain.com/redirect', // 🔁 Callback to your redirect handler
+        error_return_url: 'https://your-domain.com/redirect',
       },
       custom: {
         input1: 'request',
@@ -73,7 +80,6 @@ export const paymentRoutes = async (
       log.info('Novalnet response:', data);
 
       if (data?.result?.status === 'SUCCESS' && data?.result?.redirect_url) {
-        // ✅ Redirect to the Novalnet-hosted page
         return reply.redirect(data.result.redirect_url);
       } else {
         return reply.code(400).send({
@@ -82,12 +88,12 @@ export const paymentRoutes = async (
         });
       }
     } catch (error) {
-      log.error('Novalnet request failed', error);
+      log.error('Novalnet API call failed:', error);
       return reply.code(500).send({ error: 'Internal server error', message: error });
     }
   });
 
-  // 🔄 Standard payment route for commercetools
+  // 💳 Commercetools Payment API Route
   fastify.post<{ Body: PaymentRequestSchemaDTO; Reply: PaymentResponseSchemaDTO }>(
     '/payments',
     {
@@ -103,8 +109,32 @@ export const paymentRoutes = async (
       const resp = await opts.paymentService.createPayment({
         data: request.body,
       });
-
       return reply.status(200).send(resp);
     }
   );
+
+  // ✅ Redirect Verification Route (/redirect)
+  fastify.get('/success', async (request: FastifyRequest, reply: FastifyReply) => {
+    const query = request.query as {
+      tid?: string;
+      status?: string;
+      checksum?: string;
+    };
+
+    const txnSecret = process.env.TXN_SECRET; // ✅ Make sure it's defined in your environment
+    const paymentAccessKey = process.env.PAYMENT_ACCESS_KEY || 'YOUR_PAYMENT_ACCESS_KEY';
+
+    if (query.checksum && query.tid && query.status && txnSecret) {
+      const tokenString = `${query.tid}${txnSecret}${query.status}${reverseString(paymentAccessKey)}`;
+      const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
+
+      if (generatedChecksum !== query.checksum) {
+        return reply.code(400).send('While redirecting some data has been changed. The hash check failed');
+      } else {
+        return reply.send('✅ Payment redirect verified successfully');
+      }
+    } else {
+      return reply.send('⚠️ Missing required query parameters.');
+    }
+  });
 };
