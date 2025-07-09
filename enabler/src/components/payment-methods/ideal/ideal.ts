@@ -96,7 +96,7 @@ export class Ideal extends BaseComponent {
       console.log(data);
      
      if(data.paymentReference) {
-       window.location.href = data.paymentReference;
+       location.href = data.paymentReference;
      } else {
        this.onError("Some error occurred. Please try again.");
      }
