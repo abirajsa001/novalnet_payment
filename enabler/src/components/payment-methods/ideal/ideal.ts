@@ -79,8 +79,9 @@ export class Ideal extends BaseComponent {
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
       console.log('requestDataIdeal');
-    console.log(requestData);
-
+      console.log(requestData);
+      console.log('processorUrl');
+      console.log(this.processorUrl);
       const response = await fetch(this.processorUrl + "/payments", {
         method: "POST",
         headers: {
