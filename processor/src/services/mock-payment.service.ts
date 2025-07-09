@@ -294,31 +294,30 @@ console.log('status-handler');
 	  },
 	  customer: {
 	    billing: {
-	      city: String(billingAddress?.city ?? 'demo'),
-	      country_code: String(billingAddress?.country ?? 'US'),
-	      house_no: String(billingAddress?.streetName ?? '10'),
-	      street: String(billingAddress?.streetName ?? 'teststreet'),
-	      zip: String(billingAddress?.postalCode ?? '12345'),
+	      city: String(billingAddress?.city),
+	      country_code: String(billingAddress?.country),
+	      house_no: String(billingAddress?.streetName),
+	      street: String(billingAddress?.streetName),
+	      zip: String(billingAddress?.postalCode),
 	    },
 	    shipping: {
-	      city: String(deliveryAddress?.city ?? 'demoshipping'),
-	      country_code: String(deliveryAddress?.country ?? 'US'),
-	      house_no: String(deliveryAddress?.streetName ?? '11'),
-	      street: String(deliveryAddress?.streetName ?? 'testshippingstreet'),
-	      zip: String(deliveryAddress?.postalCode ?? '12345'),
+	      city: String(deliveryAddress?.city),
+	      country_code: String(deliveryAddress?.country),
+	      house_no: String(deliveryAddress?.streetName),
+	      street: String(deliveryAddress?.streetName),
+	      zip: String(deliveryAddress?.postalCode),
 	    },
-	    first_name: 'Max',
-	    last_name: 'Mustermann',
-	    email: 'abiraj_s@novalnetsolutions.com',
+	    first_name: String(billingAddress?.firstName),
+	    last_name: String(billingAddress?.lastName),
+	    email: String(parsedCart?.customerEmail),
 	  },
 	  transaction: {
 	    test_mode: '1',
 	    payment_type: 'IDEAL',
-	    amount: '123',
-	    currency: 'EUR',
+	    amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount),
+	    currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode),
 	    return_url: 'https://poc-novalnetpayments.frontend.site/checkout/success',
 	    error_return_url: 'https://poc-novalnetpayments.frontend.site/checkout/failure',
-
 	  },
 	  custom: {
 	    input1: 'currencyCode',
@@ -350,8 +349,8 @@ console.log('status-handler');
 	} catch (err) {
 	  responseString = 'Unable to parse Novalnet response';
 	}
-    const parsedResponse = JSON.parse(responseString);
-    const ctPayment = await this.ctPaymentService.createPayment({
+        const parsedResponse = JSON.parse(responseString);
+        const ctPayment = await this.ctPaymentService.createPayment({
       amountPlanned: await this.ctCartService.getPaymentAmount({
         cart: ctCart,
       }),
