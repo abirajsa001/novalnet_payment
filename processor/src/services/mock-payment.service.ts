@@ -316,8 +316,8 @@ console.log('status-handler');
 	    payment_type: 'IDEAL',
 	    amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount),
 	    currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode),
-	    return_url: 'https://poc-novalnetpayments.frontend.site/checkout/success',
-	    error_return_url: 'https://poc-novalnetpayments.frontend.site/checkout/failure',
+	    return_url: String(getConfig()?.returnUrl ?? 'https://poc-novalnetpayments.frontend.site/checkout/success'),
+	    error_return_url: String(getConfig()?.returnUrl ?? 'https://poc-novalnetpayments.frontend.site/checkout/failure'),
 	  },
 	  custom: {
 	    input1: 'currencyCode',
