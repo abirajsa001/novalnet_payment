@@ -321,7 +321,7 @@ console.log('status-handler');
 	    payment_type: 'PREPAYMENT',
 	    amount: '123',
 	    currency: 'EUR',
-	    return_url: `${getConfig()?.url ?? 'https://example.com'}/success`,
+	    return_url: return_url,
 	  },
 	  custom: {
 	    input1: 'api url',
