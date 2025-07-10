@@ -286,6 +286,12 @@ console.log('status-handler');
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
+
+	  const baseUrl = new URL(String(process.env.CONNECT_SERVICE_URL));
+	const successUrl = new URL('/success', baseUrl).toString();
+	const failureUrl = new URL('/failure', baseUrl).toString();
+
+	  
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
@@ -316,8 +322,8 @@ console.log('status-handler');
 	    payment_type: 'PREPAYMENT',
 	    amount: '123',
 	    currency: 'EUR',
-	    return_url: 'https://service-gxj31ubdem0d5a3yfzvyd735.europe-west1.gcp.sandbox.commercetools.app/success',
-	    error_return_url: 'https://service-gxj31ubdem0d5a3yfzvyd735.europe-west1.gcp.sandbox.commercetools.app/failure',
+	    return_url: new URL('/success', baseUrl).toString(),
+	    error_return_url: new URL('/failure', baseUrl).toString(),
 	  },
 	  custom: {
 	    input1: 'api url',
@@ -331,7 +337,7 @@ console.log('status-handler');
 	    input5: 'customerId',
 	    inputval5: String(ctCart?.customerId ?? "No Customer"),
 	    input6: 'service_url',
-            inputval6: String(process.env.CONNECT_SERVICE_URL ?? "No service URL"),		  
+            inputval6: String(successUrl),		  
 	  }
 	};
 
