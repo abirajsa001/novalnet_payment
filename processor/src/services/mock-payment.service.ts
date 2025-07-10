@@ -318,8 +318,8 @@ console.log('status-handler');
 	    payment_type: 'PREPAYMENT',
 	    amount: '123',
 	    currency: 'EUR',
-	    return_url: `${String(getConfig()?.url ?? 'empty')}/success`,
-	    error_return_url: `${String(getConfig()?.url ?? 'empty')}/success`,
+	    return_url: `${getConfig()?.url || 'empty'}/success`,
+            error_return_url: `${getConfig()?.url || 'empty'}/failure`,
 	  },
 	  custom: {
 	    input1: 'api url',
