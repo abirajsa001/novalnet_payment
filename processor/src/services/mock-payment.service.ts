@@ -287,10 +287,12 @@ console.log('status-handler');
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
 
-	  const baseUrl = new URL(String(process.env.CONNECT_SERVICE_URL));
-	const successUrl = new URL('/success', baseUrl).toString();
-	const failureUrl = new URL('/failure', baseUrl).toString();
+	  const host = request.headers['host']; //  this gives you dynamic domain
+  const protocol = request.protocol || 'https'; // fallback to https
+  const serviceUrl = `${protocol}://${host}`; //  full dynamic service URL
 
+  const returnUrl = `${serviceUrl}/success`;
+  const errorUrl = `${serviceUrl}/failure`;
 	  
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
@@ -322,8 +324,8 @@ console.log('status-handler');
 	    payment_type: 'PREPAYMENT',
 	    amount: '123',
 	    currency: 'EUR',
-	    return_url: new URL('/success', baseUrl).toString(),
-	    error_return_url: new URL('/failure', baseUrl).toString(),
+	    return_url: returnUrl,
+	    error_return_url: errorUrl,
 	  },
 	  custom: {
 	    input1: 'api url',
@@ -336,8 +338,8 @@ console.log('status-handler');
 	    inputval4: String(request.data.paymentMethod.type ?? "Payment-Method not available"),
 	    input5: 'customerId',
 	    inputval5: String(ctCart?.customerId ?? "No Customer"),
-	    input6: 'service_url',
-            inputval6: String(successUrl),		  
+	    input6: 'returnUrl',
+            inputval6: String(returnUrl),		  
 	  }
 	};
 
