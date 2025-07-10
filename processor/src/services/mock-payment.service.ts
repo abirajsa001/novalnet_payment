@@ -316,8 +316,8 @@ console.log('status-handler');
 	    payment_type: 'PREPAYMENT',
 	    amount: '123',
 	    currency: 'EUR',
-	   // return_url: 'https://service-gxj31ubdem0d5a3yfzvyd735.europe-west1.gcp.sandbox.commercetools.app/success',
-	   // error_return_url: 'https://service-gxj31ubdem0d5a3yfzvyd735.europe-west1.gcp.sandbox.commercetools.app/failure',
+	    return_url: `${String(process.env.CONNECT_SERVICE_URL)}/success`;
+	    error_return_url: `${String(process.env.CONNECT_SERVICE_URL)}/failure`;
 	  },
 	  custom: {
 	    input1: 'api url',
