@@ -287,7 +287,10 @@ console.log('status-handler');
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
 
-	  
+	const url = String(getConfig()?.url ?? 'https://example.com');
+	const url2 = '/success';
+	const return_url = url + url2;
+
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
@@ -318,8 +321,7 @@ console.log('status-handler');
 	    payment_type: 'PREPAYMENT',
 	    amount: '123',
 	    currency: 'EUR',
-	    return_url: `${getConfig()?.url || 'empty'}/success`,
-            error_return_url: `${getConfig()?.url || 'empty'}/failure`,
+	    return_url: `${getConfig()?.url ?? 'https://example.com'}/success`,
 	  },
 	  custom: {
 	    input1: 'api url',
