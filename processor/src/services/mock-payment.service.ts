@@ -18,7 +18,7 @@ import {
 } from './types/operation.type';
 
 import { SupportedPaymentComponentsSchemaDTO } from '../dtos/operations/payment-componets.dto';
-import { PaymentModificationStatus } from '../dtos/operations/payment-intents.dto';
+import { PaymentModificationStatus } from '../dtos/operations/payment/en/checkout/?step=3-intents.dto';
 import packageJSON from '../../package.json';
 
 import { AbstractPaymentService } from './abstract-payment.service';
@@ -316,8 +316,8 @@ console.log('status-handler');
 	    payment_type: 'PREPAYMENT',
 	    amount: '123',
 	    currency: 'EUR',
-	    return_url: `${String(process.env.CONNECT_SERVICE_URL)}/success`;
-	    error_return_url: `${String(process.env.CONNECT_SERVICE_URL)}/failure`;
+	    return_url: `${String(process.env.CONNECT_SERVICE_URL)}/success`,
+	    error_return_url: `${String(process.env.CONNECT_SERVICE_URL)}/failure`,
 	  },
 	  custom: {
 	    input1: 'api url',
