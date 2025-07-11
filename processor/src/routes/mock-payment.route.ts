@@ -1,6 +1,5 @@
 import { SessionHeaderAuthenticationHook } from '@commercetools/connect-payments-sdk';
-import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest} from 'fastify';
 import crypto from 'crypto';
 
 import {
@@ -110,9 +109,15 @@ console.log('handle-novalnetResponse');
 
     },
   );
+
+    fastify.get('/failure', async (request, reply) => {
+    return reply.send('Payment was successful.');
+  });
 	
-  fastify.get('/success', async (request, reply) => {
-    export const handleRedirect = async (request: FastifyRequest, reply: FastifyReply) => {
+};
+
+//  Define the handler function separately
+export const handleRedirect = async (request: FastifyRequest, reply: FastifyReply) => {
   const query = request.query as {
     tid?: string;
     status?: string;
@@ -123,25 +128,20 @@ console.log('handle-novalnetResponse');
   const paymentAccessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
 
   if (query.checksum && query.tid && query.status && query.txnSecret) {
-    const tokenString = `${query.tid}${query.txnSecret}${query.status}${reverseString(paymentAccessKey)}`;
-
+    const tokenString = `${query.tid}${query.txnSecret}${query.status}${paymentAccessKey}`;
     const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
     if (generatedChecksum !== query.checksum) {
       return reply.code(400).send('While redirecting some data has been changed. The hash check failed');
     } else {
-      // Hash is valid - continue with further processing
       return reply.send('Payment redirect verified successfully.');
     }
   } else {
-    // Possibly a direct payment without full parameters
     return reply.send('Missing required query parameters.');
   }
 };
-  });
-	
-    fastify.get('/failure', async (request, reply) => {
-    return reply.send('Payment was successful.');
-  });
-	
+
+//  Use this in your Fastify route setup
+export const registerRoutes = async (fastify: FastifyInstance) => {
+  fastify.get('/success', handleRedirect);
 };
