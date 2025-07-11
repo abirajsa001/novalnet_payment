@@ -109,7 +109,35 @@ console.log('handle-novalnetResponse');
   );
 	
   fastify.get('/success', async (request, reply) => {
+    export const handleRedirect = async (request: FastifyRequest, reply: FastifyReply) => {
+  const query = request.query as {
+    tid?: string;
+    status?: string;
+    checksum?: string;
+    txnSecret?: string;
+  };
+
+  const paymentAccessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
+
+  if (query.checksum && query.tid && query.status && query.txnSecret) {
+    const tokenString = `${query.tid}${query.txnSecret}${query.status}${reverseString(paymentAccessKey)}`;
+
+    const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
+
+    if (generatedChecksum !== query.checksum) {
+      return reply.code(400).send('While redirecting some data has been changed. The hash check failed');
+    } else {
+      // Hash is valid - continue with further processing
+      return reply.send('Payment redirect verified successfully.');
+    }
+  } else {
+    // Possibly a direct payment without full parameters
+    return reply.send('Missing required query parameters.');
+  }
+};
+  });
+	
+    fastify.get('/failure', async (request, reply) => {
     return reply.send('Payment was successful.');
   });
-  
 };
