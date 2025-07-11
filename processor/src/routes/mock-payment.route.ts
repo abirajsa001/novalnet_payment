@@ -1,7 +1,7 @@
 import { SessionHeaderAuthenticationHook } from '@commercetools/connect-payments-sdk';
 import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest} from 'fastify';
 import crypto from 'crypto';
-import { sha256 } from 'js-sha256';
+// import { sha256 } from 'js-sha256';
 
 import {
   PaymentRequestSchema,
@@ -105,12 +105,9 @@ console.log('handle-novalnetResponse');
       const resp = await opts.paymentService.createPayments({
         data: request.body,
       });
-
       return reply.status(200).send(resp);
-
     },
   );
-
     fastify.get('/failure', async (request, reply) => {
     return reply.send('Payment was successful.');
   });
