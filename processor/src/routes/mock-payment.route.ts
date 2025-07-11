@@ -1,5 +1,8 @@
 import { SessionHeaderAuthenticationHook } from '@commercetools/connect-payments-sdk';
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
+import crypto from 'crypto';
+
 import {
   PaymentRequestSchema,
   PaymentRequestSchemaDTO,
@@ -140,4 +143,5 @@ console.log('handle-novalnetResponse');
     fastify.get('/failure', async (request, reply) => {
     return reply.send('Payment was successful.');
   });
+	
 };
