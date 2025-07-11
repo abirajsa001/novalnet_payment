@@ -89,5 +89,8 @@ console.log('handle-novalnetResponse');
   fastify.get('/success', async (request, reply) => {
     return reply.send('Payment was successful.');
   });
-	
+
+  fastify.get('/failure', async (request, reply) => {
+    return reply.send('Payment was failure.');
+  });
 };
