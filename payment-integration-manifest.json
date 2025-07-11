@@ -2,26 +2,9 @@
   "name": "novalnet-payment",
   "version": "1.0.0",
   "description": "This is a custom payment integration",
-  "target": "payment",
-  "endpoint": "https://novalnet-payment.vercel.app",
+  "endpoint": "https://novalnet-payment.vercel.app/payment-handler",
   "builders": {
     "paymentProvider": "1.0.0"
   },
-  "routes": [
-    {
-      "path": "/payment-handler",
-      "method": "POST",
-      "secured": false
-    },
-    {
-      "path": "/success",
-      "method": "GET",
-      "secured": false
-    },
-    {
-      "path": "/failure",
-      "method": "GET",
-      "secured": false
-    }
-  ]
+  "target": "payment"
 }
