@@ -1,6 +1,6 @@
 import { SessionHeaderAuthenticationHook } from '@commercetools/connect-payments-sdk';
 import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest} from 'fastify';
-import crypto from 'crypto';
+import { crypto } from 'crypto';
 // import { sha256 } from 'js-sha256';
 
 import {
@@ -127,7 +127,7 @@ export const handleRedirect = async (request: FastifyRequest, reply: FastifyRepl
 
   if (query.checksum && query.tid && query.status && query.txn_secret) {
     const tokenString = `${query.tid}${query.txn_secret}${query.status}${paymentAccessKey}`;
-    const generatedChecksum = sha256(tokenString);
+    const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
     if (generatedChecksum !== query.checksum) {
       return reply.code(400).send('While redirecting some data has been changed. The hash check failed');
     } else {
