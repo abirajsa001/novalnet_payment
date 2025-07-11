@@ -122,13 +122,13 @@ export const handleRedirect = async (request: FastifyRequest, reply: FastifyRepl
     tid?: string;
     status?: string;
     checksum?: string;
-    txnSecret?: string;
+    txn_secret?: string;
   };
 
   const paymentAccessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
 
-  if (query.checksum && query.tid && query.status && query.txnSecret) {
-    const tokenString = `${query.tid}${query.txnSecret}${query.status}${paymentAccessKey}`;
+  if (query.checksum && query.tid && query.status && query.txn_secret) {
+    const tokenString = `${query.tid}${query.txn_secret}${query.status}${paymentAccessKey}`;
     const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
     if (generatedChecksum !== query.checksum) {
