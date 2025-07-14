@@ -134,7 +134,7 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
 
       if (generatedChecksum !== query.checksum) {
         // Replace with your service method
-        const resp = await paymentService.createPayment({
+        const resp = await opts.paymentService.createPayment({
           data: {
             transaction: {
               tid: query.tid,
@@ -147,7 +147,7 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
           novalnetResponse: resp,
         });
       } else {
-        const resp = await paymentService.createPayment({
+        const resp = await opts.paymentService.createPayment({
           data: {
             transaction: {
               tid: query.tid,
@@ -168,6 +168,6 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
 
 
 //  Use this in your Fastify route setup
-export const registerRoutes = async (fastify: FastifyInstance, paymentService: MockPaymentService) => {
+export const registerRoutes = async (fastify: FastifyInstance, opts: FastifyPluginOptions & PaymentRoutesOptions) => {
   fastify.get('/success', handleRedirect(paymentService));
 };
