@@ -13,4 +13,9 @@ export default async function (server: FastifyInstance) {
     paymentService: mockPaymentService,
     sessionHeaderAuthHook: paymentSDK.sessionHeaderAuthHookFn,
   });
+
+  await server.register(registerRoutes, {
+    paymentService: mockPaymentService,
+    sessionHeaderAuthHook: paymentSDK.sessionHeaderAuthHookFn,
+  });
 }
