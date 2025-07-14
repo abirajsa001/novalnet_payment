@@ -286,7 +286,7 @@ console.log('status-handler');
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
- if (request?.data?.transaction && request?.data?.transaction?.tid && !request?.data?.paymentMethod?.type) {
+ if (!request?.data?.paymentMethod?.type) {
      const novalnetPayloads = {
 	transaction: {
 		tid: request?.data?.transaction?.tid ?? '',
@@ -303,7 +303,7 @@ console.log('status-handler');
 	body: JSON.stringify(novalnetPayloads),
      });
   }
-   if (!request?.data?.transaction && !request?.data?.transaction?.tid && request?.data?.paymentMethod?.type) {
+   if (request?.data?.paymentMethod?.type) {
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
