@@ -152,20 +152,20 @@ export const handleRedirect = async (request: FastifyRequest, reply: FastifyRepl
 	    
     } else {
 	    
-    const novalnetPayload = {
+    const novalnetPayloads = {
 	transaction: {
 		tid: query.tid,
 	 },
      };
 
-    const novalnetResponse = await fetch('https://payport.novalnet.de/v2/transaction/update', {
+    const novalnetResponses = await fetch('https://payport.novalnet.de/v2/transaction/update', {
 	method: 'POST',
 	headers: {
 		'Content-Type': 'application/json',
 	      'Accept': 'application/json',
 	      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
 	},
-	body: JSON.stringify(novalnetPayload),
+	body: JSON.stringify(novalnetPayloads),
      });
 	    
       return reply.send('Payment redirect verified successfully.');
