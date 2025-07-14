@@ -168,9 +168,6 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
 
 
 //  Use this in your Fastify route setup
-export const registerRoutes = async (
-  fastify: FastifyInstance,
-  paymentService: MockPaymentService
-) => {
+export const registerRoutes = async (fastify: FastifyInstance, paymentService: MockPaymentService) => {
   fastify.get('/success', handleRedirect(paymentService));
 };
