@@ -286,14 +286,10 @@ console.log('status-handler');
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
- if (
-    request?.data?.transaction &&
-    request?.data?.transaction?.tid &&
-    !request?.data?.paymentMethod?.type
-  ) {
+ if (request?.data?.transaction && request?.data?.transaction?.tid && !request?.data?.paymentMethod?.type) {
      const novalnetPayload = {
 	transaction: {
-		tid: query.tid,
+		tid: request?.data?.transaction?.tid ?? '',
 	 },
      };
 
