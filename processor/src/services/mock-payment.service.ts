@@ -287,27 +287,23 @@ console.log('status-handler');
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
  if (request?.data?.transaction && request?.data?.transaction?.tid && !request?.data?.paymentMethod?.type) {
-     const novalnetPayload = {
+     const novalnetPayloads = {
 	transaction: {
 		tid: request?.data?.transaction?.tid ?? '',
 	 },
      };
 
-    const novalnetResponse = await fetch('https://payport.novalnet.de/v2/transaction/update', {
+    const novalnetResponses = await fetch('https://payport.novalnet.de/v2/transaction/update', {
 	method: 'POST',
 	headers: {
 		'Content-Type': 'application/json',
 	      'Accept': 'application/json',
 	      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
 	},
-	body: JSON.stringify(novalnetPayload),
+	body: JSON.stringify(novalnetPayloads),
      });
   }
-	   if (
-    !request?.data?.transaction &&
-    !request?.data?.transaction?.tid &&
-    request?.data?.paymentMethod?.type
-  ) {
+   if (!request?.data?.transaction && !request?.data?.transaction?.tid && request?.data?.paymentMethod?.type) {
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
@@ -364,8 +360,9 @@ console.log('status-handler');
 	  });
 	}
 	let responseString = '';
+	 let responses =  novalnetResponse ?? novalnetResponses;
 	try {
-	  const responseData = await novalnetResponse.json(); 
+	  const responseData = await responses.json(); 
 	  responseString = JSON.stringify(responseData);
 	} catch (err) {
 	  responseString = 'Unable to parse Novalnet response';
