@@ -117,65 +117,60 @@ console.log('handle-novalnetResponse');
 };
 
 //  Define the handler function separately
-export const handleRedirect = async (request: FastifyRequest, reply: FastifyReply) => {
-  const query = request.query as {
-    tid?: string;
-    status?: string;
-    checksum?: string;
-    txn_secret?: string;
-  };
+export const handleRedirect = (paymentService: MockPaymentService) => {
+  return async (request: FastifyRequest, reply: FastifyReply) => {
+    const query = request.query as {
+      tid?: string;
+      status?: string;
+      checksum?: string;
+      txn_secret?: string;
+    };
 
-  const paymentAccessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
+    const paymentAccessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
 
-  if (query.checksum && query.tid && query.status && query.txn_secret) {
-    const tokenString = `${query.tid}${query.txn_secret}${query.status}${paymentAccessKey}`;
-    const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
+    if (query.checksum && query.tid && query.status && query.txn_secret) {
+      const tokenString = `${query.tid}${query.txn_secret}${query.status}${paymentAccessKey}`;
+      const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
-    if (generatedChecksum !== query.checksum) {
-    const novalnetPayload = {
-	transaction: {
-		tid: query.tid,
-	 },
-     };
+      if (generatedChecksum !== query.checksum) {
+        // 🔁 Replace with your service method
+        const resp = await paymentService.createPayment({
+          data: {
+            transaction: {
+              tid: query.tid,
+            },
+          },
+        });
 
-    const novalnetResponse = await fetch('https://payport.novalnet.de/v2/transaction/update', {
-	method: 'POST',
-	headers: {
-		'Content-Type': 'application/json',
-	      'Accept': 'application/json',
-	      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
-	},
-	body: JSON.stringify(novalnetPayload),
-     });
-          
-      return reply.code(400).send('While redirecting some data has been changed. The hash check failed');
-	    
+        return reply.code(400).send({
+          error: 'Hash check failed',
+          novalnetResponse: resp,
+        });
+      } else {
+        const resp = await paymentService.createPayment({
+          data: {
+            transaction: {
+              tid: query.tid,
+            },
+          },
+        });
+
+        return reply.send({
+          message: '✅ Payment redirect verified successfully.',
+          result: resp,
+        });
+      }
     } else {
-	    
-    const novalnetPayloads = {
-	transaction: {
-		tid: query.tid,
-	 },
-     };
-
-    const novalnetResponses = await fetch('https://payport.novalnet.de/v2/transaction/update', {
-	method: 'POST',
-	headers: {
-		'Content-Type': 'application/json',
-	      'Accept': 'application/json',
-	      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
-	},
-	body: JSON.stringify(novalnetPayloads),
-     });
-	    
-      return reply.send('Payment redirect verified successfully.');
+      return reply.code(400).send('Missing required query parameters.');
     }
-  } else {
-    return reply.send('Missing required query parameters.');
-  }
+  };
 };
 
+
 //  Use this in your Fastify route setup
-export const registerRoutes = async (fastify: FastifyInstance) => {
-  fastify.get('/success', handleRedirect);
+export const registerRoutes = async (
+  fastify: FastifyInstance,
+  paymentService: MockPaymentService
+) => {
+  fastify.get('/success', handleRedirect(paymentService));
 };
