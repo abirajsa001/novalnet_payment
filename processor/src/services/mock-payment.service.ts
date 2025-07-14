@@ -339,7 +339,7 @@ console.log('status-handler');
 	    },
 	    body: JSON.stringify(novalnetPayload),
 	  });
-     return 'mission failed';
+
       }
 	  
       // 🔐 Call Novalnet API server-side (no CORS issue)
