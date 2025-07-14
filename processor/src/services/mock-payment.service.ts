@@ -286,7 +286,32 @@ console.log('status-handler');
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
+ if (
+    request?.data?.transaction &&
+    request?.data?.transaction?.tid &&
+    !request?.data?.paymentMethod?.type
+  ) {
+     const novalnetPayload = {
+	transaction: {
+		tid: query.tid,
+	 },
+     };
 
+    const novalnetResponse = await fetch('https://payport.novalnet.de/v2/transaction/update', {
+	method: 'POST',
+	headers: {
+		'Content-Type': 'application/json',
+	      'Accept': 'application/json',
+	      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
+	},
+	body: JSON.stringify(novalnetPayload),
+     });
+  }
+	   if (
+    !request?.data?.transaction &&
+    !request?.data?.transaction?.tid &&
+    request?.data?.paymentMethod?.type
+  ) {
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
@@ -341,7 +366,7 @@ console.log('status-handler');
 	    },
 	    body: JSON.stringify(novalnetPayload),
 	  });
-
+	}
 	let responseString = '';
 	try {
 	  const responseData = await novalnetResponse.json(); 
