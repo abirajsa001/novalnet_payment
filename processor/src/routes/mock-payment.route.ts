@@ -132,27 +132,9 @@ export const handleRedirect = async (request: FastifyRequest, reply: FastifyRepl
     const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
     if (generatedChecksum !== query.checksum) {
-	// Call your transaction update logic
-        const resp = await paymentService.createPayment({
-          data: query.txn_secret,
-        });
-
-        return reply.send({
-          message: 'Payment redirect verified successfully.',
-          result: resp,
-        });
-      // return reply.code(400).send('While redirecting some data has been changed. The hash check failed');
+      return reply.code(400).send('While redirecting some data has been changed. The hash check failed');
     } else {
-	// Call your transaction update logic
-        // const resp = await paymentService.createPayment({
-        //   data: query.txn_secret,
-        // });
-
-        // return reply.send({
-        //   message: 'Payment redirect verified successfully.',
-        //   result: resp,
-        // });
-       return reply.send('Payment redirect verified successfully.');
+      return reply.send('Payment redirect verified successfully.');
     }
   } else {
     return reply.send('Missing required query parameters.');
