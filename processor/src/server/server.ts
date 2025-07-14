@@ -8,6 +8,7 @@ import { config } from '../config/config';
 import { requestContextPlugin } from '../libs/fastify/context/context';
 import { errorHandler } from '../libs/fastify/error-handler';
 import { registerRoutes } from '../routes/mock-payment.route'; 
+import { MockPaymentService } from '../services/mock-payment.service'; // 👈 Add this
 
 export const setupFastify = async () => {
   const server = Fastify({
@@ -34,7 +35,9 @@ export const setupFastify = async () => {
     dir: join(__dirname, 'plugins'),
   });
 
-  await registerRoutes(server);
+  // 🆕 Inject MockPaymentService and register routes
+  const paymentService = new MockPaymentService();
+  await registerRoutes(server, paymentService);
 
   return server;
 };
