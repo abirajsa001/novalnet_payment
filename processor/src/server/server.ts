@@ -38,11 +38,11 @@ export const setupFastify = async () => {
   // 🆕 Inject MockPaymentService and register routes
   // const paymentService = new MockPaymentService();
   // await registerRoutes(server, paymentService);
-  const paymentService = new MockPaymentService({
-  ctCartService: ...,
-  ctPaymentService: ...,
-  });
-  await registerRoutes(server, {paymentService,sessionHeaderAuthHook,});
+  // const paymentService = new MockPaymentService({
+  // ctCartService: ...,
+  // ctPaymentService: ...,
+  // });
+  // await registerRoutes(server, {paymentService,sessionHeaderAuthHook,});
 
   return server;
 };
