@@ -1,7 +1,7 @@
 import { SessionHeaderAuthenticationHook } from '@commercetools/connect-payments-sdk';
 import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest} from 'fastify';
  // import { crypto } from 'crypto';
-import { sha256 } from 'js-sha256';
+import sha256 from 'js-sha256';
 
 import {
   PaymentRequestSchema,
