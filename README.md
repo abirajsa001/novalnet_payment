@@ -1,6 +1,10 @@
 # connect-payment-integration-template
 
+
 This repository provides a [connect](https://docs.commercetools.com/connect) template for payment integration connector. This boilerplate code acts as a starting point for integration with external payment service provider.
+=======
+This repository provides a [connect](https://docs.commercetools.com/connect) template for payment integration connector. This boilerplate code acts as a starting point for integration with external payment service provider test.
+
 
 ## Template Features
 
@@ -8,7 +12,7 @@ This repository provides a [connect](https://docs.commercetools.com/connect) tem
 - Uses Fastify as web server framework.
 - Uses [commercetools SDK](https://docs.commercetools.com/sdk/js-sdk-getting-started) for the commercetools-specific communication.
 - Uses [connect payment SDK](https://github.com/commercetools/connect-payments-sdk) to manage request context, sessions and JWT authentication.
-- Includes local development utilities in npm commands to build, start, test, lint & prettify code.
+- Includes local development utilities in npm commands to build, start, test, lint & prettify code test.
 
 ## Prerequisite
 
