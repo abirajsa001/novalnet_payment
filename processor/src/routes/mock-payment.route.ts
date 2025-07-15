@@ -147,16 +147,17 @@ export const registerRoutes = async (
           novalnetResponse: resp,
         });
       } else {
-        const resp = await opts.paymentService.createPayment({
-          data: {
-            transaction: { tid: query.tid },
-          },
-        });
+	console.log('tested'); 
+        // const resps = await opts.paymentService.createPayment({
+        //   data: {
+        //     transaction: { tid: query.tid },
+        //   },
+        // });
 
-        return reply.send({
-          message: 'Payment redirect verified successfully.',
-          result: resp,
-        });
+        // return reply.send({
+        //   message: 'Payment redirect verified successfully.',
+        //   result: resps,
+        // });
       }
     } else {
       return reply.code(400).send('Missing required query parameters.');
