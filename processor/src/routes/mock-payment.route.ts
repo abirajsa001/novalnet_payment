@@ -132,21 +132,20 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
       const tokenString = `${query.tid}${query.txn_secret}${query.status}${paymentAccessKey}`;
       const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
-      if (generatedChecksum !== query.checksum) {
-        // Replace with your service method
-        const resp = await opts.paymentService.createPayment({
-     	 data: request,
-        });
+      const data = {
+        transaction: {
+          tid: query.tid,
+        },
+      };
 
+      const resp = await paymentService.createPayment({ data });
+
+      if (generatedChecksum !== query.checksum) {
         return reply.code(400).send({
           error: 'Hash check failed',
           novalnetResponse: resp,
         });
       } else {
-        const resp = await opts.paymentService.createPayment({
-          data: request,
-        });
-
         return reply.send({
           message: 'Payment redirect verified successfully.',
           result: resp,
@@ -157,6 +156,7 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
     }
   };
 };
+
 
 
 //  Use this in your Fastify route setup
