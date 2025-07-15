@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { paymentSDK } from '../../payment-sdk';
 import { paymentRoutes } from '../../routes/mock-payment.route';
 import { MockPaymentService } from '../../services/mock-payment.service';
+import { registerRoutes } from '../../routes/mock-payment.route';
 
 export default async function (server: FastifyInstance) {
   const mockPaymentService = new MockPaymentService({
@@ -10,6 +11,11 @@ export default async function (server: FastifyInstance) {
   });
 
   await server.register(paymentRoutes, {
+    paymentService: mockPaymentService,
+    sessionHeaderAuthHook: paymentSDK.sessionHeaderAuthHookFn,
+  });
+
+  await server.register(registerRoutes, {
     paymentService: mockPaymentService,
     sessionHeaderAuthHook: paymentSDK.sessionHeaderAuthHookFn,
   });
