@@ -133,7 +133,7 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
       const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
       if (generatedChecksum !== query.checksum) {
-         const resp = await paymentService.createPayment({
+         const resp = await paymentService.createPaymentt({
            data: request,
          });
 
