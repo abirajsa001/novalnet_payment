@@ -7,9 +7,9 @@ import { join } from 'path';
 import { config } from '../config/config';
 import { requestContextPlugin } from '../libs/fastify/context/context';
 import { errorHandler } from '../libs/fastify/error-handler';
-import { registerRoutes } from '../routes/mock-payment.route'; 
-import { MockPaymentService } from '../services/mock-payment.service';
-import { paymentSDK } from '../payment-sdk';
+// import { registerRoutes } from '../routes/mock-payment.route'; 
+// import { MockPaymentService } from '../services/mock-payment.service';
+// import { paymentSDK } from '../payment-sdk';
 
 export const setupFastify = async () => {
   const server = Fastify({
@@ -38,12 +38,12 @@ export const setupFastify = async () => {
 
   // await registerRoutes(server);
 
-  const mockPaymentService = new MockPaymentService({
-    ctCartService: paymentSDK.ctCartService,
-    ctPaymentService: paymentSDK.ctPaymentService,
-  });
+  // const mockPaymentService = new MockPaymentService({
+  //   ctCartService: paymentSDK.ctCartService,
+  //   ctPaymentService: paymentSDK.ctPaymentService,
+  // });
 
-  await registerRoutes(server, { paymentService: mockPaymentService, sessionHeaderAuthHook: paymentSDK.sessionHeaderAuthHookFn });
+  // await registerRoutes(server, { paymentService: mockPaymentService, sessionHeaderAuthHook: paymentSDK.sessionHeaderAuthHookFn });
 
   return server;
 };
