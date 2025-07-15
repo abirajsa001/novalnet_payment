@@ -1,5 +1,5 @@
 import { SessionHeaderAuthenticationHook } from '@commercetools/connect-payments-sdk';
-import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest} from 'fastify';
+import { FastifyInstance, FastifyPluginOptions} from 'fastify';
 import crypto from 'crypto';
 
 import {
@@ -15,7 +15,6 @@ type PaymentRoutesOptions = {
   sessionHeaderAuthHook: SessionHeaderAuthenticationHook;
 };
 console.log('before-payment-routes');
-log.info('before-payment-routes');
 export const paymentRoutes = async (fastify: FastifyInstance, opts: FastifyPluginOptions & PaymentRoutesOptions) => {
 
 fastify.post('/test', async (request, reply) => {
@@ -117,10 +116,7 @@ console.log('handle-novalnetResponse');
 };
 
 //  Use this in your Fastify route setup
-export const registerRoutes = async (
-  fastify: FastifyInstance,
-  opts: FastifyPluginOptions & PaymentRoutesOptions
-) => {
+export const registerRoutes = async (fastify: FastifyInstance,opts: FastifyPluginOptions & PaymentRoutesOptions) => {
   fastify.get('/success', async (request, reply) => {
     const query = request.query as {
       tid?: string;
@@ -136,16 +132,12 @@ export const registerRoutes = async (
       const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
       if (generatedChecksum !== query.checksum) {
-        const resp = await opts.paymentService.createPayment({
+        const res = await opts.paymentService.createPayment({
           data: {
             transaction: { tid: query.tid },
           },
         });
-
-        return reply.code(400).send({
-          error: 'Hash check failed',
-          novalnetResponse: resp,
-        });
+         return reply.code(400).send('hash failed');
       } else {
 	console.log('tested'); 
         // const resps = await opts.paymentService.createPayment({
