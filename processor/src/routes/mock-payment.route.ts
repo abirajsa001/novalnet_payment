@@ -135,11 +135,7 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
       if (generatedChecksum !== query.checksum) {
         // Replace with your service method
         const resp = await opts.paymentService.createPayment({
-          data: {
-            transaction: {
-              tid: query.tid,
-            },
-          },
+     	 data: request,
         });
 
         return reply.code(400).send({
@@ -148,11 +144,7 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
         });
       } else {
         const resp = await opts.paymentService.createPayment({
-          data: {
-            transaction: {
-              tid: query.tid,
-            },
-          },
+          data: request,
         });
 
         return reply.send({
