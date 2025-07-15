@@ -23,9 +23,9 @@ export const paymentRoutes = async (
   fastify: FastifyInstance,
   opts: FastifyPluginOptions & PaymentRoutesOptions
 ) => {
-  const { paymentService, sessionHeaderAuthHook } = opts;
+  // const { paymentService, sessionHeaderAuthHook } = opts;
 
-  // ✅ /test route (manual Novalnet API hit)
+  // test route (manual Novalnet API hit)
   fastify.post('/test', async (request, reply) => {
     console.log('Received payment request in processor');
 
@@ -70,7 +70,7 @@ export const paymentRoutes = async (
     return reply.send(data);
   });
 
-  // ✅ /payments route (with schema)
+  // payments route (with schema)
   fastify.post<{ Body: PaymentRequestSchemaDTO; Reply: PaymentResponseSchemaDTO }>(
     '/payments',
     {
@@ -81,12 +81,12 @@ export const paymentRoutes = async (
       },
     },
     async (request, reply) => {
-      const resp = await paymentService.createPayment({ data: request.body });
+      const resp = await opts.paymentService.createPayment({ data: request.body });
       return reply.status(200).send(resp);
     }
   );
 
-  // ✅ /payment route (createPayments)
+  // payment route (createPayments)
   fastify.post<{ Body: PaymentRequestSchemaDTO; Reply: PaymentResponseSchemaDTO }>(
     '/payment',
     {
@@ -97,17 +97,17 @@ export const paymentRoutes = async (
       },
     },
     async (request, reply) => {
-      const resp = await paymentService.createPayments({ data: request.body });
+      const resp = await opts.paymentService.createPayments({ data: request.body });
       return reply.status(200).send(resp);
     }
   );
 
-  // ✅ /failure (no schema, plain route)
+  // failure (no schema, plain route)
   fastify.get('/failure', async (_, reply) => {
     return reply.send('Payment failed or was canceled.');
   });
 
-  // ✅ /success (redirect + createPayment)
+  // success (redirect + createPayment)
   fastify.get('/success', async (request, reply) => {
     const query = request.query as {
       tid?: string;
@@ -127,7 +127,7 @@ export const paymentRoutes = async (
 
       if (generatedChecksum === query.checksum) {
         try {
-          const result = await paymentService.createPayment({
+          const result = await opts.paymentService.createPayment({
             data: {
               interfaceId: query.tid,
               status: query.status,
