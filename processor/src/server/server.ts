@@ -35,16 +35,11 @@ export const setupFastify = async () => {
     dir: join(__dirname, 'plugins'),
   });
 
-  const paymentService = new MockPaymentService({
-    ctCartService,
-    ctPaymentService,
-  });
-  
+  const paymentService = new MockPaymentService();
   await registerRoutes(server, {
     paymentService,
     sessionHeaderAuthHook,
   });
-
 
   return server;
 };
