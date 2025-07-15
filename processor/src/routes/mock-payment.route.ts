@@ -116,9 +116,12 @@ console.log('handle-novalnetResponse');
 	
 };
 
-//  Define the handler function separately
-export const handleRedirect = (paymentService: MockPaymentService) => {
-  return async (request: FastifyRequest, reply: FastifyReply) => {
+//  Use this in your Fastify route setup
+export const registerRoutes = async (
+  fastify: FastifyInstance,
+  opts: FastifyPluginOptions & PaymentRoutesOptions
+) => {
+  fastify.get('/success', async (request, reply) => {
     const query = request.query as {
       tid?: string;
       status?: string;
@@ -132,20 +135,24 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
       const tokenString = `${query.tid}${query.txn_secret}${query.status}${paymentAccessKey}`;
       const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
-      const data = {
-        transaction: {
-          tid: query.tid,
-        },
-      };
-
-      const resp = await paymentService.createPayment({ data });
-
       if (generatedChecksum !== query.checksum) {
+        const resp = await opts.paymentService.createPayment({
+          data: {
+            transaction: { tid: query.tid },
+          },
+        });
+
         return reply.code(400).send({
           error: 'Hash check failed',
           novalnetResponse: resp,
         });
       } else {
+        const resp = await opts.paymentService.createPayment({
+          data: {
+            transaction: { tid: query.tid },
+          },
+        });
+
         return reply.send({
           message: 'Payment redirect verified successfully.',
           result: resp,
@@ -154,12 +161,6 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
     } else {
       return reply.code(400).send('Missing required query parameters.');
     }
-  };
+  });
 };
 
-
-
-//  Use this in your Fastify route setup
-export const registerRoutes = async (fastify: FastifyInstance,opts: FastifyPluginOptions & PaymentRoutesOptions) => {
-  fastify.get('/success', handleRedirect(opts.paymentService));
-};
