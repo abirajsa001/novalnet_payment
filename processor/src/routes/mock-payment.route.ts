@@ -117,31 +117,43 @@ console.log('handle-novalnetResponse');
 };
 
 //  Define the handler function separately
-export const handleRedirect = async (request: FastifyRequest, reply: FastifyReply) => {
-  const query = request.query as {
-    tid?: string;
-    status?: string;
-    checksum?: string;
-    txn_secret?: string;
-  };
+export const handleRedirect = (paymentService: MockPaymentService) => {
+  return async (request: FastifyRequest, reply: FastifyReply) => {
+    const query = request.query as {
+      tid?: string;
+      status?: string;
+      checksum?: string;
+      txn_secret?: string;
+    };
 
-  const paymentAccessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
+    const paymentAccessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
 
-  if (query.checksum && query.tid && query.status && query.txn_secret) {
-    const tokenString = `${query.tid}${query.txn_secret}${query.status}${paymentAccessKey}`;
-    const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
+    if (query.checksum && query.tid && query.status && query.txn_secret) {
+      const tokenString = `${query.tid}${query.txn_secret}${query.status}${paymentAccessKey}`;
+      const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
-    if (generatedChecksum !== query.checksum) {
-      return reply.code(400).send('While redirecting some data has been changed. The hash check failed');
+      if (generatedChecksum !== query.checksum) {
+        // ✅ Call your service method on failure
+        const resp = await paymentService.createPayment({
+          data: request, // Or request.body if required
+        });
+
+        return reply.code(400).send({
+          error: 'Hash check failed',
+          result: resp,
+        });
+      } else {
+        return reply.send('Payment redirect verified successfully.');
+      }
     } else {
-      return reply.send('Payment redirect verified successfully.');
+      return reply.code(400).send('Missing required query parameters.');
     }
-  } else {
-    return reply.send('Missing required query parameters.');
-  }
+  };
 };
+
 
 //  Use this in your Fastify route setup
-export const registerRoutes = async (fastify: FastifyInstance) => {
-  fastify.get('/success', handleRedirect);
+export const registerRoutes = async (fastify: FastifyInstance, opts: FastifyPluginOptions & PaymentRoutesOptions) => {
+  fastify.get('/success', handleRedirect(opts.paymentService));
 };
+
