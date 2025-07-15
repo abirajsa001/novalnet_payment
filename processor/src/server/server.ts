@@ -8,10 +8,8 @@ import { config } from '../config/config';
 import { requestContextPlugin } from '../libs/fastify/context/context';
 import { errorHandler } from '../libs/fastify/error-handler';
 import { registerRoutes } from '../routes/mock-payment.route'; 
-
-import { MockPaymentService } from '../../services/mock-payment.service';
-import { registerRoutes } from '../../routes/mock-payment.route';
-import { paymentSDK } from '../../payment-sdk';
+import { MockPaymentService } from '../services/mock-payment.service';
+import { paymentSDK } from '../payment-sdk';
 
 export const setupFastify = async () => {
   const server = Fastify({
