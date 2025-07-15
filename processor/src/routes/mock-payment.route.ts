@@ -1,4 +1,3 @@
-import { SessionHeaderAuthenticationHook } from '@commercetools/connect-payments-sdk';
 import {
   FastifyInstance,
   FastifyPluginOptions,
@@ -6,7 +5,6 @@ import {
   FastifyRequest,
 } from 'fastify';
 import crypto from 'crypto';
-
 import {
   PaymentRequestSchema,
   PaymentRequestSchemaDTO,
@@ -14,25 +12,22 @@ import {
   PaymentResponseSchemaDTO,
 } from '../dtos/mock-payment.dto';
 import { MockPaymentService } from '../services/mock-payment.service';
-import { log } from '../libs/logger';
+import { SessionHeaderAuthenticationHook } from '@commercetools/connect-payments-sdk';
 
 type PaymentRoutesOptions = {
   paymentService: MockPaymentService;
   sessionHeaderAuthHook: SessionHeaderAuthenticationHook;
 };
 
-console.log('before-payment-routes');
-log.info('before-payment-routes');
-
-// MAIN ROUTE REGISTRATION
 export const paymentRoutes = async (
   fastify: FastifyInstance,
   opts: FastifyPluginOptions & PaymentRoutesOptions
 ) => {
   const { paymentService, sessionHeaderAuthHook } = opts;
 
+  // ✅ /test route (manual Novalnet API hit)
   fastify.post('/test', async (request, reply) => {
-    console.log("Received payment request in processor");
+    console.log('Received payment request in processor');
 
     const novalnetPayload = {
       merchant: {
@@ -58,33 +53,24 @@ export const paymentRoutes = async (
         amount: 10,
         currency: 'EUR',
       },
-      custom: {
-        input1: 'request',
-        inputval1: String(request ?? 'empty'),
-        input2: 'reply',
-        inputval2: String(reply ?? 'empty'),
-      },
     };
 
-    const novalnetResponse = await fetch(
-      'https://payport.novalnet.de/v2/payment',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          'X-NN-Access-Key':
-            'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
-        },
-        body: JSON.stringify(novalnetPayload),
-      }
-    );
+    const response = await fetch('https://payport.novalnet.de/v2/payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-NN-Access-Key':
+          'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
+      },
+      body: JSON.stringify(novalnetPayload),
+    });
 
-    console.log('handle-novalnetResponse');
-    console.log(novalnetResponse);
+    const data = await response.json();
+    return reply.send(data);
   });
 
-  // payments
+  // ✅ /payments route (with schema)
   fastify.post<{ Body: PaymentRequestSchemaDTO; Reply: PaymentResponseSchemaDTO }>(
     '/payments',
     {
@@ -100,7 +86,7 @@ export const paymentRoutes = async (
     }
   );
 
-  // payment
+  // ✅ /payment route (createPayments)
   fastify.post<{ Body: PaymentRequestSchemaDTO; Reply: PaymentResponseSchemaDTO }>(
     '/payment',
     {
@@ -116,18 +102,13 @@ export const paymentRoutes = async (
     }
   );
 
-  // failure
+  // ✅ /failure (no schema, plain route)
   fastify.get('/failure', async (_, reply) => {
     return reply.send('Payment failed or was canceled.');
   });
 
-  // success - HANDLER ADDED HERE (No separate registerRoutes)
-  fastify.get('/success', handleRedirect(paymentService));
-};
-
-// HANDLER FUNCTION WITH createPayment
-export const handleRedirect = (paymentService: MockPaymentService) => {
-  return async (request: FastifyRequest, reply: FastifyReply) => {
+  // ✅ /success (redirect + createPayment)
+  fastify.get('/success', async (request, reply) => {
     const query = request.query as {
       tid?: string;
       status?: string;
@@ -135,36 +116,34 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
       txn_secret?: string;
     };
 
-    const paymentAccessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
+    const accessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
 
     if (query.tid && query.status && query.checksum && query.txn_secret) {
-      const tokenString = `${query.tid}${query.txn_secret}${query.status}${paymentAccessKey}`;
+      const tokenString = `${query.tid}${query.txn_secret}${query.status}${accessKey}`;
       const generatedChecksum = crypto
         .createHash('sha256')
         .update(tokenString)
         .digest('hex');
 
       if (generatedChecksum === query.checksum) {
-        //  Checksum verified - now call createPayment
-        const paymentData = {
-          interfaceId: query.tid,
-          status: query.status,
-          redirectSource: 'novalnet-success',
-        };
-
         try {
           const result = await paymentService.createPayment({
-            data: paymentData,
+            data: {
+              interfaceId: query.tid,
+              status: query.status,
+              source: 'redirect',
+            },
           });
 
           return reply.send({
-            message: 'Payment verified and created successfully.',
+            message: 'Redirect verified. Payment created.',
             result,
           });
         } catch (err) {
-          return reply
-            .code(500)
-            .send({ error: 'createPayment failed', details: err });
+          return reply.code(500).send({
+            error: 'createPayment failed',
+            details: err instanceof Error ? err.message : err,
+          });
         }
       } else {
         return reply.code(400).send('Checksum verification failed.');
@@ -172,5 +151,5 @@ export const handleRedirect = (paymentService: MockPaymentService) => {
     } else {
       return reply.code(400).send('Missing required query parameters.');
     }
-  };
+  });
 };
