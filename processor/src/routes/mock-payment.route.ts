@@ -121,14 +121,11 @@ export const paymentRoutes = async (
 
     if (query.tid && query.status && query.checksum && query.txn_secret) {
       const tokenString = `${query.tid}${query.txn_secret}${query.status}${accessKey}`;
-      const generatedChecksum = crypto
-        .createHash('sha256')
-        .update(tokenString)
-        .digest('hex');
+      const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
       if (generatedChecksum === query.checksum) {
         try {
-          const result = await paymentService.createPayment({
+          const result = await paymentService.createPaymentt({
             data: {
               interfaceId: query.tid,
               status: query.status,
