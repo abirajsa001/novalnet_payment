@@ -23,12 +23,10 @@ export const paymentRoutes = async (
   fastify: FastifyInstance,
   opts: FastifyPluginOptions & PaymentRoutesOptions
 ) => {
-  // const { paymentService, sessionHeaderAuthHook } = opts;
+  const { paymentService, sessionHeaderAuthHook } = opts;
 
-  // test route (manual Novalnet API hit)
+  // 🔹 /test route — Novalnet direct request (no auth, for internal use only)
   fastify.post('/test', async (request, reply) => {
-    console.log('Received payment request in processor');
-
     const novalnetPayload = {
       merchant: {
         signature:
@@ -55,22 +53,25 @@ export const paymentRoutes = async (
       },
     };
 
-    const response = await fetch('https://payport.novalnet.de/v2/payment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'X-NN-Access-Key':
-          'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
-      },
-      body: JSON.stringify(novalnetPayload),
-    });
+    try {
+      const response = await fetch('https://payport.novalnet.de/v2/payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
+        },
+        body: JSON.stringify(novalnetPayload),
+      });
 
-    const data = await response.json();
-    return reply.send(data);
+      const data = await response.json();
+      return reply.send(data);
+    } catch (error) {
+      return reply.code(500).send({ error: 'Novalnet request failed', details: error });
+    }
   });
 
-  // payments route (with schema)
+  // 🔹 POST /payments — secure with schema
   fastify.post<{ Body: PaymentRequestSchemaDTO; Reply: PaymentResponseSchemaDTO }>(
     '/payments',
     {
@@ -81,12 +82,12 @@ export const paymentRoutes = async (
       },
     },
     async (request, reply) => {
-      const resp = await opts.paymentService.createPayment({ data: request.body });
+      const resp = await paymentService.createPayment({ data: request.body });
       return reply.status(200).send(resp);
     }
   );
 
-  // payment route (createPayments)
+  // 🔹 POST /payment — alternate endpoint
   fastify.post<{ Body: PaymentRequestSchemaDTO; Reply: PaymentResponseSchemaDTO }>(
     '/payment',
     {
@@ -97,18 +98,18 @@ export const paymentRoutes = async (
       },
     },
     async (request, reply) => {
-      const resp = await opts.paymentService.createPayments({ data: request.body });
+      const resp = await paymentService.createPayments({ data: request.body });
       return reply.status(200).send(resp);
     }
   );
 
-  // failure (no schema, plain route)
+  // 🔹 GET /failure — plain redirect
   fastify.get('/failure', async (_, reply) => {
     return reply.send('Payment failed or was canceled.');
   });
 
-  // success (redirect + createPayment)
-  fastify.get('/success', async (request, reply) => {
+  // 🔹 GET /success — with checksum and redirect validation
+  fastify.get('/success', async (request: FastifyRequest, reply: FastifyReply) => {
     const query = request.query as {
       tid?: string;
       status?: string;
@@ -127,7 +128,7 @@ export const paymentRoutes = async (
 
       if (generatedChecksum === query.checksum) {
         try {
-          const result = await opts.paymentService.createPayment({
+          const result = await paymentService.createPayment({
             data: {
               interfaceId: query.tid,
               status: query.status,
@@ -140,6 +141,7 @@ export const paymentRoutes = async (
             result,
           });
         } catch (err) {
+          console.error('createPayment error:', err);
           return reply.code(500).send({
             error: 'createPayment failed',
             details: err instanceof Error ? err.message : err,
