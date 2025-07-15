@@ -125,6 +125,11 @@ export const paymentRoutes = async (
 
       if (generatedChecksum === query.checksum) {
         try {
+         async (request, reply) => {
+            const resp = await paymentService.createPayment({ data: request.body });
+            return reply.status(200).send(resp);
+          }
+
           const result = await paymentService.createPaymentt({
             data: {
               interfaceId: query.tid,
@@ -133,16 +138,10 @@ export const paymentRoutes = async (
             },
           });
 
-          return reply.send({
-            message: 'Redirect verified. Payment created.',
-            result,
-          });
+          return reply.code(200).send('resp');
         } catch (err) {
           console.error('createPayment error:', err);
-          return reply.code(500).send({
-            error: 'createPayment failed',
-            details: err instanceof Error ? err.message : err,
-          });
+          return reply.code(200).send('create-resp'); 
         }
       } else {
         return reply.code(400).send('Checksum verification failed.');
