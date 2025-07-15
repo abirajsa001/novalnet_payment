@@ -1,5 +1,5 @@
 import { SessionHeaderAuthenticationHook } from '@commercetools/connect-payments-sdk';
-import { FastifyInstance, FastifyPluginOptions} from 'fastify';
+import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest} from 'fastify';
 import crypto from 'crypto';
 
 import {
@@ -15,6 +15,7 @@ type PaymentRoutesOptions = {
   sessionHeaderAuthHook: SessionHeaderAuthenticationHook;
 };
 console.log('before-payment-routes');
+log.info('before-payment-routes');
 export const paymentRoutes = async (fastify: FastifyInstance, opts: FastifyPluginOptions & PaymentRoutesOptions) => {
 
 fastify.post('/test', async (request, reply) => {
@@ -115,45 +116,32 @@ console.log('handle-novalnetResponse');
 	
 };
 
-//  Use this in your Fastify route setup
-export const registerRoutes = async (fastify: FastifyInstance,opts: FastifyPluginOptions & PaymentRoutesOptions) => {
-  fastify.get('/success', async (request, reply) => {
-    const query = request.query as {
-      tid?: string;
-      status?: string;
-      checksum?: string;
-      txn_secret?: string;
-    };
+//  Define the handler function separately
+export const handleRedirect = async (request: FastifyRequest, reply: FastifyReply) => {
+  const query = request.query as {
+    tid?: string;
+    status?: string;
+    checksum?: string;
+    txn_secret?: string;
+  };
 
-    const paymentAccessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
+  const paymentAccessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
 
-    if (query.checksum && query.tid && query.status && query.txn_secret) {
-      const tokenString = `${query.tid}${query.txn_secret}${query.status}${paymentAccessKey}`;
-      const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
+  if (query.checksum && query.tid && query.status && query.txn_secret) {
+    const tokenString = `${query.tid}${query.txn_secret}${query.status}${paymentAccessKey}`;
+    const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
-      if (generatedChecksum !== query.checksum) {
-        const res = await opts.paymentService.createPayment({
-          data: {
-            transaction: { tid: query.tid },
-          },
-        });
-         return reply.code(400).send('hash failed');
-      } else {
-	console.log('tested'); 
-        // const resps = await opts.paymentService.createPayment({
-        //   data: {
-        //     transaction: { tid: query.tid },
-        //   },
-        // });
-
-        // return reply.send({
-        //   message: 'Payment redirect verified successfully.',
-        //   result: resps,
-        // });
-      }
+    if (generatedChecksum !== query.checksum) {
+      return reply.code(400).send('While redirecting some data has been changed. The hash check failed');
     } else {
-      return reply.code(400).send('Missing required query parameters.');
+      return reply.send('Payment redirect verified successfully.');
     }
-  });
+  } else {
+    return reply.send('Missing required query parameters.');
+  }
 };
 
+//  Use this in your Fastify route setup
+export const registerRoutes = async (fastify: FastifyInstance) => {
+  fastify.get('/success', handleRedirect);
+};
