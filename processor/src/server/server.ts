@@ -12,7 +12,7 @@ import { registerRoutes } from '../routes/mock-payment.route';
 import { MockPaymentService } from '../services/mock-payment.service';
 import { sessionHeaderAuthHook } from '../libs/commercetools/session-header-auth-hook'; // ✅ Assuming this is your hook
 
-// ✅ You must import these services or mock them if not yet implemented
+// You must import these services or mock them if not yet implemented
 import { ctCartService } from '../libs/commercetools/ct-cart.service';
 import { ctPaymentService } from '../libs/commercetools/ct-payment.service';
 
@@ -52,19 +52,19 @@ export const setupFastify = async () => {
     dir: join(__dirname, 'plugins'),
   });
 
-  // ✅ Create an instance of your payment service
+  // Create an instance of your payment service
   const paymentService = new MockPaymentService({
     ctCartService,
     ctPaymentService,
   });
 
-  // ✅ Register payment-related routes
+  // Register payment-related routes
   await registerRoutes(server, {
     paymentService,
     sessionHeaderAuthHook,
   });
 
-  // ✅ Optionally log all registered routes
+  // Optionally log all registered routes
   console.log(server.printRoutes());
 
   return server;
