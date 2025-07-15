@@ -286,24 +286,6 @@ console.log('status-handler');
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
- // if (!request) {
- //     const novalnetPayloads = {
-	// transaction: {
-	// 	tid: request?.data?.transaction?.tid ?? '',
-	//  },
- //     };
-
- //    const novalnetResponses = await fetch('https://payport.novalnet.de/v2/transaction/update', {
-	// method: 'POST',
-	// headers: {
-	// 	'Content-Type': 'application/json',
-	//       'Accept': 'application/json',
-	//       'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
-	// },
-	// body: JSON.stringify(novalnetPayloads),
- //     });
- //  }
-   if (request) {
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
@@ -343,7 +325,7 @@ console.log('status-handler');
 	    input2: 'transaction amount',
 	    inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
 	    input3: 'customerEmail',
-	    inputval3: String(novalnetResponses ?? "Email not available"),
+	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
 	    input4: 'Payment-Method',
 	    inputval4: String(request.data.paymentMethod.type ?? "Payment-Method not available"), 
 	  }
@@ -358,9 +340,8 @@ console.log('status-handler');
 	    },
 	    body: JSON.stringify(novalnetPayload),
 	  });
-	}
+
 	let responseString = '';
-	 // let responses =  novalnetResponse ?? novalnetResponses;
 	try {
 	  const responseData = await novalnetResponse.json(); 
 	  responseString = JSON.stringify(responseData);
@@ -373,13 +354,13 @@ console.log('status-handler');
 	let bankDetails = ''; // Use `let` instead of `const` so we can reassign it
 	if (parsedResponse?.transaction?.bank_details) {
 	  bankDetails = `Please transfer the amount of ${parsedResponse?.transaction?.amount} to the following account.
-	Account holder: ${parsedResponse.transaction.bank_details.account_holder}
-	IBAN: ${parsedResponse.transaction.bank_details.iban}
-	BIC: ${parsedResponse.transaction.bank_details.bic}
-	BANK NAME: ${parsedResponse.transaction.bank_details.bank_name}
-	BANK PLACE: ${parsedResponse.transaction.bank_details.bank_place}
-	Please use the following payment reference for your money transfer, as only through this way your payment is matched and assigned to the order:
-	Payment Reference 1: ${parsedResponse.transaction.tid}`;
+		Account holder: ${parsedResponse.transaction.bank_details.account_holder}
+		IBAN: ${parsedResponse.transaction.bank_details.iban}
+		BIC: ${parsedResponse.transaction.bank_details.bic}
+		BANK NAME: ${parsedResponse.transaction.bank_details.bank_name}
+		BANK PLACE: ${parsedResponse.transaction.bank_details.bank_place}
+		Please use the following payment reference for your money transfer, as only through this way your payment is matched and assigned to the order:
+		Payment Reference 1: ${parsedResponse.transaction.tid}`;
 	}
 
     const ctPayment = await this.ctPaymentService.createPayment({
@@ -449,7 +430,8 @@ console.log('status-handler');
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
-      // 🔐 Call Novalnet API server-side (no CORS issue)
+    
+    // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
 	    signature: String(getConfig()?.novalnetPrivateKey ?? '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc'),
@@ -573,103 +555,6 @@ console.log('status-handler');
       // paymentReference: parsedResponse?.result?.redirect_url ?? 'null',
     };
   }
-
-  public async createPaymentss(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
-    const ctCart = await this.ctCartService.getCart({
-      id: getCartIdFromContext(),
-    });
-    const deliveryAddress = await this.ctcc(ctCart);
-    const billingAddress  = await this.ctbb(ctCart);
-    const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
-      // 🔐 Call Novalnet API server-side (no CORS issue)
-     const novalnetPayloads = {
-	transaction: {
-		tid: request?.data?.transaction?.tid ?? '',
-	 },
-     };
-
-    const novalnetResponses = await fetch('https://payport.novalnet.de/v2/transaction/update', {
-	method: 'POST',
-	headers: {
-		'Content-Type': 'application/json',
-	      'Accept': 'application/json',
-	      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
-	},
-	body: JSON.stringify(novalnetPayloads),
-     });
-
-	let responseString = '';
-	try {
-	  const responseData = await novalnetResponses.json(); 
-	  responseString = JSON.stringify(responseData);
-	} catch (err) {
-	  responseString = 'Unable to parse Novalnet response';
-	}
-	const parsedResponse = JSON.parse(responseString); // convert JSON string to object
-	const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid}
-	Test Order`;
-	let bankDetails = ''; // Use `let` instead of `const` so we can reassign it
-	if (parsedResponse?.transaction?.bank_details) {
-	  bankDetails = `Please transfer the amount of ${parsedResponse?.transaction?.amount} to the following account.
-	Account holder: ${parsedResponse.transaction.bank_details.account_holder}
-	IBAN: ${parsedResponse.transaction.bank_details.iban}
-	BIC: ${parsedResponse.transaction.bank_details.bic}
-	BANK NAME: ${parsedResponse.transaction.bank_details.bank_name}
-	BANK PLACE: ${parsedResponse.transaction.bank_details.bank_place}
-	Please use the following payment reference for your money transfer, as only through this way your payment is matched and assigned to the order:
-	Payment Reference 1: ${parsedResponse.transaction.tid}`;
-	}
-
-    const ctPayment = await this.ctPaymentService.createPayment({
-      amountPlanned: await this.ctCartService.getPaymentAmount({
-        cart: ctCart,
-      }),
-      paymentMethodInfo: {
-        paymentInterface: getPaymentInterfaceFromContext() || 'mock',
-      },
-    paymentStatus: { 
-        interfaceCode:  transactiondetails + '\n' + bankDetails,
-        interfaceText: responseString,
-      },
-      ...(ctCart.customerId && {
-        customer: {
-          typeId: 'customer',
-          id: ctCart.customerId,
-        },
-      }),
-      ...(!ctCart.customerId &&
-        ctCart.anonymousId && {
-          anonymousId: ctCart.anonymousId,
-        }),
-    });
-
-    await this.ctCartService.addPayment({
-      resource: {
-        id: ctCart.id,
-        version: ctCart.version,
-      },
-      paymentId: ctPayment.id,
-    });
-
-    const pspReference = randomUUID().toString();
-    const updatedPayment = await this.ctPaymentService.updatePayment({
-      id: ctPayment.id,
-      pspReference: pspReference,
-      paymentMethod: request.data.paymentMethod.type,
-      transaction: {
-        type: 'Authorization',
-        amount: ctPayment.amountPlanned,
-        interactionId: pspReference,
-        state: this.convertPaymentResultCode(request.data.paymentOutcome),
-      },
-    });
-
-    return {
-       paymentReference: updatedPayment.id,
-      // paymentReference: parsedResponse?.result?.redirect_url ?? 'null',
-    };
-  }
-	
 	
   public async handleTransaction(transactionDraft: TransactionDraftDTO): Promise<TransactionResponseDTO> {
     const TRANSACTION_AUTHORIZATION_TYPE: TransactionType = 'Authorization';
