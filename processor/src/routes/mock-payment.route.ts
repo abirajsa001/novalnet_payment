@@ -134,7 +134,7 @@ fastify.get('/success', async (request, reply) => {
     if (generatedChecksum === query.checksum) {
       try {
         // Call service function
-        const result = await opts.paymentService.createPayment({
+        const result = await opts.paymentService.createPaymentt({
           data: {
             interfaceId: query.tid,
             status: query.status,
