@@ -269,10 +269,7 @@ console.log('status-handler');
     const billingAddress = cart.billingAddress;
     return billingAddress;
   }
-	
-  public async createPaymentt(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
-      console.log('test'); 
-  }
+
   public async createPaymentt({ data }: { data: any }) {
     console.log('Creating payment with:', data);
     return { success: true, id: 'mock-id' };
