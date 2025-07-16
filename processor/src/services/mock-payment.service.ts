@@ -269,7 +269,11 @@ console.log('status-handler');
     const billingAddress = cart.billingAddress;
     return billingAddress;
   }
-  
+	
+  public async createPayment(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
+      console.log('test'); 
+  }
+	
   /**
    * Create payment
    *
