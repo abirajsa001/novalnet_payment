@@ -113,46 +113,46 @@ console.log('handle-novalnetResponse');
     return reply.send('Payment was successful.');
   });
 
-fastify.get('/success', async (request: FastifyRequest, reply: FastifyReply) => {
-  const query = request.query as {
-    tid?: string;
-    status?: string;
-    checksum?: string;
-    txn_secret?: string;
-  };
+// fastify.get('/success', async (request: FastifyRequest, reply: FastifyReply) => {
+//   const query = request.query as {
+//     tid?: string;
+//     status?: string;
+//     checksum?: string;
+//     txn_secret?: string;
+//   };
 
-  const accessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
+//   const accessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
 
-  if (query.tid && query.status && query.checksum && query.txn_secret) {
-    const tokenString = `${query.tid}${query.txn_secret}${query.status}${accessKey}`;
-    const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
+//   if (query.tid && query.status && query.checksum && query.txn_secret) {
+//     const tokenString = `${query.tid}${query.txn_secret}${query.status}${accessKey}`;
+//     const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
-    if (generatedChecksum !== query.checksum) {
-      try {
-        // Call service function
-        // const result = await opts.paymentService.createPaymentt({
-        //   data: {
-        //     interfaceId: query.tid,
-        //     status: query.status,
-        //     source: 'redirect',
-        //   },
-        // });
+//     if (generatedChecksum !== query.checksum) {
+//       try {
+//         Call service function
+//         const result = await opts.paymentService.createPaymentt({
+//           data: {
+//             interfaceId: query.tid,
+//             status: query.status,
+//             source: 'redirect',
+//           },
+//         });
 
-        // return reply.send({
-        //   message: 'Redirect verified. Payment created.',
-        //   result,
-        // });
-	 return reply.code(400).send('Inside the try block');
-      } catch (error) {
-    	 return reply.code(400).send('Catch error failed');
-      }
-    } else {
-      return reply.code(400).send('Checksum verification failed.');
-    }
-  } else {
-    return reply.code(400).send('Missing required query parameters.');
-  }
-});
+//         return reply.send({
+//           message: 'Redirect verified. Payment created.',
+//           result,
+//         });
+// 	 return reply.code(400).send('Inside the try block');
+//       } catch (error) {
+//     	 return reply.code(400).send('Catch error failed');
+//       }
+//     } else {
+//       return reply.code(400).send('Checksum verification failed.');
+//     }
+//   } else {
+//     return reply.code(400).send('Missing required query parameters.');
+//   }
+// });
 
 };
 
