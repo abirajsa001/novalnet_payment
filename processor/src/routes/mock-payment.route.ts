@@ -129,9 +129,7 @@ console.log('handle-novalnetResponse');
       const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
       if (generatedChecksum === query.checksum) {
-        try {
          async (request, reply) => {
-      
           const result = await opts.paymentService.createPaymentt({
             data: {
               interfaceId: query.tid,
@@ -139,12 +137,8 @@ console.log('handle-novalnetResponse');
               source: 'redirect',
             },
           });
-
           return reply.code(200).send('resp');
-        } catch (err) {
-          console.error('createPayment error:', err);
-          return reply.code(200).send('create-resp'); 
-        }
+	 }
       } else {
         return reply.code(400).send('Checksum verification failed.');
       }
