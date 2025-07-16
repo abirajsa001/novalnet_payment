@@ -114,7 +114,7 @@ console.log('handle-novalnetResponse');
     return reply.send('Payment was successful.');
   });
 
-  fastify.get('/success', async (request: FastifyRequest, reply: FastifyReply) => {
+  fastify.get('/success', async (request, reply) => {
     const query = request.query as {
       tid?: string;
       status?: string;
@@ -128,7 +128,7 @@ console.log('handle-novalnetResponse');
       const tokenString = `${query.tid}${query.txn_secret}${query.status}${accessKey}`;
       const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
-      if (generatedChecksum === query.checksum) {
+      if (generatedChecksum !== query.checksum) {
          async (request, reply) => {
           const result = await opts.paymentService.createPaymentt({
             data: {
@@ -137,8 +137,9 @@ console.log('handle-novalnetResponse');
               source: 'redirect',
             },
           });
-          return reply.code(200).send('resp');
+          return reply.code(200).send('resp-failed');
 	 }
+	 return reply.code(200).send('resp-passed');
       } else {
         return reply.code(400).send('Checksum verification failed.');
       }
