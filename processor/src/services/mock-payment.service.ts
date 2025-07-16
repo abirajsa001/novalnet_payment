@@ -271,7 +271,7 @@ console.log('status-handler');
   }
 
  public async createPaymentt(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
-    return { success: true, id: 'mock-id' };
+    return { paymentReference: 'true'};
   }	
 
   /**
