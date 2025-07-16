@@ -125,31 +125,26 @@ fastify.get('/success', async (request: FastifyRequest, reply: FastifyReply) => 
 
   if (query.tid && query.status && query.checksum && query.txn_secret) {
     const tokenString = `${query.tid}${query.txn_secret}${query.status}${accessKey}`;
-    const generatedChecksum = crypto
-      .createHash('sha256')
-      .update(tokenString)
-      .digest('hex');
+    const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
-    if (generatedChecksum === query.checksum) {
+    if (generatedChecksum !== query.checksum) {
       try {
         // Call service function
-        const result = await opts.paymentService.createPaymentt({
-          data: {
-            interfaceId: query.tid,
-            status: query.status,
-            source: 'redirect',
-          },
-        });
+        // const result = await opts.paymentService.createPaymentt({
+        //   data: {
+        //     interfaceId: query.tid,
+        //     status: query.status,
+        //     source: 'redirect',
+        //   },
+        // });
 
-        return reply.send({
-          message: 'Redirect verified. Payment created.',
-          result,
-        });
+        // return reply.send({
+        //   message: 'Redirect verified. Payment created.',
+        //   result,
+        // });
+	 return reply.code(400).send('Inside the try block');
       } catch (error) {
-        return reply.code(500).send({
-          error: 'Failed to create payment',
-          details: error instanceof Error ? error.message : error,
-        });
+    	 return reply.code(400).send('Catch error failed');
       }
     } else {
       return reply.code(400).send('Checksum verification failed.');
