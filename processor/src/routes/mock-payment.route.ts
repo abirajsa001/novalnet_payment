@@ -114,7 +114,7 @@ console.log('handle-novalnetResponse');
     return reply.send('Payment was successful.');
   });
 
-  fastify.get('/success', async (request, reply) => {
+  fastify.get('/success', async (request: FastifyRequest, reply: FastifyReply) => {
     const query = request.query as {
       tid?: string;
       status?: string;
