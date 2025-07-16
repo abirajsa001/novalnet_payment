@@ -129,13 +129,13 @@ console.log('handle-novalnetResponse');
       const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
       if (generatedChecksum !== query.checksum) {
-  //       const result = await opts.paymentService.createPaymentt({
-  //       data: {
-	 //          interfaceId: query.tid,
-	 //          status: query.status,
-	 //          source: 'redirect',
-	 //        },
-	 // });
+  	//        const result = await opts.paymentService.createPaymentt({
+ 	 //       data: {
+	  //         interfaceId: query.tid,
+	  //         status: query.status,
+	  //         source: 'redirect',
+	  //       },
+	 	// });
 	 return reply.code(200).send('resp-passed');
       } else {
         return reply.code(400).send('Checksum verification failed.');
