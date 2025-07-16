@@ -270,7 +270,7 @@ console.log('status-handler');
     return billingAddress;
   }
 
-public async createPaymentt({ data }: { data: CreatePaymentRequest }): Promise<PaymentResponseSchemaDTO>
+public async createPayment(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
     return { success: true, id: 'mock-id' };
   }	
 
