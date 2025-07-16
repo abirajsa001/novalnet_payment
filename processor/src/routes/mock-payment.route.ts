@@ -128,7 +128,6 @@ console.log('handle-novalnetResponse');
 
     if (generatedChecksum !== query.checksum) {
       try {
-        Call service function
         const result = await opts.paymentService.createPaymentt({
           data: {
             interfaceId: query.tid,
@@ -136,12 +135,7 @@ console.log('handle-novalnetResponse');
             source: 'redirect',
           },
         });
-
-        return reply.send({
-          message: 'Redirect verified. Payment created.',
-          result,
-        });
-	 return reply.code(400).send('Inside the try block');
+	 return reply.code(400).send('redirect verifed');
       } catch (error) {
     	 return reply.code(400).send('Catch error failed');
       }
