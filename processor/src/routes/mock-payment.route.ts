@@ -129,7 +129,7 @@ console.log('handle-novalnetResponse');
       const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
       if (generatedChecksum !== query.checksum) {
-        const result = await opts.paymentService.createPayment({
+        const result = await opts.paymentService.createPaymentt({
         data: {
 	          interfaceId: query.tid,
 	          status: query.status,
