@@ -270,9 +270,13 @@ console.log('status-handler');
     return billingAddress;
   }
 
- public async createPaymentt(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
-    return { paymentReference: 'true'};
-  }	
+public async createPaymentt(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
+  return {
+    success: 'true',
+    id: request.interfaceId || 'mock-id',
+  };
+}
+	
 
   /**
    * Create payment
