@@ -273,7 +273,10 @@ console.log('status-handler');
   public async createPaymentt(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
       console.log('test'); 
   }
-	
+  public async createPaymentt({ data }: { data: any }) {
+    console.log('Creating payment with:', data);
+    return { success: true, id: 'mock-id' };
+  }	
   /**
    * Create payment
    *
