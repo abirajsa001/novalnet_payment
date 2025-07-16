@@ -270,7 +270,7 @@ console.log('status-handler');
     return billingAddress;
   }
 	
-  public async createPayment(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
+  public async createPaymentt(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
       console.log('test'); 
   }
 	
