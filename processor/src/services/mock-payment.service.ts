@@ -274,7 +274,7 @@ console.log('status-handler');
     console.log('Creating payment');
     return { success: true, id: 'mock-id' };
   }	
-	
+
   /**
    * Create payment
    *
