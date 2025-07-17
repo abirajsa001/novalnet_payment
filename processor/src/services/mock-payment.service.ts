@@ -304,7 +304,7 @@ console.log('status-handler');
 	  },
 	  custom: {
 	    input1: 'currencyValue',
-	    inputval1: JSON.stringify(data),
+	    inputval1: JSON.stringify(parsedData),
 	  }
 	};
 
