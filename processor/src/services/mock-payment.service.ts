@@ -271,7 +271,57 @@ console.log('status-handler');
   }
 
   public async createPaymentt({ data }: { data: any }) {
-    console.log('Creating payment with:', data);
+	const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+	const novalnetPayload = {
+	  merchant: {
+	    signature: String(getConfig()?.novalnetPrivateKey ?? '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc'),
+	    tariff: String(getConfig()?.novalnetTariff ?? '10004'),
+	  },
+	  customer: {
+	    billing: {
+	      city: String( 'demo'),
+	      country_code: String('US'),
+	      house_no: String('10'),
+	      street: String('teststreet'),
+	      zip: String('12345'),
+	    },
+	    shipping: {
+	      city: String('demoshipping'),
+	      country_code: String('US'),
+	      house_no: String('11'),
+	      street: String('testshippingstreet'),
+	      zip: String('12345'),
+	    },
+	    first_name: 'Max',
+	    last_name: 'Mustermann',
+	    email: 'abiraj_s@novalnetsolutions.com',
+	  },
+	  transaction: {
+	    test_mode: '1',
+	    payment_type: 'IDEAL',
+	    amount: '222',
+	    currency: 'EUR',
+	    return_url: 'https://service-gxj31ubdem0d5a3yfzvyd735.europe-west1.gcp.sandbox.commercetools.app/success',
+	    error_return_url: 'https://service-gxj31ubdem0d5a3yfzvyd735.europe-west1.gcp.sandbox.commercetools.app/test',
+	  },
+	  custom: {
+	    input1: 'currencyCode',
+	    inputval1: String(parsedData),
+	  }
+	};
+
+	  const novalnetResponse = await fetch('https://payport.novalnet.de/v2/payment', {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/json',
+	      'Accept': 'application/json',
+	      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
+	    },
+	    body: JSON.stringify(novalnetPayload),
+	  });
+
+
+	  
     return { success: true, id: 'mock-id' };
   }	
 	
