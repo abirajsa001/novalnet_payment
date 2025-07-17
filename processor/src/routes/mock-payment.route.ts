@@ -109,47 +109,48 @@ export const paymentRoutes = async (
   );
 
   // Success callback route with checksum verification
-  fastify.get('/success',{
-      schema: {
-        response: {
-          200: PaymentResponseSchema,
-        },
-      },
+fastify.get('/success',{
+  schema: {
+    response: {
+      200: PaymentResponseSchema,
+      400: Type.Object({ error: Type.String() }), // Good
     },
-    async (request: FastifyRequest, reply: FastifyReply) => {
-      const query = request.query as {
-        tid?: string;
-        status?: string;
-        checksum?: string;
-        txn_secret?: string;
-      };
-  
-      const accessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
-      const { tid, status, checksum, txn_secret } = query;
-  
-      if (tid && status && checksum && txn_secret) {
-        const tokenString = `${tid}${txn_secret}${status}${accessKey}`;
-        const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
-  
-        if (generatedChecksum === checksum) {
-          try {
-            const result = await opts.paymentService.createPaymentt({
-              interfaceId: tid,
-              status,
-              source: 'redirect',
-            });
-            return reply.code(200).send(result);
-          } catch (error) {
-            return reply.code(400).send({ error: 'Payment creation failed' });
-          }
-        } else {
-          return reply.code(400).send({ error: 'Checksum verification failed' });
-        }
-      } else {
-        return reply.code(400).send({ error: 'Missing required query parameters' });
+  },
+},
+async (request: FastifyRequest, reply: FastifyReply) => {
+  const query = request.query as {
+    tid?: string;
+    status?: string;
+    checksum?: string;
+    txn_secret?: string;
+  };
+
+  const accessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
+  const { tid, status, checksum, txn_secret } = query;
+
+  if (tid && status && checksum && txn_secret) {
+    const tokenString = `${tid}${txn_secret}${status}${accessKey}`;
+    const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
+
+    if (generatedChecksum === checksum) {
+      try {
+        const result = await opts.paymentService.createPaymentt({
+          interfaceId: tid,
+          status,
+          source: 'redirect',
+        });
+        return reply.code(200).send(result);
+      } catch (error) {
+        return reply.code(400).send({ error: 'Payment creation failed' });
       }
+    } else {
+      return reply.code(400).send({ error: 'Checksum verification failed' });
     }
-  );
+  } else {
+    return reply.code(400).send({ error: 'Missing required query parameters' });
+  }
+});
+
 
 
 };
