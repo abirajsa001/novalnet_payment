@@ -303,7 +303,7 @@ console.log('status-handler');
 	    currency: 'EUR',
 	  },
 	  custom: {
-	    input1: 'currencyCode',
+	    input1: 'currencyValue',
 	    inputval1: JSON.stringify(data),
 	  }
 	};
