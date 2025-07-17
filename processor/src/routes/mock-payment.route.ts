@@ -113,37 +113,55 @@ console.log('handle-novalnetResponse');
     return reply.send('Payment was successful.');
   });
 
-  fastify.get('/success', async (request: FastifyRequest, reply: FastifyReply) => {
-  const query = request.query as {
-    tid?: string;
-    status?: string;
-    checksum?: string;
-    txn_secret?: string;
-  };
+  fastify.get(
+    '/success',
+    {
+      schema: {
+        response: {
+          200: PaymentResponseSchema,
+          400: Type.Object({
+            error: Type.String(),
+          }),
+        },
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const query = request.query as {
+        tid?: string;
+        status?: string;
+        checksum?: string;
+        txn_secret?: string;
+      };
 
-  const accessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
-  if (query.tid && query.status && query.checksum && query.txn_secret) {
-    const tokenString = `${query.tid}${query.txn_secret}${query.status}${accessKey}`;
-    const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
+      const accessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
 
-    if (generatedChecksum !== query.checksum) {
-      try {
-	 const result = await opts.paymentService.createPaymentt({
-	    interfaceId: query.tid ?? '',
-	    status: query.status ?? '',
-	    source: 'redirect',
-	  });
-	 return reply.code(400).send('redirect verifed');
-      } catch (error) {
-    	 return reply.code(400).send('Catch error failed');
+      if (query.tid && query.status && query.checksum && query.txn_secret) {
+        const tokenString = `${query.tid}${query.txn_secret}${query.status}${accessKey}`;
+        const generatedChecksum = crypto
+          .createHash('sha256')
+          .update(tokenString)
+          .digest('hex');
+
+        if (generatedChecksum !== query.checksum) {
+          try {
+            const result: PaymentResponseSchemaDTO = await opts.paymentService.createPaymentt({
+              interfaceId: query.tid ?? '',
+              status: query.status ?? '',
+              source: 'redirect',
+            });
+
+            return reply.code(200).send('result');
+          } catch (error) {
+            return reply.code(400).send({ error: 'Service call failed' });
+          }
+        } else {
+          return reply.code(400).send({ error: 'Checksum verification failed' });
+        }
+      } else {
+        return reply.code(400).send({ error: 'Missing required query parameters' });
       }
-    } else {
-      return reply.code(400).send('Checksum verification failed.');
     }
-  } else {
-    return reply.code(400).send('Missing required query parameters.');
-  }
-});
+  );
 
 };
 
