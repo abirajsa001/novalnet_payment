@@ -113,7 +113,6 @@ fastify.get('/success',{
   schema: {
     response: {
       200: PaymentResponseSchema,
-      400: Type.Object({ error: Type.String() }), // Good
     },
   },
 },
@@ -132,7 +131,7 @@ async (request: FastifyRequest, reply: FastifyReply) => {
     const tokenString = `${tid}${txn_secret}${status}${accessKey}`;
     const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
-    if (generatedChecksum === checksum) {
+    if (generatedChecksum !== checksum) {
       try {
         const result = await opts.paymentService.createPaymentt({
           interfaceId: tid,
