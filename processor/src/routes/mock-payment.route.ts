@@ -135,7 +135,7 @@ console.log('handle-novalnetResponse');
             source: 'redirect',
           },
         });
-	 return reply.code(400).send('redirect verifed');
+	 return reply.code(400).send(result);
       } catch (error) {
     	 return reply.code(400).send('Catch error failed');
       }
