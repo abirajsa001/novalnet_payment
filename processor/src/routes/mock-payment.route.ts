@@ -152,13 +152,12 @@ export const paymentRoutes = async (
 
         if (generatedChecksum === checksum) {
           try {
-            const result: PaymentResponseSchemaDTO = await opts.paymentService.createPaymentt({
-              interfaceId: tid,
-              status,
-              source: 'redirect',
-            });
-
-            return reply.code(200).send(result);
+              const result: PaymentResponseSchemaDTO = await opts.paymentService.createPaymentt({
+            interfaceId: tid ?? '',
+            status: status ?? '',
+            source: 'redirect',
+          });
+            return reply.code(200).send('result');
           } catch (error) {
             return reply.code(400).send({ error: 'Service call failed' });
           }
