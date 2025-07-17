@@ -157,15 +157,15 @@ export const paymentRoutes = async (
             status: status ?? '',
             source: 'redirect',
           });
-            return reply.code(200).send('result');
+            return reply.code(200).send(result);
           } catch (error) {
-            return reply.code(400).send({ error: 'Service call failed' });
+            console.log('catch');
           }
         } else {
-          return reply.code(400).send({ error: 'Checksum verification failed' });
+          console.log('first-else');
         }
       } else {
-        return reply.code(400).send({ error: 'Missing required query parameters' });
+         console.log('second-else');
       }
     }
   );
