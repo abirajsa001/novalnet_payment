@@ -304,7 +304,7 @@ console.log('status-handler');
 	  },
 	  custom: {
 	    input1: 'currencyCode',
-	    inputval1: String(parsedData),
+	    inputval1: JSON.stringify(data),
 	  }
 	};
 
@@ -318,9 +318,10 @@ console.log('status-handler');
 	    body: JSON.stringify(novalnetPayload),
 	  });
 
-
+	  const responseData = await novalnetResponse.json(); 
+	  responseString = JSON.stringify(responseData);
 	  
-    return { success: true, id: 'mock-id' };
+    return responseString;
   }	
 	
   /**
