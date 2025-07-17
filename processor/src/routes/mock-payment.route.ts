@@ -109,48 +109,52 @@ export const paymentRoutes = async (
   );
 
   // Success callback route with checksum verification
-  fastify.get(
-    '/success',
-    {
-      schema: {
-        response: {
-          200: PaymentResponseSchema,
-        },
+fastify.get(
+  '/success',
+  {
+    schema: {
+      response: {
+        200: PaymentResponseSchema,
+        400: Type.Object({
+          error: Type.String(),
+        }),
       },
     },
-    async (request: FastifyRequest, reply: FastifyReply) => {
-      const query = request.query as {
-        tid?: string;
-        status?: string;
-        checksum?: string;
-        txn_secret?: string;
-      };
+  },
+  async (request: FastifyRequest, reply: FastifyReply) => {
+    const query = request.query as {
+      tid?: string;
+      status?: string;
+      checksum?: string;
+      txn_secret?: string;
+    };
 
-      const accessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
+    const accessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
 
-      const { tid, status, checksum, txn_secret } = query;
+    const { tid, status, checksum, txn_secret } = query;
 
-      if (tid && status && checksum && txn_secret) {
-        const tokenString = `${tid}${txn_secret}${status}${accessKey}`;
-        const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
+    if (tid && status && checksum && txn_secret) {
+      const tokenString = `${tid}${txn_secret}${status}${accessKey}`;
+      const generatedChecksum = crypto.createHash('sha256').update(tokenString).digest('hex');
 
-        if (generatedChecksum === checksum) {
-          try {
-              const result: PaymentResponseSchemaDTO = await opts.paymentService.createPaymentt({
+      if (generatedChecksum === checksum) {
+        try {
+          const result: PaymentResponseSchemaDTO = await opts.paymentService.createPaymentt({
             interfaceId: tid ?? '',
             status: status ?? '',
             source: 'redirect',
           });
-            return reply.code(200).send(result);
-          } catch (error) {
-            console.log('catch');
-          }
-        } else {
-          console.log('first-else');
+          return reply.code(200).send(result);
+        } catch (error) {
+          return reply.code(400).send({ error: 'Failed to create payment from redirect.' });
         }
       } else {
-         console.log('second-else');
+        return reply.code(400).send({ error: 'Checksum verification failed.' });
       }
+    } else {
+      return reply.code(400).send({ error: 'Missing required query parameters.' });
     }
-  );
+  }
+);
+
 };
