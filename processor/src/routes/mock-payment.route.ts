@@ -108,21 +108,6 @@ export const paymentRoutes = async (
     }
   );
 
-  // Failure callback route
-  fastify.get(
-    '/failure',
-    {
-      schema: {
-        response: {
-          200: Type.Object({ message: Type.String() }),
-        },
-      },
-    },
-    async (_request, reply) => {
-      return reply.code(200).send({ message: 'Payment failed or canceled.' });
-    }
-  );
-
   // Success callback route with checksum verification
   fastify.get(
     '/success',
@@ -130,7 +115,6 @@ export const paymentRoutes = async (
       schema: {
         response: {
           200: PaymentResponseSchema,
-          400: Type.Object({ error: Type.String() }),
         },
       },
     },
