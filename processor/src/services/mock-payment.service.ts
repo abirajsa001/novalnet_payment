@@ -275,7 +275,6 @@ public async createPaymentt(request: CreatePaymentRequest): Promise<PaymentRespo
     paymentReference: request.interfaceId ?? 'mock-id',
   };
 }
-	
 
   /**
    * Create payment
