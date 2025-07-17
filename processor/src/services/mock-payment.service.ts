@@ -25,7 +25,7 @@ import { AbstractPaymentService } from './abstract-payment.service';
 import { getConfig } from '../config/config';
 import { appLogger, paymentSDK } from '../payment-sdk';
 import { CreatePaymentRequest, MockPaymentServiceOptions } from './types/mock-payment.type';
-import { PaymentMethodType, PaymentOutcome, PaymentResponseSchemaDTO, CreatePaymentRequestDTO } from '../dtos/mock-payment.dto';
+import { PaymentMethodType, PaymentOutcome, PaymentResponseSchemaDTO } from '../dtos/mock-payment.dto';
 import { getCartIdFromContext, getPaymentInterfaceFromContext } from '../libs/fastify/context/context';
 import { randomUUID } from 'crypto';
 import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/transaction.dto';
@@ -270,12 +270,11 @@ console.log('status-handler');
     return billingAddress;
   }
 
-public async createPaymentt(request: CreatePaymentRequestDTO): Promise<PaymentResponseSchemaDTO> {
-  return {
-    paymentReference: 'mock-id',
-  };
-}
-
+  public async createPaymentt({ data }: { data: any }) {
+    console.log('Creating payment with:', data);
+    return { success: true, id: 'mock-id' };
+  }	
+	
   /**
    * Create payment
    *
