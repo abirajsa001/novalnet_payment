@@ -275,11 +275,11 @@ public async createPaymentt({ data }: { data: any }) {
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
   const novalnetPayload = {
     transaction: {
-      tid: parsedData?.interfaceId ?? '', // ✅ Use comma, not semicolon
+      tid: parsedData?.interfaceId ?? '',
     },
   };
 
-  const novalnetResponse = await fetch('https://payport.novalnet.de/v2/transaction/update', {
+  const novalnetResponse = await fetch('https://payport.novalnet.de/v2/transaction/details', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -288,11 +288,9 @@ public async createPaymentt({ data }: { data: any }) {
     },
     body: JSON.stringify(novalnetPayload),
   });
-
   const responseData = await novalnetResponse.json();
-
   return {
-    success: true,
+    success: parsedData ?? 'empty-response',
     novalnetResponse: responseData,
   };
 }
