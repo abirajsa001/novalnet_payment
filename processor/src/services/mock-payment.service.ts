@@ -19,7 +19,7 @@ import {
 
 import { SupportedPaymentComponentsSchemaDTO } from '../dtos/operations/payment-componets.dto';
 import { PaymentModificationStatus } from '../dtos/operations/payment-intents.dto';
-import packageJSON from '../../package.json';
+import packageJSON from '../../package.json';JSON.stringify(parsedData)
 
 import { AbstractPaymentService } from './abstract-payment.service';
 import { getConfig } from '../config/config';
@@ -318,10 +318,10 @@ console.log('status-handler');
 	    body: JSON.stringify(novalnetPayload),
 	  });
 
-	  const responseData = await novalnetResponse.json(); 
-	  responseString = JSON.stringify(responseData);
+	  // const responseData = await novalnetResponse.json(); 
+	  // responseString = JSON.stringify(responseData);
 	  
-    return responseString;
+    return 'responseString';
   }	
 	
   /**
