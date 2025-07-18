@@ -317,8 +317,8 @@ console.log('status-handler');
 	    },
 	    body: JSON.stringify(novalnetPayload),
 	  });
-	  
-    return { success: true, id: "mock-id" }
+    const responseData = await novalnetResponse.json();
+    return { success: true, novalnetResponse: responseData };
   }	
 	
   /**
