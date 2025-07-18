@@ -271,7 +271,7 @@ console.log('status-handler');
   }
 
   public async createPaymentt({ data }: { data: any }) {
-	const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+	// const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
 	const novalnetPayload = {
 	  merchant: {
 	    signature: String(getConfig()?.novalnetPrivateKey ?? '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc'),
@@ -304,7 +304,7 @@ console.log('status-handler');
 	  },
 	  custom: {
 	    input1: 'currencyValue',
-	    inputval1: JSON.stringify(parsedData),
+	    inputval1: 'dummy',
 	  }
 	};
 
