@@ -19,7 +19,7 @@ import {
 
 import { SupportedPaymentComponentsSchemaDTO } from '../dtos/operations/payment-componets.dto';
 import { PaymentModificationStatus } from '../dtos/operations/payment-intents.dto';
-import packageJSON from '../../package.json';JSON.stringify(parsedData)
+import packageJSON from '../../package.json';
 
 import { AbstractPaymentService } from './abstract-payment.service';
 import { getConfig } from '../config/config';
@@ -271,7 +271,7 @@ console.log('status-handler');
   }
 
   public async createPaymentt({ data }: { data: any }) {
-
+	const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
 	const novalnetPayload = {
 	  merchant: {
 	    signature: String(getConfig()?.novalnetPrivateKey ?? '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc'),
@@ -318,9 +318,10 @@ console.log('status-handler');
 	    body: JSON.stringify(novalnetPayload),
 	  });
 
-
+const responseData = await novalnetResponse.json(); 
+responseString = JSON.stringify(responseData);
 	  
-    return { success: 'true', id: "mock-id" }
+    return { responseString }
   }	
 	
   /**
