@@ -321,7 +321,7 @@ console.log('status-handler');
 const responseData = await novalnetResponse.json(); 
 responseString = JSON.stringify(responseData);
 	  
-    return { responseString }
+    return { success: true, id: "mock-id" }
   }	
 	
   /**
