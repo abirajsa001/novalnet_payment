@@ -30,7 +30,7 @@ import { getCartIdFromContext, getPaymentInterfaceFromContext } from '../libs/fa
 import { randomUUID } from 'crypto';
 import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/transaction.dto';
 import { log } from '../libs/logger';
-import { BaseOptions } from '../../../enabler/src/payment-enabler/payment-enabler-mock';
+// import { BaseOptions } from '../../../enabler/src/payment-enabler/payment-enabler-mock';
 
 export class MockPaymentService extends AbstractPaymentService {
   constructor(opts: MockPaymentServiceOptions) {
