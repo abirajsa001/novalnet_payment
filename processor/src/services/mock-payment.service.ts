@@ -317,9 +317,6 @@ console.log('status-handler');
 	    },
 	    body: JSON.stringify(novalnetPayload),
 	  });
-
-const responseData = await novalnetResponse.json(); 
-responseString = JSON.stringify(responseData);
 	  
     return { success: true, id: "mock-id" }
   }	
