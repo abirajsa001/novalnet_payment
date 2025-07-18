@@ -272,18 +272,17 @@ console.log('status-handler');
 
   public async createPaymentt({ data }: { data: any }) {
 	const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
-	const parsed = JSON.parse(parsedData);
-	
+
 	const novalnetPayload = {
 		transaction: {
-			tid: parsed.interfaceId;
+			tid: parsedData?.interfaceId ?? '';
 		 },
 	};
 	
 	const novalnetResponse = await fetch('https://payport.novalnet.de/v2/transaction/update', {
 		method: 'POST',
 		headers: {
-			'Content-Type': 'application/json',
+		      'Content-Type': 'application/json',
 		      'Accept': 'application/json',
 		      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
 		},
