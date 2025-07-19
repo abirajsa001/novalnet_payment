@@ -12,11 +12,7 @@
     "strict": true,
     "skipLibCheck": true,
     "rootDir": "./src",
-    "outDir": "./dist",
-    "baseUrl": ".", 
-    "paths": {
-      "@enabler/*": ["../enabler/src/*"]
-    }
+    "outDir": "./dist"
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/*.[test|spec].ts"]
