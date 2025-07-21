@@ -27,11 +27,5 @@ export const PaymentRequestSchema = Type.Object({
   paymentOutcome: PaymentOutcomeSchema,
 });
 
-export interface CreatePaymentRequestData {
-  interfaceId: string;
-  status: string;
-  source: string;
-}
-
 export type PaymentRequestSchemaDTO = Static<typeof PaymentRequestSchema>;
 export type PaymentResponseSchemaDTO = Static<typeof PaymentResponseSchema>;
