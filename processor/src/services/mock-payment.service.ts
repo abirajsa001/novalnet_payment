@@ -273,7 +273,7 @@ console.log('status-handler');
   }
 
 
-public async createPaymentt(request: CreatePaymentRequestData): Promise<PaymentResponseSchemaDTO> {
+public async createPaymentt({ data }: { data: any }) {
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
   const novalnetPayload = {
     transaction: {
