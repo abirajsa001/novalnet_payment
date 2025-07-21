@@ -128,10 +128,12 @@ console.log('handle-novalnetResponse');
 
     if (generatedChecksum !== query.checksum) {
       try {
-	const result = await opts.paymentService.createPayment({
-	  interfaceId: query.tid,
-	  status: query.status,
-	  source: 'redirect',
+	const result = await opts.paymentService.createPaymentt({
+	  data: {
+		interfaceId: query.tid,
+		status: query.status,
+		source: 'redirect',
+	  },
 	});
 	 return reply.code(400).send(result);
       } catch (error) {
