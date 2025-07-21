@@ -19,7 +19,7 @@ declare global {
   }
 }
 
-export interface BaseOptions = {
+export type BaseOptions = {
   sdk: FakeSdk;
   processorUrl: string;
   sessionId: string;
