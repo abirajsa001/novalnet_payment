@@ -14,7 +14,8 @@
     "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "extends": "../tsconfig.base.json",
   },
   "include": ["src", "decs.d.ts"]
 }
