@@ -1,7 +1,9 @@
 {
+  "extends": "../tsconfig.base.json",
   "ts-node": {
     "files": true
   },
+  "files": ["src/main.ts", "src/global.d.ts"],
   "compilerOptions": {
     "target": "es2022",
     "module": "Node16",
@@ -10,18 +12,9 @@
     "resolveJsonModule": true,
     "strict": true,
     "skipLibCheck": true,
-    "rootDir": ".",
-    "outDir": "dist",
-    "baseUrl": ".",
-    "paths": {
-      "@enabler/*": ["enabler/src/*"],
-      "@processor/*": ["processor/src/*"]
-    }
+    "rootDir": "./src",
+    "outDir": "./dist"
   },
-  "include": [
-    "processor/src/**/*",
-    "enabler/src/**/*",
-    "src/**/*"
-  ],
-  "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.[test|spec].ts"]
 }
