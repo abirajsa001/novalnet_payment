@@ -1,8 +1,14 @@
 {
-  "name": "ct-payment-connector",
-  "version": "1.0.0",
+  "name": "payment-connector-app",
   "private": true,
   "scripts": {
-    "build": "tsc -p enabler/tsconfig.json && tsc -p processor/tsconfig.json"
+    "build": "npm run build --workspace=enabler && npm run build --workspace=processor"
+  },
+  "workspaces": [
+    "enabler",
+    "processor"
+  ],
+  "devDependencies": {
+    "typescript": "^5.3.3"
   }
 }
