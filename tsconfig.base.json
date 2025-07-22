@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".", // base path is the project root
+    "paths": {
+      "@enabler/*": ["enabler/src/*"],
+      "@processor/*": ["processor/src/*"]
+    }
+  }
+}
