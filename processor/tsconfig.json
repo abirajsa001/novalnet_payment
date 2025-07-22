@@ -1,9 +1,9 @@
 {
-  "extends": "../tsconfig.base.json",
   "ts-node": {
     "files": true
   },
   "files": ["src/main.ts", "src/global.d.ts"],
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "target": "es2022",
     "module": "Node16",
@@ -13,8 +13,7 @@
     "strict": true,
     "skipLibCheck": true,
     "rootDir": "./src",
-    "outDir": "./dist",
-    "extends": "../tsconfig.base.json",
+    "outDir": "./dist"
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/*.[test|spec].ts"]
