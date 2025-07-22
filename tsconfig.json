@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@enabler/*": ["enabler/src/*"],
-      "@processor/*": ["processor/src/*"]
-    }
-  }
+    "target": "ES2020",
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "baseUrl": "."
+  },
+  "include": ["enabler/src/**/*", "processor/src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
