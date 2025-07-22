@@ -3,6 +3,7 @@
   "private": true,
   "version": "4.1.0",
   "type": "module",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "vite --port 3000",
     "start": "serve public -l 8080 --cors",
@@ -19,8 +20,8 @@
     "jest": "29.7.0",
     "sass": "1.88.0",
     "ts-jest": "^29.3.2",
-    "typescript": "5.8.3",
-    "vite": "6.3.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0",
     "vite-plugin-css-injected-by-js": "3.5.2"
   },
   "overrides": {
