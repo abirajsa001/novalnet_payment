@@ -1,0 +1,8 @@
+{
+  "name": "ct-payment-connector",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p enabler/tsconfig.json && tsc -p processor/tsconfig.json"
+  }
+}
