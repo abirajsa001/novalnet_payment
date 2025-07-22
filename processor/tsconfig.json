@@ -15,6 +15,6 @@
     "rootDir": "./src",
     "outDir": "./dist"
   },
-  "include": ["src/**/*"],
-  "exclude": ["src/**/*.[test|spec].ts"]
+  "include": ["src/**/*", "../enabler/src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
