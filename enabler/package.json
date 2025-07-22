@@ -3,7 +3,6 @@
   "private": true,
   "version": "4.1.0",
   "type": "module",
-  "main": "dist/index.js",
   "scripts": {
     "dev": "vite --port 3000",
     "start": "serve public -l 8080 --cors",
