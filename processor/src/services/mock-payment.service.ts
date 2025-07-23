@@ -433,14 +433,14 @@ public async createPaymentt({ data }: { data: any }) {
       },
     });
 
-     if(parsedResponse?.result?.redirect_url) {
-	const redirectUrl = parsedResponse?.result?.redirect_url ?? 'null';
-	return reply.redirect(302, redirectUrl);
-      }
-    return {
-      paymentReference: updatedPayment.id,
-     // paymentReference: parsedResponse?.result?.redirect_url ?? 'null',
-    };
+	if (parsedResponse?.result?.redirect_url) {
+	  return reply.redirect(302, parsedResponse.result.redirect_url);
+	}
+
+	return {
+	  paymentReference: updatedPayment.id,
+	};
+
   }
 
 
