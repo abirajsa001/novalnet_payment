@@ -10,6 +10,7 @@ import {
 } from '../dtos/mock-payment.dto';
 import { MockPaymentService } from '../services/mock-payment.service';
 import { log } from '../libs/logger';
+import { PaymentModificationStatus } from '../dtos/operations/payment-intents.dto';
 type PaymentRoutesOptions = {
   paymentService: MockPaymentService;
   sessionHeaderAuthHook: SessionHeaderAuthenticationHook;
@@ -135,7 +136,7 @@ console.log('handle-novalnetResponse');
             source: 'redirect',
           },
         });
-	 return reply.code(400).send(result);
+	 return reply.status(200).send({ outcome: PaymentModificationStatus.APPROVED });
       } catch (error) {
     	 return reply.code(400).send('Catch error failed');
       }
