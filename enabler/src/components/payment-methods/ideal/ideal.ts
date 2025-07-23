@@ -12,7 +12,7 @@ import {
   PaymentRequestSchemaDTO,
 } from "../../../dtos/mock-payment.dto";
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
-import { log } from '../../../../../processor/src/libs/logger';
+// import { log } from '../../../../../processor/src/libs/logger';
 // import { getConfig } from "../../../config/config";
 
 export class IdealBuilder implements PaymentComponentBuilder {
