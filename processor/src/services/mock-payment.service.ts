@@ -432,15 +432,11 @@ public async createPaymentt({ data }: { data: any }) {
         state: this.convertPaymentResultCode(request.data.paymentOutcome),
       },
     });
-
-	if (parsedResponse?.result?.redirect_url) {
-	  return reply.redirect(302, parsedResponse.result.redirect_url);
-	}
-
-	return {
+	  
+   return {
+	  redirectUrl: parsedResponse?.result?.redirect_url ?? null,
 	  paymentReference: updatedPayment.id,
-	};
-
+    };
   }
 
 
