@@ -1,7 +1,6 @@
 import { FastifyError, type FastifyReply, type FastifyRequest } from 'fastify';
 
 import { FastifySchemaValidationError } from 'fastify/types/schema';
-import { log } from '../logger';
 import {
   ErrorAuthErrorResponse,
   ErrorGeneral,
@@ -63,12 +62,6 @@ const transformErrorxToHTTPModel = (errors: Errorx[]): TErrorObject[] => {
   const errorObjectList: TErrorObject[] = [];
 
   for (const err of errors) {
-    if (err.skipLog) {
-      log.debug(err.message, err);
-    } else {
-      log.error(err.message, err);
-    }
-
     const tErrObj: TErrorObject = {
       code: err.code,
       message: err.message,
