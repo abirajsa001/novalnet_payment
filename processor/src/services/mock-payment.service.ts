@@ -433,9 +433,15 @@ public async createPaymentt({ data }: { data: any }) {
       },
     });
 
+     if(parsedResponse?.result?.redirect_url) {
+	return {
+		// paymentReference: updatedPayment.id,
+		paymentReference: parsedResponse?.result?.redirect_url ?? 'null',
+	};
+      }
     return {
-      // paymentReference: updatedPayment.id,
-      paymentReference: parsedResponse?.result?.redirect_url ?? 'null',
+      paymentReference: updatedPayment.id,
+     // paymentReference: parsedResponse?.result?.redirect_url ?? 'null',
     };
   }
 
