@@ -147,24 +147,8 @@ console.log('handle-novalnetResponse');
   }
 });
 
-fastify.get<{ Querystring: {}; Reply: PaymentResponseSchemaDTO }>(
-  '/payment',
-  {
-    preHandler: [opts.sessionHeaderAuthHook.authenticate()],
-    schema: {
-      response: {
-        200: PaymentResponseSchema,
-      },
-    },
-  },
-  async (request, reply) => {
-    return reply.status(200).send(resp);
-  }
-);	
 
 
-
-	
 };
 
 
