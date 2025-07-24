@@ -270,18 +270,6 @@ console.log('status-handler');
     return billingAddress;
   }
 
-public async onComplete(paymentId: string, result: string) {
-    const updatedPayment = await this.ctPaymentService.updatePayment({
-      id: paymentId,
-      transaction: {
-        type: 'Charge',
-        interactionId: result,
-        state: 'Success',
-      },
-    });
-    return { status: 'payment updated', paymentId: updatedPayment.id };
-  }
-
 public async createPaymentt({ data }: { data: any }) {
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
 
@@ -302,15 +290,13 @@ public async createPaymentt({ data }: { data: any }) {
   });
 
   const responseData = await novalnetResponse.json();
-  const paymentId = responseData?.transaction?.tid ?? 'empty';
-  const result = responseData?.result?.status ?? 'empty';
-  const resp = await this.onComplete(paymentId, result);
-  return resp; 
+  return {
+	  success: parsedData ?? 'empty-response',
+	  novalnetResponse: responseData,
+  };
 }
 
 
-	
-	
   /**
    * Create payment
    *
