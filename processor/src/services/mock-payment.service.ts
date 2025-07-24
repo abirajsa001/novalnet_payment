@@ -307,14 +307,10 @@ public async createPaymentt({ data }: { data: any }) {
     body: JSON.stringify(novalnetPayload),
   });
   const responseData = await novalnetResponse.json();
-	  const paymentId = request.responseData.transaction.tid as string;
- 	 const result = request.responseData.result.status as string;
-	const resp = await paymentProcessorService.onComplete(paymentId, result);
+	const paymentId = responseData?.transaction?.tid as string;
+	const result = responseData?.result?.status as string;
+	const resp = await this.onComplete(paymentId, result);
 	 return reply.send(resp);
-  // return {
-  //   success: parsedData ?? 'empty-response',
-  //   novalnetResponse: responseData,
-  // };
 }
 	
 	
