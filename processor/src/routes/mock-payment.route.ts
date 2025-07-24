@@ -160,14 +160,9 @@ fastify.get<{ Reply: PaymentResponseSchemaDTO }>(
   async (request, reply) => {
     // If needed, get query parameters like this:
     // const query = request.query as { id: string };
-      const requestData: PaymentRequestSchemaDTO = {
-        paymentMethod: {
-          type: 'PAYPAL',
-        },
-        paymentOutcome: 'AUTHORIZED',
-      };
+
     const resp = await opts.paymentService.createPayments({
-      data: requestData, 
+      data: {}, 
     });
 
     return reply.status(200).send(resp);
