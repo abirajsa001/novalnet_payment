@@ -14,7 +14,7 @@ import {
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
 // import { log } from '../../../../../processor/src/libs/logger';
 // import { getConfig } from "../../../config/config";
-import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest} from '../../../libs/fastify';
+import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest} from 'fastify';
 
 export class IdealBuilder implements PaymentComponentBuilder {
   public componentHasSubmit = true;
