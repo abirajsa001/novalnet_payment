@@ -147,6 +147,36 @@ console.log('handle-novalnetResponse');
   }
 });
 
+fastify.get<{ Reply: PaymentResponseSchemaDTO }>(
+  '/payment',
+  {
+    preHandler: [opts.sessionHeaderAuthHook.authenticate()],
+    schema: {
+      response: {
+        200: PaymentResponseSchema,
+      },
+    },
+  },
+  async (request, reply) => {
+    // If needed, get query parameters like this:
+    // const query = request.query as { id: string };
+      const requestData: PaymentRequestSchemaDTO = {
+        paymentMethod: {
+          type: 'PAYPAL',
+        },
+        paymentOutcome: 'AUTHORIZED',
+      };
+    const resp = await opts.paymentService.createPayments({
+      data: requestData, 
+    });
+
+    return reply.status(200).send(resp);
+  }
+);
+
+
+
+	
 };
 
 
