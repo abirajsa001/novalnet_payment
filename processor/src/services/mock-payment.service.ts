@@ -33,7 +33,7 @@ import { log } from '../libs/logger';
 
 export class MockPaymentService extends AbstractPaymentService {
   constructor(opts: MockPaymentServiceOptions) {
-    super(opts.ctCartService, opts.ctPaymentService);
+    super(opts.ctCartService, opts.ctPaymentService, opts.CtOrderService);
   }
 
   /**
@@ -270,6 +270,24 @@ console.log('status-handler');
     return billingAddress;
   }
 
+public async onComplete(paymentId: string, result: string) {
+    const updatedPayment = await this.ctPaymentService.updatePayment({
+      id: paymentId,
+      transaction: {
+        type: 'Charge',
+        interactionId: result,
+        state: 'Success',
+      },
+    });
+
+    // 2. Optional: create order from cart
+    if (updatedPayment.interfaceInteractions?.[0]?.fields?.status === 'Success') {
+      const order = await this.ctOrderService.createOrderFromPayment(updatedPayment);
+      return { status: 'completed', orderId: order.id };
+    }
+
+    return { status: 'payment updated', paymentId: updatedPayment.id };
+  }
 
 public async createPaymentt({ data }: { data: any }) {
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
@@ -289,10 +307,14 @@ public async createPaymentt({ data }: { data: any }) {
     body: JSON.stringify(novalnetPayload),
   });
   const responseData = await novalnetResponse.json();
-  return {
-    success: parsedData ?? 'empty-response',
-    novalnetResponse: responseData,
-  };
+	  const paymentId = request.responseData.transaction.tid as string;
+ 	 const result = request.responseData.result.status as string;
+	const resp = await paymentProcessorService.onComplete(paymentId, result);
+	 return reply.send(resp);
+  // return {
+  //   success: parsedData ?? 'empty-response',
+  //   novalnetResponse: responseData,
+  // };
 }
 	
 	
