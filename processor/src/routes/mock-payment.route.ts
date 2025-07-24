@@ -147,7 +147,7 @@ console.log('handle-novalnetResponse');
   }
 });
 
-fastify.get<{ Reply: PaymentResponseSchemaDTO }>(
+fastify.get<{ Querystring: {}; Reply: PaymentResponseSchemaDTO }>(
   '/payment',
   {
     preHandler: [opts.sessionHeaderAuthHook.authenticate()],
@@ -167,7 +167,7 @@ fastify.get<{ Reply: PaymentResponseSchemaDTO }>(
 
     return reply.status(200).send(resp);
   }
-);
+);	
 
 
 
