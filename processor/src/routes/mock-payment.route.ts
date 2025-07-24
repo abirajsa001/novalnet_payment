@@ -133,7 +133,7 @@ console.log('handle-novalnetResponse');
             interfaceId: query.tid,
             status: query.status,
             source: 'redirect',
-          },reply
+          },
         });
 	 return reply.status(200).send({ outcome: PaymentModificationStatus.APPROVED });
       } catch (error) {
