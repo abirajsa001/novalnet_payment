@@ -14,6 +14,7 @@ export enum PaymentMethodType {
 
 export const PaymentResponseSchema = Type.Object({
   paymentReference: Type.String(),
+  redirectUrl: Type.Optional(Type.String()),
 });
 
 export const PaymentOutcomeSchema = Type.Enum(PaymentOutcome);
