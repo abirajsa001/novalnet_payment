@@ -289,14 +289,13 @@ public async onComplete(paymentId: string, result: string) {
     return { status: 'payment updated', paymentId: updatedPayment.id };
   }
 
-public async createPaymentt({ data }: { data: any }) {
+public async createPaymentt({ data }: { data: any }, reply: FastifyReply) {
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
     },
   };
-
   const novalnetResponse = await fetch('https://payport.novalnet.de/v2/transaction/details', {
     method: 'POST',
     headers: {
@@ -306,12 +305,14 @@ public async createPaymentt({ data }: { data: any }) {
     },
     body: JSON.stringify(novalnetPayload),
   });
+
   const responseData = await novalnetResponse.json();
-	const paymentId = responseData?.transaction?.tid as string;
-	const result = responseData?.result?.status as string;
-	const resp = await this.onComplete(paymentId, result);
-	 return reply.send(resp);
+  const paymentId = responseData?.transaction?.tid as string;
+  const result = responseData?.result?.status as string;
+  const resp = await this.onComplete(paymentId, result);
+  return reply.send(resp); 
 }
+
 	
 	
   /**
