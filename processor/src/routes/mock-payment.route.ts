@@ -172,7 +172,7 @@ console.log('handle-novalnetResponse');
             source: 'redirect',
           },
         });
-	res.redirect(
+	return reply.redirect(302,
 	  'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52'
 	);
 	 // return reply.status(200).send({ outcome: PaymentModificationStatus.APPROVED });
