@@ -30,7 +30,7 @@ import { getCartIdFromContext, getPaymentInterfaceFromContext } from '../libs/fa
 import { randomUUID } from 'crypto';
 import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/transaction.dto';
 import { log } from '../libs/logger';
-import * as Context from '../src/libs/fastify/context/context';
+import * as Context from '../libs/fastify/context/context';
 
 export class MockPaymentService extends AbstractPaymentService {
   constructor(opts: MockPaymentServiceOptions) {
