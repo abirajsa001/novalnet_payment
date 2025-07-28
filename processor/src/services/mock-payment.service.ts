@@ -301,6 +301,10 @@ public async createPaymentt({ data }: { data: any }) {
 
   const transactiondetails = `Novalnet Transaction ID: ${responseData?.transaction?.tid ?? 'N/A'}\nTest Order`;
 
+  const ctCart = await this.ctCartService.getCart({
+    id: getCartIdFromContext(),
+  });
+	
   return {
     success: parsedData ?? 'empty-response',
     novalnetResponse: responseData,
