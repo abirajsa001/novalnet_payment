@@ -304,6 +304,29 @@ public async createPaymentt({ data }: { data: any }) {
   const ctCart = await this.ctCartService.getCart({
     id: getCartIdFromContext(),
   });
+
+  const ctPayment = await this.ctPaymentService.createPayment({
+      amountPlanned: await this.ctCartService.getPaymentAmount({
+        cart: ctCart,
+      }),
+      paymentMethodInfo: {
+        paymentInterface: getPaymentInterfaceFromContext() || 'mock',
+      },
+    paymentStatus: { 
+        interfaceCode:  transactiondetails,
+        interfaceText: responseString,
+      },
+      ...(ctCart.customerId && {
+        customer: {
+          typeId: 'customer',
+          id: ctCart.customerId,
+        },
+      }),
+      ...(!ctCart.customerId &&
+        ctCart.anonymousId && {
+          anonymousId: ctCart.anonymousId,
+        }),
+    });
 	
   return {
     success: parsedData ?? 'empty-response',
