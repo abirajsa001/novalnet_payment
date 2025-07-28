@@ -135,10 +135,10 @@ console.log('handle-novalnetResponse');
             source: 'redirect',
           },
         });
-	 const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site';
-	 return reply.redirect(302, thirdPartyUrl);
+	 // const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site';
+	 // return reply.redirect(302, thirdPartyUrl);
 
-	 // return reply.status(200).send({ outcome: PaymentModificationStatus.APPROVED });
+	 return reply.status(200).send({ outcome: PaymentModificationStatus.APPROVED });
       } catch (error) {
     	 return reply.code(400).send('Catch error failed');
       }
@@ -173,11 +173,10 @@ console.log('handle-novalnetResponse');
             source: 'redirect',
           },
         });
-	 const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site';
-	 return reply.redirect(302, thirdPartyUrl);
-	      
-	 // return reply.status(200).send(resp);
-	 // return reply.status(200).send({ outcome: PaymentModificationStatus.APPROVED });
+	 // const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site';
+	 // return reply.redirect(302, thirdPartyUrl);
+
+	 return reply.status(200).send({ outcome: PaymentModificationStatus.APPROVED });
       } catch (error) {
     	 return reply.code(400).send('Catch error failed');
       }
