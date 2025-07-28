@@ -289,7 +289,18 @@ public async createPaymentt({ data }: { data: any }) {
     },
     body: JSON.stringify(novalnetPayload),
   });
-  const responseData = await novalnetResponse.json();
+    // Step 2: Parse response safely
+  let responseString: string = '';
+  let responseData: any = {};
+  try {
+    responseData = await novalnetResponse.json();
+    responseString = JSON.stringify(responseData);
+  } catch (err) {
+    responseString = 'Unable to parse Novalnet response';
+  }
+
+  const transactiondetails = `Novalnet Transaction ID: ${responseData?.transaction?.tid ?? 'N/A'}\nTest Order`;
+
   return {
     success: parsedData ?? 'empty-response',
     novalnetResponse: responseData,
