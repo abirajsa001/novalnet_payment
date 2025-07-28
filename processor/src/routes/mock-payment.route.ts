@@ -135,9 +135,10 @@ console.log('handle-novalnetResponse');
             source: 'redirect',
           },
         });
-	 // return reply.redirect(302, 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52');
+	 const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site';
+	 return reply.redirect(302, thirdPartyUrl);
 
-	 return reply.status(200).send({ outcome: PaymentModificationStatus.APPROVED });
+	 // return reply.status(200).send({ outcome: PaymentModificationStatus.APPROVED });
       } catch (error) {
     	 return reply.code(400).send('Catch error failed');
       }
@@ -172,10 +173,11 @@ console.log('handle-novalnetResponse');
             source: 'redirect',
           },
         });
-	// return reply.redirect(302,
-	//   'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52'
-	// );
-	 return reply.status(200).send({ outcome: PaymentModificationStatus.APPROVED });
+	 const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site';
+	 return reply.redirect(302, thirdPartyUrl);
+	      
+	 // return reply.status(200).send(resp);
+	 // return reply.status(200).send({ outcome: PaymentModificationStatus.APPROVED });
       } catch (error) {
     	 return reply.code(400).send('Catch error failed');
       }
