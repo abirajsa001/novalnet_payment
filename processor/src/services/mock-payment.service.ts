@@ -290,10 +290,14 @@ public async createPaymentt({ data }: { data: any }) {
   });
 
   const responseData = await novalnetResponse.json();
-  return {
-	  success: parsedData ?? 'empty-response',
-	  novalnetResponse: responseData,
-  };
+	
+  const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
+  return thirdPartyUrl;
+	
+  // return {
+	 //  success: parsedData ?? 'empty-response',
+	 //  novalnetResponse: responseData,
+  // };
 }
 
 
