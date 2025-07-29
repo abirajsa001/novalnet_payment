@@ -293,7 +293,21 @@ public async createPaymentt({ data }: { data: any }) {
     body: JSON.stringify(novalnetPayload),
   });
 
-  const  responseData = await novalnetResponse.json();
+   let responseString = '';
+    let responseData = '';
+    try {
+      responseData = await novalnetResponse.json();
+      responseString = JSON.stringify(responseData);
+    } catch (err) {
+      responseString = 'Unable to parse Novalnet response';
+    }
+
+    const transactiondetails = `Novalnet Transaction ID: ${responseData?.transaction?.tid}
+	Test Order\nTest`;
+	
+    const ctCart = await this.ctCartService.getCart({
+      id: getCartIdFromContext(),
+    });
 	
   return {
     success: parsedData ?? 'empty-response',
