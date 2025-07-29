@@ -301,9 +301,9 @@ public async createPaymentt({ data }: { data: any }) {
 
   const transactiondetails = `Novalnet Transaction ID: ${responseData?.transaction?.tid ?? 'N/A'}\nTest Order`;
 
-  // const ctCart = await this.ctCartService.getCart({
-  //   id: getCartIdFromContext(),
-  // });
+  const ctCart = await this.ctCartService.getCart({
+    id: getCartIdFromContext(),
+  });
 
   const ctPayment = await this.ctPaymentService.createPayment({
       paymentMethodInfo: {
@@ -313,6 +313,16 @@ public async createPaymentt({ data }: { data: any }) {
         interfaceCode:  transactiondetails,
         interfaceText: responseString,
       },
+      ...(ctCart.customerId && {
+        customer: {
+          typeId: 'customer',
+          id: ctCart.customerId,
+        },
+      }),
+      ...(!ctCart.customerId &&
+        ctCart.anonymousId && {
+          anonymousId: ctCart.anonymousId,
+        }),
     });
 	
   return {
