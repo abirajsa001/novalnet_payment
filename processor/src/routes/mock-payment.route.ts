@@ -141,7 +141,7 @@ console.log('handle-novalnetResponse');
 
 	 // return reply.code(400).send(result);
       } catch (error) {
-    	 return reply.code(400).send('Catch error failed');
+    	 return reply.code(400).send(error);
       }
     } else {
       return reply.code(400).send('Checksum verification failed.');
