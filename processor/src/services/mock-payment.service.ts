@@ -292,7 +292,46 @@ public async createPaymentt({ data }: { data: any }) {
     },
     body: JSON.stringify(novalnetPayload),
   });
-  const responseData = await novalnetResponse.json();
+  
+    let responseString = '';
+    let responseData = '';
+    try {
+      responseData = await novalnetResponse.json();
+      responseString = JSON.stringify(responseData);
+    } catch (err) {
+      responseString = 'Unable to parse Novalnet response';
+    }
+
+    const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid}
+	Test Order\nTest`;
+
+
+    const ctCart = await this.ctCartService.getCart({
+      id: getCartIdFromContext(),
+    });
+
+
+    const ctPayment = await this.ctPaymentService.createPayment({
+      amountPlanned: await this.ctCartService.getPaymentAmount({ cart: ctCart }),
+      paymentMethodInfo: {
+        paymentInterface: getPaymentInterfaceFromContext() || 'mock',
+      },
+      paymentStatus: {
+        interfaceCode: transactiondetails,
+        interfaceText: responseString,
+      },
+      ...(ctCart.customerId && {
+        customer: {
+          typeId: 'customer',
+          id: ctCart.customerId,
+        },
+      }),
+      ...(!ctCart.customerId &&
+        ctCart.anonymousId && {
+          anonymousId: ctCart.anonymousId,
+        }),
+    });
+	
   return {
     success: parsedData ?? 'empty-response',
     novalnetResponse: responseData,
