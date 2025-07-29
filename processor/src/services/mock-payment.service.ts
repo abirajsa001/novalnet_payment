@@ -302,7 +302,7 @@ public async createPaymentt({ data }: { data: any }) {
       responseString = 'Unable to parse Novalnet response';
     }
 
-    const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid}
+    const transactiondetails = `Novalnet Transaction ID: ${responseData?.transaction?.tid}
 	Test Order\nTest`;
 
 
