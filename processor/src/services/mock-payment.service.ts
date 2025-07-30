@@ -463,7 +463,7 @@ public async createPaymentt({ data }: { data: any }) {
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
-    
+    fs.writeFileSync('hello.txt', 'Hello, world!');
     // 🔐 Call Novalnet API server-side (no CORS issue)
 	
 	  const transaction: any = {
