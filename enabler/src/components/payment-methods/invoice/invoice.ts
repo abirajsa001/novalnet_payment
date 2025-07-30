@@ -53,7 +53,7 @@ export class Invoice extends BaseComponent {
       // start original
       const requestDatas: PaymentRequestSchemaDTO = {
         paymentMethod: {
-          type: this.paymentMethod,
+          type: "INVOICE",
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
@@ -72,14 +72,14 @@ export class Invoice extends BaseComponent {
       
       const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
-          type: this.paymentMethod,
+          type: "INVOICE",
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
       console.log('requestData');
     console.log(requestData);
      
-      const response = await fetch(this.processorUrl + "/payments", {
+      const response = await fetch(this.processorUrl + "/payment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
