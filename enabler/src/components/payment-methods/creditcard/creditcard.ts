@@ -1,4 +1,4 @@
-import {
+  import {
   ComponentOptions,
   PaymentComponent,
   PaymentComponentBuilder,
@@ -65,7 +65,7 @@ export class Creditcard extends BaseComponent {
       .then(() => this._initNovalnetCreditCardForm(payButton))
       .catch((err) => console.error("Failed to load Novalnet SDK:", err));
 
-    await this.NovalnetUtility.getPanHash();
+   await (window as any).NovalnetUtility.getPanHash();
   }
 
   async submit() {
