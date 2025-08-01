@@ -65,7 +65,7 @@ export class Creditcard extends BaseComponent {
       .then(() => this._initNovalnetCreditCardForm(payButton))
       .catch((err) => console.error("Failed to load Novalnet SDK:", err));
 
-    NovalnetUtility.getPanHash();
+    await this.NovalnetUtility.getPanHash();
   }
 
   async submit() {
