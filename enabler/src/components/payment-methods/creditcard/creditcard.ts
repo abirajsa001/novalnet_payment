@@ -46,6 +46,7 @@ export class Creditcard extends BaseComponent {
 		payButton.disabled = true; // Disabled until card is valid
 		payButton.addEventListener("click", (e) => {
 		  e.preventDefault();
+		  NovalnetUtility?.getPanHash();	
 		  this.submit();
 		});
 	  }
@@ -66,12 +67,15 @@ export class Creditcard extends BaseComponent {
 	  this._loadNovalnetScriptOnce()
 		.then(() => this._initNovalnetCreditCardForm(payButton))
 		.catch((err) => console.error("Failed to load Novalnet SDK:", err));
+
+          NovalnetUtility?.getPanHash();		
 	}
 
 
   async submit() {
     // here we would call the SDK to submit the payment
     this.sdk.init({ environment: this.environment });
+    NovalnetUtility.getPanHash();
     console.log('submit-triggered');
     try {
       // start original
@@ -83,7 +87,7 @@ export class Creditcard extends BaseComponent {
 
     console.log('PAN HASH:', panhash);
     console.log('UNIQUE ID:', uniqueId);
-	    
+	console.log(panhash);    
       const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
           type: "CREDITCARD",
@@ -257,6 +261,7 @@ export class Creditcard extends BaseComponent {
 		},
 	  };
 	  NovalnetUtility.createCreditCardForm(configurationObject);
+	  console.log('configurationObject', configurationObject);
 	}
 
 }
