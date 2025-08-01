@@ -75,7 +75,15 @@ export class Creditcard extends BaseComponent {
     console.log('submit-triggered');
     try {
       // start original
- 
+    const panhashInput = document.getElementById('pan_hash') as HTMLInputElement;
+    const uniqueIdInput = document.getElementById('unique_id') as HTMLInputElement;
+
+    const panhash = panhashInput?.value.trim();
+    const uniqueId = uniqueIdInput?.value.trim();
+
+    console.log('PAN HASH:', panhash);
+    console.log('UNIQUE ID:', uniqueId);
+	    
       const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
           type: "CREDITCARD",
