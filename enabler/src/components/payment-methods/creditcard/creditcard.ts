@@ -147,4 +147,108 @@ export class Creditcard extends BaseComponent {
     script.src = src;
     script.crossOrigin = "anonymous";
 
-    const loadPromise = new Promise<
+    const loadPromise = new Promise<void>((resolve, reject) => {
+      script.onload = () => resolve();
+      script.onerror = (e) => reject(e);
+    });
+
+    (script as any)._nnLoadingPromise = loadPromise;
+
+    document.head.appendChild(script);
+    await loadPromise;
+  }
+
+  private _initNovalnetCreditCardForm(payButton: HTMLButtonElement | null) {
+    const NovalnetUtility = (window as any).NovalnetUtility;
+    if (!NovalnetUtility) {
+      console.warn("NovalnetUtility not available.");
+      return;
+    }
+
+    NovalnetUtility.setClientKey("88fcbbceb1948c8ae106c3fe2ccffc12");
+
+    const configurationObject = {
+      callback: {
+        on_success: (data: any) => {
+          (document.getElementById("pan_hash") as HTMLInputElement).value = data["hash"];
+          (document.getElementById("unique_id") as HTMLInputElement).value = data["unique_id"];
+          (document.getElementById("do_redirect") as HTMLInputElement).value = data["do_redirect"];
+          if (payButton) payButton.disabled = false;
+          return true;
+        },
+        on_error: (data: any) => {
+          if (data?.error_message) {
+            alert(data.error_message);
+          }
+          if (payButton) payButton.disabled = true;
+          return false;
+        },
+        on_show_overlay: () => {
+          document.getElementById("novalnet_iframe")?.classList.add("overlay");
+        },
+        on_hide_overlay: () => {
+          document.getElementById("novalnet_iframe")?.classList.remove("overlay");
+        },
+      },
+      iframe: {
+        id: "novalnet_iframe",
+        inline: 1,
+        style: { container: "", input: "", label: "" },
+        text: {
+          lang: "EN",
+          error: "Your credit card details are invalid",
+          card_holder: {
+            label: "Card holder name",
+            place_holder: "Name on card",
+            error: "Please enter the valid card holder name",
+          },
+          card_number: {
+            label: "Card number",
+            place_holder: "XXXX XXXX XXXX XXXX",
+            error: "Please enter the valid card number",
+          },
+          expiry_date: {
+            label: "Expiry date",
+            error: "Please enter the valid expiry month / year in the given format",
+          },
+          cvc: {
+            label: "CVC/CVV/CID",
+            place_holder: "XXX",
+            error: "Please enter the valid CVC/CVV/CID",
+          },
+        },
+      },
+      customer: {
+        first_name: "Max",
+        last_name: "Mustermann",
+        email: "test@novalnet.de",
+        billing: {
+          street: "Musterstr, 2",
+          city: "Musterhausen",
+          zip: "12345",
+          country_code: "DE",
+        },
+        shipping: {
+          same_as_billing: 1,
+          first_name: "Max",
+          last_name: "Mustermann",
+          email: "test@novalnet.de",
+          street: "Hauptstr, 9",
+          city: "Kaiserslautern",
+          zip: "66862",
+          country_code: "DE",
+        },
+      },
+      transaction: {
+        amount: 123,
+        currency: "EUR",
+        test_mode: 1,
+      },
+      custom: {
+        lang: "EN",
+      },
+    };
+    NovalnetUtility.createCreditCardForm(configurationObject);
+    console.log('configurationObject', configurationObject);
+  }
+}
