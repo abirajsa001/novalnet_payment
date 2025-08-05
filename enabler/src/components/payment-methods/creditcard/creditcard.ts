@@ -92,21 +92,12 @@ export class Creditcard extends BaseComponent {
         return;
       }
 
-    const requestData: {
-      paymentMethod: {
-        type: string;
-        pan_hash: string;
-        unique_id: string;
+     const requestData: PaymentRequestSchemaDTO = {
+        paymentMethod: {
+          type: "CREDITCARD",
+        },
+        paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
-      paymentOutcome: "AUTHORIZED" | "FAILED" | "PENDING"; 
-    } = {
-      paymentMethod: {
-        type: "CREDITCARD",
-        pan_hash: panhash,
-        unique_id: uniqueId,
-      },
-      paymentOutcome: "AUTHORIZED",
-    };
 
       const response = await fetch(this.processorUrl + "/payment", {
         method: "POST",
