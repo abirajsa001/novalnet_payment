@@ -61,6 +61,7 @@ export class Creditcard extends BaseComponent {
     );
     if (reviewOrderButton) {
       reviewOrderButton.addEventListener("click", async (event) => {
+        event.preventDefault();
         const NovalnetUtility = (window as any).NovalnetUtility;
         if (NovalnetUtility?.getPanHash) {
           try {
@@ -87,17 +88,17 @@ export class Creditcard extends BaseComponent {
       const panhash = panhashInput?.value.trim();
       const uniqueId = uniqueIdInput?.value.trim();
       const doRedirect = doRedirectInput?.value.trim();
-      
-      console.log('PAN HASH:', panhash);
-      console.log('UNIQUE ID:', uniqueId);
-      console.log('DO REDIRECT:', doRedirect);
+
+      console.log("PAN HASH:", panhash);
+      console.log("UNIQUE ID:", uniqueId);
+      console.log("DO REDIRECT:", doRedirect);
       
       if (!panhash || !uniqueId) {
         this.onError("Credit card information is missing or invalid.");
         return;
       }
 
-     const requestData: PaymentRequestSchemaDTO = {
+      const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
           type: "CREDITCARD",
           panHash: panhash,
