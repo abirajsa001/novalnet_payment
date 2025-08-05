@@ -485,7 +485,7 @@ public async createPaymentt({ data }: { data: any }) {
 	}
 
 	if (String(request.data.paymentMethod.type).toUpperCase() == 'CREDITCARD') {
-	  if(request.data.paymentMethod.doRedirect) {
+	  if(String(request.data.paymentMethod.doRedirect) == '1') {
 		  const processorURL = Context.getProcessorUrlFromContext();	
 		  transaction.return_url = `${processorURL}/success`;
 	          transaction.error_return_url = `${processorURL}/payments`;  
