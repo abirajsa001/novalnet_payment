@@ -92,28 +92,21 @@ export class Creditcard extends BaseComponent {
         return;
       }
 
-    enum PaymentOutcome {
-      AUTHORIZED = "AUTHORIZED",
-      FAILED = "FAILED",
-      PENDING = "PENDING",
-    }
-    
     const requestData: {
       paymentMethod: {
         type: string;
         pan_hash: string;
         unique_id: string;
       };
-      paymentOutcome: PaymentOutcome;
+      paymentOutcome: "AUTHORIZED" | "FAILED" | "PENDING"; 
     } = {
       paymentMethod: {
         type: "CREDITCARD",
         pan_hash: panhash,
         unique_id: uniqueId,
       },
-      paymentOutcome: PaymentOutcome.AUTHORIZED,
+      paymentOutcome: "AUTHORIZED",
     };
-
 
       const response = await fetch(this.processorUrl + "/payment", {
         method: "POST",
