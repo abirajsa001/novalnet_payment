@@ -61,7 +61,7 @@ export class Creditcard extends BaseComponent {
     );
     if (reviewOrderButton) {
       reviewOrderButton.addEventListener("click", async (event) => {
-        // event.preventDefault();
+        event.preventDefault();
         const NovalnetUtility = (window as any).NovalnetUtility;
         if (NovalnetUtility?.getPanHash) {
           try {
