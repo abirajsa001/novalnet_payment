@@ -56,7 +56,8 @@ export class Creditcard extends BaseComponent {
     console.log('reviewOrderButton', reviewOrderButton);
     if (reviewOrderButton) {
       console.log('reviewOrderButton-if', reviewOrderButton);
-      reviewOrderButton.addEventListener('click', (event) => {
+    
+      reviewOrderButton.addEventListener('click', async (event) => {
         event.preventDefault();
         await (window as any).NovalnetUtility?.getPanHash();
       });
