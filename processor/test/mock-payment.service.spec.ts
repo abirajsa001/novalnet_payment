@@ -221,6 +221,8 @@ describe('mock-payment.service', () => {
           type: PaymentMethodType.PREPAYMENT,
           poNumber: '123456',
           invoiceMemo: 'This is a test invoice',
+          panHash: 'This is a test panHash',
+          uniqueId: 'This is a test uniqueId',
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       },
