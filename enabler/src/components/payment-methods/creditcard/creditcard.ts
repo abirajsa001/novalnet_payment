@@ -49,7 +49,11 @@ export class Creditcard extends BaseComponent {
       });
     }
 
-    const form = document.getElementById('purchaseOrderForm');
+    this._loadNovalnetScriptOnce()
+      .then(() => this._initNovalnetCreditCardForm(payButton))
+      .catch((err) => console.error("Failed to load Novalnet SDK:", err));
+    const form = document.getElementById('purchaseOrderForm-paymentButton');
+
     if (form) {
       form.onsubmit = async (e) => {
         const panhashInput = document.getElementById('pan_hash') as HTMLInputElement;
@@ -61,11 +65,6 @@ export class Creditcard extends BaseComponent {
       };
     }
 
-    this._loadNovalnetScriptOnce()
-      .then(() => this._initNovalnetCreditCardForm(payButton))
-      .catch((err) => console.error("Failed to load Novalnet SDK:", err));
-
-   await (window as any).NovalnetUtility?.getPanHash();
   }
 
   async submit() {
