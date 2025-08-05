@@ -484,6 +484,12 @@ public async createPaymentt({ data }: { data: any }) {
 	  };
 	}
 
+	if (String(request.data.paymentMethod.type).toUpperCase() === 'CREDIT_CARD') {
+	  transaction.payment_data = {
+	    pan_hash: String(request.data.paymentMethod.panhash ?? ''),
+	    unique_id: String(request.data.paymentMethod.uniqueid ?? ''),
+	  };
+	}
 
 	const novalnetPayload = {
 	  merchant: {
