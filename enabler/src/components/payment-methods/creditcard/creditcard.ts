@@ -1,4 +1,4 @@
-import {
+ import {
   ComponentOptions,
   PaymentComponent,
   PaymentComponentBuilder,
@@ -192,6 +192,7 @@ export class Creditcard extends BaseComponent {
           (document.getElementById("unique_id") as HTMLInputElement).value = data["unique_id"];
           (document.getElementById("do_redirect") as HTMLInputElement).value = data["do_redirect"];
           if (payButton) payButton.disabled = false;
+          payButton.click(); 
           return true;
         },
         on_error: (data: any) => {
