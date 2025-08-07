@@ -309,8 +309,8 @@ public async createPaymentt({ data }: { data: any }) {
         paymentInterface: getPaymentInterfaceFromContext() || 'mock',
       },
     paymentStatus: { 
-        interfaceCode:  transactiondetails + '\n' + bankDetails,
-        interfaceText: responseString,
+        interfaceCode:  'TestInterfaceCode',
+        interfaceText: 'TestInterfaceText',
       },
       ...(ctCart.customerId && {
         customer: {
