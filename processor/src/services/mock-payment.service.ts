@@ -278,16 +278,6 @@ console.log('status-handler');
     return billingAddress;
   }
 
-export const getCartIdFromContext = (): string | undefined => {
-  const context = getRequestContext();
-  return context?.cart?.id;
-};
-
-export const getPaymentInterfaceFromContext = (): string | undefined => {
-  const context = getRequestContext();
-  return context?.payment?.paymentMethodInfo?.paymentInterface;
-};
-	
 public async createPaymentt({ data }: { data: any }) {
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
 
