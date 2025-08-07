@@ -352,8 +352,6 @@ public async createPaymentt({ data }: { data: any }) {
   return {
     success: parsedData ?? 'empty-response',
     novalnetResponse: responseData,
-    commercetoolsPaymentId: ctPayment.id,
-    updatedPaymentId: updatedPayment.id,
   };
 }
 	
