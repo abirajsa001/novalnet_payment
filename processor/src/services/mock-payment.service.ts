@@ -31,6 +31,7 @@ import { randomUUID } from 'crypto';
 import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/transaction.dto';
 import { log } from '../libs/logger';
 import * as Context from '../libs/fastify/context/context';
+import fetch from 'node-fetch'; 
 
 export class MockPaymentService extends AbstractPaymentService {
   constructor(opts: MockPaymentServiceOptions) {
@@ -277,9 +278,19 @@ console.log('status-handler');
     return billingAddress;
   }
 
+export const getCartIdFromContext = (): string | undefined => {
+  const context = getRequestContext();
+  return context?.cart?.id;
+};
 
+export const getPaymentInterfaceFromContext = (): string | undefined => {
+  const context = getRequestContext();
+  return context?.payment?.paymentMethodInfo?.paymentInterface;
+};
+	
 public async createPaymentt({ data }: { data: any }) {
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
@@ -291,62 +302,68 @@ public async createPaymentt({ data }: { data: any }) {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
+      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=', // Use from ENV in production!
     },
     body: JSON.stringify(novalnetPayload),
   });
+
   const responseData = await novalnetResponse.json();
 
-    const ctCart = await this.ctCartService.getCart({
-      id: getCartIdFromContext(),
-    });
+  const cartId = getCartIdFromContext();
+  if (!cartId) {
+    throw new Error('Cart ID is undefined in context. Cannot proceed.');
+  }
 
-   const ctPayment = await this.ctPaymentService.createPayment({
-      amountPlanned: await this.ctCartService.getPaymentAmount({
-        cart: ctCart,
-      }),
-      paymentMethodInfo: {
-        paymentInterface: getPaymentInterfaceFromContext() || 'mock',
-      },
+  const ctCart = await this.ctCartService.getCart({ id: cartId });
+  if (!ctCart) {
+    throw new Error(`commercetools cart not found for ID: ${cartId}`);
+  }
+
+  const ctPayment = await this.ctPaymentService.createPayment({
+    amountPlanned: await this.ctCartService.getPaymentAmount({ cart: ctCart }),
+    paymentMethodInfo: {
+      paymentInterface: getPaymentInterfaceFromContext() || 'mock',
+    },
     paymentStatus: { 
-        interfaceCode:  'TestInterfaceCode',
-        interfaceText: 'TestInterfaceText',
+      interfaceCode: 'TestInterfaceCode',
+      interfaceText: 'TestInterfaceText',
+    },
+    ...(ctCart.customerId && {
+      customer: {
+        typeId: 'customer',
+        id: ctCart.customerId,
       },
-      ...(ctCart.customerId && {
-        customer: {
-          typeId: 'customer',
-          id: ctCart.customerId,
-        },
-      }),
-      ...(!ctCart.customerId &&
-        ctCart.anonymousId && {
-          anonymousId: ctCart.anonymousId,
-        }),
-    });
+    }),
+    ...(!ctCart.customerId && ctCart.anonymousId && {
+      anonymousId: ctCart.anonymousId,
+    }),
+  });
 
-    await this.ctCartService.addPayment({
-      resource: {
-        id: ctCart.id,
-        version: ctCart.version,
-      },
-      paymentId: ctPayment.id,
-    });
+  await this.ctCartService.addPayment({
+    resource: {
+      id: ctCart.id,
+      version: ctCart.version,
+    },
+    paymentId: ctPayment.id,
+  });
 
-    const pspReference = randomUUID().toString();
-    const updatedPayment = await this.ctPaymentService.updatePayment({
-      id: ctPayment.id,
-      pspReference: pspReference,
-      transaction: {
-        type: 'Authorization',
-        amount: ctPayment.amountPlanned,
-        interactionId: pspReference,
-        state: 'SUCCESS',
-      },
-    });
-	
+  const pspReference = randomUUID().toString();
+  const updatedPayment = await this.ctPaymentService.updatePayment({
+    id: ctPayment.id,
+    pspReference,
+    transaction: {
+      type: 'Authorization',
+      amount: ctPayment.amountPlanned,
+      interactionId: pspReference,
+      state: 'SUCCESS',
+    },
+  });
+
   return {
     success: parsedData ?? 'empty-response',
     novalnetResponse: responseData,
+    commercetoolsPaymentId: ctPayment.id,
+    updatedPaymentId: updatedPayment.id,
   };
 }
 	
