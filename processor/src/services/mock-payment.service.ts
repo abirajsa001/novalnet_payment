@@ -298,7 +298,7 @@ public async createPaymentt({ data }: { data: any }) {
   const responseData = await novalnetResponse.json();
 
    const ctCart = await this.ctCartService.getCart({
-      id: getCartIdFromContext(),
+      id: Context.getCartIdFromContext(),
     });
    
    const ctPayment = await this.ctPaymentService.createPayment({
