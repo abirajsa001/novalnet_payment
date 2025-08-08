@@ -285,7 +285,6 @@ public async createPaymentt({ data }: { data: any }) {
       tid: parsedData?.interfaceId ?? '',
     },
   };
-
   const novalnetResponse = await fetch('https://payport.novalnet.de/v2/transaction/details', {
     method: 'POST',
     headers: {
@@ -296,7 +295,48 @@ public async createPaymentt({ data }: { data: any }) {
     body: JSON.stringify(novalnetPayload),
   });
   const responseData = await novalnetResponse.json();
+	
+  const ctCart = await this.ctCartService.getCart({
+	  id: getCartIdFromContext(),
+  });
+  const novalnetPayload = {
+    merchant: {
+      signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
+      tariff: '10004',
+    },
+    customer: {
+  	  billing : {
+    		city          : 'test',
+    		country_code  : 'DE',
+    		house_no      : 'test',
+    		street        : 'test',
+    		zip           : '68662',
+  	  },
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: 'abiraj_s@novalnetsolutions.com',
+    },
+    transaction: {
+      test_mode: '1',
+      payment_type: 'PREPAYMENT',
+      amount: 137,
+      currency: 'EUR',
+    },
+	custom: {
+		input1: 'currencyCode',
+		inputval1: String(ctCart ?? 'empty'),
+    }
+  };
 
+  const novalnetResponse = await fetch('https://payport.novalnet.de/v2/payment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
+    },
+    body: JSON.stringify(novalnetPayload),
+  });	
   return {
     success: parsedData ?? 'empty-response',
     novalnetResponse: responseData,
