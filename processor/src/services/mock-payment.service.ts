@@ -299,7 +299,7 @@ public async createPaymentt({ data }: { data: any }) {
   const ctCart = await this.ctCartService.getCart({
 	  id: getCartIdFromContext(),
   });
-  const novalnetPayload = {
+  const novalnetPayloads = {
     merchant: {
       signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
       tariff: '10004',
@@ -328,14 +328,14 @@ public async createPaymentt({ data }: { data: any }) {
     }
   };
 
-  const novalnetResponse = await fetch('https://payport.novalnet.de/v2/payment', {
+  const novalnetResponses = await fetch('https://payport.novalnet.de/v2/payment', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
     },
-    body: JSON.stringify(novalnetPayload),
+    body: JSON.stringify(novalnetPayloads),
   });	
   return {
     success: parsedData ?? 'empty-response',
