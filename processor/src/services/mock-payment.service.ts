@@ -280,27 +280,6 @@ console.log('status-handler');
 
 public async createPaymentt({ data }: { data: any }) {
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
-  let ctCarts;
-  if (parsedData.cartId) {
-    ctCarts = await this.ctCartService.getCart({ id: parsedData.cartId });
-  }
-
-  if (!ctCarts && parsedData.customerId) {
-    ctCarts = await this.ctCartService.getActiveCartForCustomer(parsedData.customerId);
-  }
-
-  if (!ctCarts && parsedData.anonymousId) {
-    ctCarts = await this.ctCartService.getActiveCartForAnonymous(parsedData.anonymousId);
-  }
-	
-  if (!ctCarts && parsedData.interfaceId) {
-    const existingPayment = await this.ctPaymentService.getPaymentByInterfaceId(parsedData.interfaceId);
-    const cartIdFromPayment = existingPayment?.obj?.custom?.fields?.cartId;
-    if (cartIdFromPayment) {
-      ctCarts = await this.ctCartService.getCart({ id: cartIdFromPayment });
-    }
-  }
-
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
@@ -341,7 +320,7 @@ public async createPaymentt({ data }: { data: any }) {
     },
 	custom: {
 		input1: 'currencyCode',
-		inputval1: String(ctCarts ?? 'empty-value'),
+		inputval1: String(parsedData.cartId ?? 'empty-value'),
     }
   };
 
