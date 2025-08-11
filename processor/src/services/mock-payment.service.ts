@@ -279,7 +279,18 @@ console.log('status-handler');
 
 
 public async createPaymentt({ data }: { data: any }) {
-  const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+	
+	const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+	const customerId = getCustomerIdFromContext();
+	const anonymousId = getAnonymousIdFromContext();
+	let ctCarts;
+	if (customerId) {
+	  ctCarts = await this.ctCartService.getActiveCartForCustomer(customerId);
+	} else if (anonymousId) {
+	  ctCarts = await this.ctCartService.getActiveCartForAnonymous(anonymousId);
+	}
+  const cartIds = ctCarts ? ctCarts.id : 'no-value';
+
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
@@ -320,7 +331,7 @@ public async createPaymentt({ data }: { data: any }) {
     },
 	custom: {
 		input1: 'currencyCode',
-		inputval1: String(Context.getCartIdFromContext() ?? 'empty-value'),
+		inputval1: String(cartIds ?? 'empty-value'),
     }
   };
 
@@ -398,7 +409,7 @@ public async createPaymentt({ data }: { data: any }) {
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
-    const processorURL = Context.getProcessorUrlFromContext();
+    const processorURL = Context.getProcessorUrlFromContext(); 
 	  
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
