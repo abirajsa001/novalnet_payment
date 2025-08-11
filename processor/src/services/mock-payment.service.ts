@@ -320,7 +320,8 @@ public async createPaymentt({ data }: { data: any }) {
     },
 	custom: {
 		input1: 'currencyCode',
-		inputval1: String(parsedData.cartId ?? 'empty-value'),
+		inputval1: String(parsedData?.cartId ?? parsedData?.cart?.id ?? 'empty-value'),
+
     }
   };
 
