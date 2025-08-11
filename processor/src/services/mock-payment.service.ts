@@ -278,8 +278,9 @@ console.log('status-handler');
   }
 
 
-public async createPaymentt({ data }: { data: any }) {
-  const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+public async createPaymentt({ request: CreatePaymentRequest }: { data: any }) {
+  const parsedData =
+    typeof request.data === 'string' ? JSON.parse(request.data) : request.data;
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
@@ -320,7 +321,9 @@ public async createPaymentt({ data }: { data: any }) {
     },
 	custom: {
 		input1: 'currencyCode',
-		inputval1: String(parsedData?.cartId ?? parsedData?.cart?.id ?? 'empty-value'),
+		inputval1: JSON.stringify(parsedData),
+        input2: 'currencyCode',
+		inputval2: JSON.stringify(request),
 
     }
   };
