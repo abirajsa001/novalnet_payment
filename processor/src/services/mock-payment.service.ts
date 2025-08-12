@@ -6,7 +6,6 @@ import {
   TransactionType,
   TransactionState,
   ErrorInvalidOperation,
-  CreatePaymentRequest,
 } from '@commercetools/connect-payments-sdk';
 import {
   CancelPaymentRequest,
@@ -25,7 +24,7 @@ import packageJSON from '../../package.json';
 import { AbstractPaymentService } from './abstract-payment.service';
 import { getConfig } from '../config/config';
 import { appLogger, paymentSDK } from '../payment-sdk';
-import { MockPaymentServiceOptions } from './types/mock-payment.type';
+import { CreatePaymentRequest, MockPaymentServiceOptions } from './types/mock-payment.type';
 import { PaymentMethodType, PaymentOutcome, PaymentResponseSchemaDTO } from '../dtos/mock-payment.dto';
 import { getCartIdFromContext, getPaymentInterfaceFromContext } from '../libs/fastify/context/context';
 import { randomUUID } from 'crypto';
