@@ -11,6 +11,7 @@ import {
 } from '../dtos/mock-payment.dto';
 import { MockPaymentService } from '../services/mock-payment.service';
 import { log } from '../libs/logger';
+import * as Context from '../libs/fastify/context/context';
 type PaymentRoutesOptions = {
   paymentService: MockPaymentService;
   sessionHeaderAuthHook: SessionHeaderAuthenticationHook;
@@ -141,7 +142,7 @@ console.log('handle-novalnetResponse');
 		},
 		context: {
 		  cart: {
-			id: getCartIdFromContext(), // pull cartId from session/context
+			id: Context.getCartIdFromContext(), 
 		  },
 		},
 	  };
