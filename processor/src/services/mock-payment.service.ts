@@ -278,17 +278,8 @@ console.log('status-handler');
   }
 
 
-public async createPaymentt(params: any) {
-  let rawData: any;
-
-  if (params && 'data' in params) {
-    rawData = params.data;
-  }
-  else if (params && 'request' in params) {
-    rawData = (params.request as CreatePaymentRequest)?.data;
-  }
-
-  const parsedData = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+ public async createPaymentt({ data }: { data: any }) {
+  const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
@@ -330,10 +321,8 @@ public async createPaymentt(params: any) {
 	custom: {
 		input1: 'currencyCode',
 		inputval1: JSON.stringify(parsedData),
-		input2: 'currencyCode',
-		inputval2: JSON.stringify(rawData),
-		input3: 'source',
-		inputval3: String(parsedData?.source ?? "getCartIdFromContext not available"),
+		input2: 'source',
+		inputval2: String(parsedData?.source ?? "getCartIdFromContext not available"),
     }
   };
 
