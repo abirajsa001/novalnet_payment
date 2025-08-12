@@ -278,17 +278,20 @@ console.log('status-handler');
   }
 
 
-public async createPaymentt(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
+public async createPaymentt(params: any) {
+  let rawData: any;
 
-  const cartId = request?.context?.cart?.id ?? getCartIdFromContext();
-  const ctCart = await this.ctCartService.getCart({
-    id: cartId,
-  });
-  const interfaceId = request?.payment?.interfaceId ?? '';
-	
+  if (params && 'data' in params) {
+    rawData = params.data;
+  }
+  else if (params && 'request' in params) {
+    rawData = (params.request as CreatePaymentRequest)?.data;
+  }
+
+  const parsedData = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
   const novalnetPayload = {
     transaction: {
-      tid: interfaceId ?? '',
+      tid: parsedData?.interfaceId ?? '',
     },
   };
   const novalnetResponse = await fetch('https://payport.novalnet.de/v2/transaction/details', {
@@ -326,9 +329,9 @@ public async createPaymentt(request: CreatePaymentRequest): Promise<PaymentRespo
     },
 	custom: {
 		input1: 'currencyCode',
-		inputval1: JSON.stringify(ctCart),
+		inputval1: JSON.stringify(parsedData),
 		input2: 'currencyCode',
-		inputval2: String(cartId ?? "getCartIdFromContext not available"),
+		inputval2: String(parsedData?.source ?? "getCartIdFromContext not available"),
     }
   };
 
