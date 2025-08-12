@@ -278,8 +278,16 @@ console.log('status-handler');
   }
 
 
-public async createPaymentt(input: CreatePaymentRequest | { data: any }) {
-  const rawData = 'data' in input ? input.data : input?.data; 
+public async createPaymentt(params: any) {
+  let rawData: any;
+
+  if (params && 'data' in params) {
+    rawData = params.data;
+  }
+  else if (params && 'request' in params) {
+    rawData = (params.request as CreatePaymentRequest)?.data;
+  }
+
   const parsedData = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
   const novalnetPayload = {
     transaction: {
@@ -322,9 +330,8 @@ public async createPaymentt(input: CreatePaymentRequest | { data: any }) {
 	custom: {
 		input1: 'currencyCode',
 		inputval1: JSON.stringify(parsedData),
-        input2: 'currencyCode',
-		inputval2: JSON.stringify(input),
-
+		input2: 'currencyCode',
+		inputval2: String(getCartIdFromContext() ?? "getCartIdFromContext not available"),
     }
   };
 
@@ -338,9 +345,9 @@ public async createPaymentt(input: CreatePaymentRequest | { data: any }) {
     body: JSON.stringify(novalnetPayloadss),
   });	
 	
-  const ctCart = await this.ctCartService.getCart({
-	  id: Context.getCartIdFromContext(),
-  });
+  // const ctCart = await this.ctCartService.getCart({
+	 //  id: Context.getCartIdFromContext(),
+  // });
   const novalnetPayloads = {
     merchant: {
       signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
@@ -366,7 +373,7 @@ public async createPaymentt(input: CreatePaymentRequest | { data: any }) {
     },
 	custom: {
 		input1: 'currencyCode',
-		inputval1: String(ctCart ?? 'empty'),
+		inputval1: String('empty'),
     }
   };
 
@@ -402,7 +409,7 @@ public async createPaymentt(input: CreatePaymentRequest | { data: any }) {
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
-    const processorURL = Context.getProcessorUrlFromContext(); 
+    const processorURL = Context.getProcessorUrlFromContext();
 	  
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
