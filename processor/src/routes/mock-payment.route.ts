@@ -11,7 +11,7 @@ import {
 } from '../dtos/mock-payment.dto';
 import { MockPaymentService } from '../services/mock-payment.service';
 import { log } from '../libs/logger';
-import * as Context from '../libs/fastify/context/context';
+
 type PaymentRoutesOptions = {
   paymentService: MockPaymentService;
   sessionHeaderAuthHook: SessionHeaderAuthenticationHook;
@@ -130,30 +130,31 @@ console.log('handle-novalnetResponse');
 
     if (generatedChecksum !== query.checksum) {
       try {
-	 const createPaymentRequest: CreatePaymentRequest = {
-		payment: {
-		  interfaceId: query.tid,
-		  custom: {
-			fields: {
-			  status: query.status,
-			  source: 'redirect',
-			},
-		  },
-		},
-		context: {
-		  cart: {
-			id: Context.getCartIdFromContext(), 
-		  },
-		},
+	  const createPaymentRequest: CreatePaymentRequest = {
+	    payment: {
+	      interfaceId: query.tid,
+	      custom: {
+	        fields: {
+	          status: query.status,
+	          source: 'redirect',
+	        },
+	      },
+	    },
+	    context: {
+	      cart: {
+	        id: getCartIdFromContext(), // <- from session/context
+	      },
+	    },
 	  };
+
+  const result = await opts.paymentService.createPaymentt(createPaymentRequest);
 	
 	 const result = await opts.paymentService.createPaymentt(createPaymentRequest);
 
 	 const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
-	 // return reply.redirect(302, thirdPartyUrl);
+
 	 return reply.code(302).redirect(thirdPartyUrl);
 
-	 // return reply.code(400).send(result);
       } catch (error) {
     	 return reply.code(400).send(error);
       }
