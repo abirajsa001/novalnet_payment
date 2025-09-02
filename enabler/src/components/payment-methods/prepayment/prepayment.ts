@@ -71,6 +71,7 @@ export class Prepayment extends BaseComponent {
       });
       console.log('responseData-newdata');
       console.log(response);
+      console.log(response);
       const data = await response.json();
       console.log(data);
       if (data.paymentReference) {
@@ -82,7 +83,6 @@ export class Prepayment extends BaseComponent {
       } else {
         this.onError("Some error occurred. Please try again.");
       }
-
     } catch (e) {
       this.onError("Some error occurred. Please try again.");
     }
