@@ -81,7 +81,7 @@ console.log('handle-novalnetResponse');
       },
     },
     async (request, reply) => {
-      const resp = await opts.paymentService.createPayment({
+      const resp = await opts.paymentService.createPayments({
         data: request.body,
       });
 
@@ -103,7 +103,7 @@ console.log('handle-novalnetResponse');
       },
     },
     async (request, reply) => {
-      const resp = await opts.paymentService.createPayments({
+      const resp = await opts.paymentService.createPayment({
         data: request.body,
       });
 
