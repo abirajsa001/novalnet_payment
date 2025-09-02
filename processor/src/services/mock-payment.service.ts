@@ -393,7 +393,7 @@ console.log('status-handler');
    * @param request - contains paymentType defined in composable commerce
    * @returns Promise with mocking data containing operation status and PSP reference
    */
-  public async createPayment(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
+  public async createPayments(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
     const ctCart = await this.ctCartService.getCart({
       id: getCartIdFromContext(),
     });
@@ -495,7 +495,7 @@ console.log('status-handler');
    * @param request - contains paymentType defined in composable commerce
    * @returns Promise with mocking data containing operation status and PSP reference
    */
-  public async createPayments(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
+  public async createPayment(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
     const ctCart = await this.ctCartService.getCart({
       id: getCartIdFromContext(),
     });
@@ -508,7 +508,7 @@ console.log('status-handler');
 	  const transaction: any = {
 	  test_mode: '1',
 	  payment_type: String(request.data.paymentMethod.type),
-	  amount: '123',
+	  amount: '333',
 	  currency: 'EUR',
 	};
 
