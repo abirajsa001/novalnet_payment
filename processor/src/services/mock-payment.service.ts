@@ -32,6 +32,26 @@ import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/
 import { log } from '../libs/logger';
 import * as Context from '../libs/fastify/context/context';
 
+type NovalnetConfig = {
+  testMode: string;
+  paymentAction: string;
+};
+
+function getNovalnetConfigValues(
+  type: string,
+  config: Record<string, any>
+): NovalnetConfig {
+  const upperType = type.toUpperCase();
+
+  const testModeKey = `novalnet_${upperType}_TestMode`;
+  const paymentActionKey = `novalnet_${upperType}_payment_action`;
+
+  return {
+    testMode: String(config?.[testModeKey] ?? '10004'),
+    paymentAction: String(config?.[paymentActionKey] ?? '0'),
+  };
+}
+
 export class MockPaymentService extends AbstractPaymentService {
   constructor(opts: MockPaymentServiceOptions) {
     super(opts.ctCartService, opts.ctPaymentService);
@@ -394,6 +414,10 @@ console.log('status-handler');
    * @returns Promise with mocking data containing operation status and PSP reference
    */
   public async createPayments(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
+  const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
+  const config = getConfig();
+  const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
+	  
     const ctCart = await this.ctCartService.getCart({
       id: getCartIdFromContext(),
     });
@@ -444,6 +468,8 @@ console.log('status-handler');
 	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
 	    input4: 'processorurl',
 	    inputval4: String(processorURL ?? "processorURL not available"), 
+		input5: 'TestMode',
+	    inputval5: String(testMode ?? '10004'), 
 	  }
 	};
 
