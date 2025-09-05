@@ -522,6 +522,10 @@ console.log('status-handler');
    * @returns Promise with mocking data containing operation status and PSP reference
    */
   public async createPayment(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
+	const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
+  	const config = getConfig();
+  	const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
+	  
     const ctCart = await this.ctCartService.getCart({
       id: getCartIdFromContext(),
     });
@@ -593,6 +597,8 @@ console.log('status-handler');
 	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
 	    input4: 'Payment-Method',
 	    inputval4: String(request.data.paymentMethod.type ?? "Payment-Method not available"),
+		input5: 'TestMode',
+	    inputval5: String(testMode ?? '10004'), 
 	  }
 	};
 
