@@ -536,7 +536,7 @@ console.log('status-handler');
     // 🔐 Call Novalnet API server-side (no CORS issue)
 	
 	  const transaction: any = {
-	  test_mode: testMode == '1' ? '1' : '0',
+	  test_mode: testMode == '0' ? '0' : '1',
 	  payment_type: String(request.data.paymentMethod.type),
 	  amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount),
 	  currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode),
