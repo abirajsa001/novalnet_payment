@@ -536,10 +536,10 @@ console.log('status-handler');
     // 🔐 Call Novalnet API server-side (no CORS issue)
 	
 	  const transaction: any = {
-	  test_mode: '1',
+	  test_mode: testMode == '1' ? '1' : '0',
 	  payment_type: String(request.data.paymentMethod.type),
-	  amount: '333',
-	  currency: 'EUR',
+	  amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount),
+	  currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode),
 	};
 
 	
@@ -601,8 +601,8 @@ console.log('status-handler');
 	    inputval5: String(testMode ?? '10004'), 
 	  }
 	};
-
-	  const novalnetResponse = await fetch('https://payport.novalnet.de/v2/payment', {
+	  const url = paymentAction == 'payment' ? 'https://payport.novalnet.de/v2/payment' : 'https://payport.novalnet.de/v2/authorize';
+	  const novalnetResponse = await fetch(url, {
 	    method: 'POST',
 	    headers: {
 	      'Content-Type': 'application/json',
