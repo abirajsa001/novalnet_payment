@@ -35,6 +35,7 @@ import * as Context from '../libs/fastify/context/context';
 type NovalnetConfig = {
   testMode: string;
   paymentAction: string;
+  dueDate: string;
 };
 
 function getNovalnetConfigValues(
