@@ -44,11 +44,13 @@ function getNovalnetConfigValues(
   const upperType = type.toUpperCase();
 
   const testModeKey = `novalnet_${upperType}_TestMode`;
-  const paymentActionKey = `novalnet_${upperType}_payment_action`;
+  const paymentActionKey = `novalnet_${upperType}_PaymentAction`;
+  const dueDateKey = `novalnet_${upperType}_DueDate`;
 
   return {
     testMode: String(config?.[testModeKey] ?? '10004'),
-    paymentAction: String(config?.[paymentActionKey] ?? '0'),
+    paymentAction: String(config?.[paymentActionKey] ?? 'payment'),
+	dueDate: String(config?.[dueDateKey] ?? '3'),
   };
 }
 
@@ -511,7 +513,20 @@ console.log('status-handler');
     };
   }
 
+  public async getPaymentDueDate(configuredDueDate: number | string): string | null {
+  // Ensure it's a number
+  const days = Number(configuredDueDate);
+  if (isNaN(days)) {
+    return null; // not numeric
+  }
 
+  const dueDate = new Date();
+  dueDate.setDate(dueDate.getDate() + days);
+
+  // Format as YYYY-MM-DD
+  const formattedDate = dueDate.toISOString().split("T")[0];
+  return formattedDate;
+}
 	  /**
    * Create payment
    *
@@ -524,7 +539,7 @@ console.log('status-handler');
   public async createPayment(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
 	const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
   	const config = getConfig();
-  	const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
+  	const { testMode, paymentAction, dueDate } = getNovalnetConfigValues(type, config);
 	  
     const ctCart = await this.ctCartService.getCart({
       id: getCartIdFromContext(),
@@ -532,7 +547,7 @@ console.log('status-handler');
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
-    
+    const dueDateValue = getPaymentDueDate(dueDate);
     // 🔐 Call Novalnet API server-side (no CORS issue)
 	
 	  const transaction: any = {
@@ -541,7 +556,9 @@ console.log('status-handler');
 	  amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount),
 	  currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode),
 	};
-
+	if(!empty(dueDateValue)) {
+		transaction.due_date = dueDateValue;
+	}
 	
 	if (String(request.data.paymentMethod.type).toUpperCase() === 'DIRECT_DEBIT_SEPA') {
 	  transaction.create_token = 1;
