@@ -548,7 +548,7 @@ console.log('status-handler');
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
-    const dueDateValue = getPaymentDueDate(dueDate);
+    const dueDateValue = await this.getPaymentDueDate(dueDate);
     // 🔐 Call Novalnet API server-side (no CORS issue)
 	
 	  const transaction: any = {
@@ -557,7 +557,7 @@ console.log('status-handler');
 	  amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount),
 	  currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode),
 	};
-	if(!empty(dueDateValue)) {
+	if(dueDateValue) {
 		transaction.due_date = dueDateValue;
 	}
 	
