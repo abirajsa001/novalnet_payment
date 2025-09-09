@@ -30,7 +30,9 @@ export const config = {
   url: process.env.URL || 'no',
   
   novalnet_PREPAYMENT_TestMode: process.env.NOVALNET_PREPAYMENT_TEST_MODE || 'processor-config',
-  novalnet_INVOICE_TestMode: process.env.NOVALNET_INVOICE_TEST_MODE || 'processor-config-invoice',
+  novalnet_INVOICE_TestMode: process.env.NOVALNET_INVOICE_TEST_MODE || 'processor-config',
+  novalnet_INVOICE_DueDate: process.env.NOVALNET_INVOICE_DUE_DATE || 'processor-config',
+  novalnet_PREPAYMENT_DueDate: process.env.NOVALNET_PREPAYMENT_DUE_DATE || 'processor-config',
   // Payment Providers config
   returnurl: process.env.RETURN_URL,
 
