@@ -32,29 +32,6 @@ import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/
 import { log } from '../libs/logger';
 import * as Context from '../libs/fastify/context/context';
 
-type NovalnetConfig = {
-  testMode: string;
-  paymentAction: string;
-  dueDate: string;
-};
-
-function getNovalnetConfigValues(
-  type: string,
-  config: Record<string, any>
-): NovalnetConfig {
-  const upperType = type.toUpperCase();
-
-  const testModeKey = `novalnet_${upperType}_TestMode`;
-  const paymentActionKey = `novalnet_${upperType}_PaymentAction`;
-  const dueDateKey = `novalnet_${upperType}_DueDate`;
-
-  return {
-    testMode: String(config?.[testModeKey] ?? '10004'),
-    paymentAction: String(config?.[paymentActionKey] ?? 'payment'),
-	dueDate: String(config?.[dueDateKey] ?? '3'),
-  };
-}
-
 export class MockPaymentService extends AbstractPaymentService {
   constructor(opts: MockPaymentServiceOptions) {
     super(opts.ctCartService, opts.ctPaymentService);
@@ -514,21 +491,7 @@ console.log('status-handler');
     };
   }
 
-  public async getPaymentDueDate(configuredDueDate: number | string): string | null {
-  // Ensure it's a number
-  const days = Number(configuredDueDate);
-  if (isNaN(days)) {
-    return null; // not numeric
-  }
-
-  const dueDate = new Date();
-  dueDate.setDate(dueDate.getDate() + days);
-
-  // Format as YYYY-MM-DD
-  const formattedDate = dueDate.toISOString().split("T")[0];
-  return formattedDate;
-}
-	  /**
+   /**
    * Create payment
    *
    * @remarks
@@ -537,167 +500,211 @@ console.log('status-handler');
    * @param request - contains paymentType defined in composable commerce
    * @returns Promise with mocking data containing operation status and PSP reference
    */
-  public async createPayment(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
-	const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
-  	const config = getConfig();
-  	const { testMode, paymentAction, dueDate } = getNovalnetConfigValues(type, config);
-	  
-    const ctCart = await this.ctCartService.getCart({
-      id: getCartIdFromContext(),
-    });
-    const deliveryAddress = await this.ctcc(ctCart);
-    const billingAddress  = await this.ctbb(ctCart);
-    const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
-    const dueDateValue = await this.getPaymentDueDate(dueDate);
-    // 🔐 Call Novalnet API server-side (no CORS issue)
-	
-	  const transaction: any = {
-	  test_mode: testMode == '0' ? '0' : '1',
-	  payment_type: String(request.data.paymentMethod.type),
-	  amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount),
-	  currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode),
-	};
-	if(dueDateValue) {
-		transaction.due_date = dueDateValue;
-	}
-	
-	if (String(request.data.paymentMethod.type).toUpperCase() === 'DIRECT_DEBIT_SEPA') {
-	  transaction.create_token = 1;
-	  transaction.payment_data = {
-	    account_holder: String(request.data.paymentMethod.poNumber ?? 'Norbert Maier'),
-	    iban: String(request.data.paymentMethod.invoiceMemo ?? 'DE24300209002411761956'),
-	  };
-	}
+public async createPayment(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
+  const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
+  const config = getConfig();
+  const { testMode, paymentAction, dueDate } = getNovalnetConfigValues(type, config);
 
-	if (String(request.data.paymentMethod.type).toUpperCase() == 'CREDITCARD') {
-	  // if(String(request.data.paymentMethod.doRedirect) == '1') {
-		 //  const processorURL = Context.getProcessorUrlFromContext();	
-		 //  transaction.return_url = `${processorURL}/success`;
-	  //         transaction.error_return_url = `${processorURL}/payments`;  
-	  // }	
-	  transaction.payment_data = {
-		pan_hash: String(request.data.paymentMethod.panHash ?? ''),
-		unique_id: String(request.data.paymentMethod.uniqueId ?? ''),
-	  };
-	}
-	  
-	const novalnetPayload = {
-	  merchant: {
-	    signature: String(getConfig()?.novalnetPrivateKey ?? '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc'),
-	    tariff: String(getConfig()?.novalnetTariff ?? '10004'),
-	  },
-	  customer: {
-	    billing: {
-	      city: String(billingAddress?.city ?? 'demo'),
-	      country_code: String(billingAddress?.country ?? 'US'),
-	      house_no: String(billingAddress?.streetName ?? '10'),
-	      street: String(billingAddress?.streetName ?? 'teststreet'),
-	      zip: String(billingAddress?.postalCode ?? '12345'),
-	    },
-	    shipping: {
-	      city: String(deliveryAddress?.city ?? 'demoshipping'),
-	      country_code: String(deliveryAddress?.country ?? 'US'),
-	      house_no: String(deliveryAddress?.streetName ?? '11'),
-	      street: String(deliveryAddress?.streetName ?? 'testshippingstreet'),
-	      zip: String(deliveryAddress?.postalCode ?? '12345'),
-	    },
-	    first_name: 'Max',
-	    last_name: 'Mustermann',
-	    email: 'abiraj_s@novalnetsolutions.com',
-	  },
-	transaction,
-	  custom: {
-	    input1: 'currencyCode',
-	    inputval1: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'empty'),
-	    input2: 'transaction amount',
-	    inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
-	    input3: 'customerEmail',
-	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
-	    input4: 'Payment-Method',
-	    inputval4: String(request.data.paymentMethod.type ?? "Payment-Method not available"),
-		input5: 'TestMode',
-	    inputval5: String(testMode ?? '10004'), 
-	  }
-	};
-	  const url = paymentAction == 'payment' ? 'https://payport.novalnet.de/v2/payment' : 'https://payport.novalnet.de/v2/authorize';
-	  const novalnetResponse = await fetch(url, {
-	    method: 'POST',
-	    headers: {
-	      'Content-Type': 'application/json',
-	      'Accept': 'application/json',
-	      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
-	    },
-	    body: JSON.stringify(novalnetPayload),
-	  });
+  const ctCart = await this.ctCartService.getCart({
+    id: getCartIdFromContext(),
+  });
+  const deliveryAddress = await this.ctcc(ctCart);
+  const billingAddress = await this.ctbb(ctCart);
+  const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
+  const dueDateValue = this.getPaymentDueDate(dueDate);
 
-	let responseString = '';
-	try {
-	  const responseData = await novalnetResponse.json(); 
-	  responseString = JSON.stringify(responseData);
-	} catch (err) {
-	  responseString = 'Unable to parse Novalnet response';
-	}
-	const parsedResponse = JSON.parse(responseString); // convert JSON string to object
-	const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid}
-	Test Order`;
-	let bankDetails = ''; // Use `let` instead of `const` so we can reassign it
-	if (parsedResponse?.transaction?.bank_details) {
-	  bankDetails = `Please transfer the amount of ${parsedResponse?.transaction?.amount} to the following account.
-	Account holder: ${parsedResponse.transaction.bank_details.account_holder}
-	IBAN: ${parsedResponse.transaction.bank_details.iban}
-	BIC: ${parsedResponse.transaction.bank_details.bic}
-	BANK NAME: ${parsedResponse.transaction.bank_details.bank_name}
-	BANK PLACE: ${parsedResponse.transaction.bank_details.bank_place}
-	Please use the following payment reference for your money transfer, as only through this way your payment is matched and assigned to the order:
-	Payment Reference 1: ${parsedResponse.transaction.tid}`;
-	}
-    const ctPayment = await this.ctPaymentService.createPayment({
-      amountPlanned: await this.ctCartService.getPaymentAmount({
-        cart: ctCart,
-      }),
-      paymentMethodInfo: {
-        paymentInterface: getPaymentInterfaceFromContext() || 'mock',
-      },
-    paymentStatus: { 
-        interfaceCode:  responseString,
-        interfaceText: transactiondetails + '\n' + bankDetails,
-      },
-      ...(ctCart.customerId && {
-        customer: {
-          typeId: 'customer',
-          id: ctCart.customerId,
-        },
-      }),
-      ...(!ctCart.customerId &&
-        ctCart.anonymousId && {
-          anonymousId: ctCart.anonymousId,
-        }),
-    });
+  // 🔐 Transaction data
+  const transaction: any = {
+    test_mode: testMode === '0' ? '0' : '1',
+    payment_type: String(request.data.paymentMethod.type),
+    amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount),
+    currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode),
+  };
 
-    await this.ctCartService.addPayment({
-      resource: {
-        id: ctCart.id,
-        version: ctCart.version,
-      },
-      paymentId: ctPayment.id,
-    });
+  if (dueDateValue) {
+    transaction.due_date = dueDateValue;
+  }
 
-    const pspReference = randomUUID().toString();
-    const updatedPayment = await this.ctPaymentService.updatePayment({
-      id: ctPayment.id,
-      pspReference: pspReference,
-      paymentMethod: request.data.paymentMethod.type,
-      transaction: {
-        type: 'Authorization',
-        amount: ctPayment.amountPlanned,
-        interactionId: pspReference,
-        state: this.convertPaymentResultCode(request.data.paymentOutcome),
-      },
-    });
-    return {
-       paymentReference: updatedPayment.id,
+  if (String(request.data.paymentMethod.type).toUpperCase() === 'DIRECT_DEBIT_SEPA') {
+    transaction.create_token = 1;
+    transaction.payment_data = {
+      account_holder: String(request.data.paymentMethod.poNumber ?? 'Norbert Maier'),
+      iban: String(request.data.paymentMethod.invoiceMemo ?? 'DE24300209002411761956'),
     };
   }
+
+  if (String(request.data.paymentMethod.type).toUpperCase() === 'CREDITCARD') {
+    transaction.payment_data = {
+      pan_hash: String(request.data.paymentMethod.panHash ?? ''),
+      unique_id: String(request.data.paymentMethod.uniqueId ?? ''),
+    };
+  }
+
+  const novalnetPayload = {
+    merchant: {
+      signature: String(
+        getConfig()?.novalnetPrivateKey ??
+          '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc'
+      ),
+      tariff: String(getConfig()?.novalnetTariff ?? '10004'),
+    },
+    customer: {
+      billing: {
+        city: String(billingAddress?.city ?? 'demo'),
+        country_code: String(billingAddress?.country ?? 'US'),
+        house_no: String(billingAddress?.streetName ?? '10'),
+        street: String(billingAddress?.streetName ?? 'teststreet'),
+        zip: String(billingAddress?.postalCode ?? '12345'),
+      },
+      shipping: {
+        city: String(deliveryAddress?.city ?? 'demoshipping'),
+        country_code: String(deliveryAddress?.country ?? 'US'),
+        house_no: String(deliveryAddress?.streetName ?? '11'),
+        street: String(deliveryAddress?.streetName ?? 'testshippingstreet'),
+        zip: String(deliveryAddress?.postalCode ?? '12345'),
+      },
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: 'abiraj_s@novalnetsolutions.com',
+    },
+    transaction,
+    custom: {
+      input1: 'currencyCode',
+      inputval1: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'empty'),
+      input2: 'transaction amount',
+      inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
+      input3: 'customerEmail',
+      inputval3: String(parsedCart.customerEmail ?? 'Email not available'),
+      input4: 'Payment-Method',
+      inputval4: String(request.data.paymentMethod.type ?? 'Payment-Method not available'),
+      input5: 'TestMode',
+      inputval5: String(testMode ?? '0'),
+    },
+  };
+
+  const url =
+    paymentAction === 'payment'
+      ? 'https://payport.novalnet.de/v2/payment'
+      : 'https://payport.novalnet.de/v2/authorize';
+
+  const novalnetResponse = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
+    },
+    body: JSON.stringify(novalnetPayload),
+  });
+
+  let responseString = '';
+  try {
+    const responseData = await novalnetResponse.json();
+    responseString = JSON.stringify(responseData);
+  } catch (err) {
+    responseString = 'Unable to parse Novalnet response';
+  }
+
+  const parsedResponse = JSON.parse(responseString);
+  const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid}
+  Test Order`;
+
+  let bankDetails = '';
+  if (parsedResponse?.transaction?.bank_details) {
+    bankDetails = `Please transfer the amount of ${parsedResponse?.transaction?.amount} to the following account.
+    Account holder: ${parsedResponse.transaction.bank_details.account_holder}
+    IBAN: ${parsedResponse.transaction.bank_details.iban}
+    BIC: ${parsedResponse.transaction.bank_details.bic}
+    BANK NAME: ${parsedResponse.transaction.bank_details.bank_name}
+    BANK PLACE: ${parsedResponse.transaction.bank_details.bank_place}
+    Please use the following payment reference for your money transfer:
+    Payment Reference 1: ${parsedResponse.transaction.tid}`;
+  }
+
+  const ctPayment = await this.ctPaymentService.createPayment({
+    amountPlanned: await this.ctCartService.getPaymentAmount({
+      cart: ctCart,
+    }),
+    paymentMethodInfo: {
+      paymentInterface: getPaymentInterfaceFromContext() || 'mock',
+    },
+    paymentStatus: {
+      interfaceCode: responseString,
+      interfaceText: transactiondetails + '\n' + bankDetails,
+    },
+    ...(ctCart.customerId && {
+      customer: {
+        typeId: 'customer',
+        id: ctCart.customerId,
+      },
+    }),
+    ...(!ctCart.customerId &&
+      ctCart.anonymousId && {
+        anonymousId: ctCart.anonymousId,
+      }),
+  });
+
+  await this.ctCartService.addPayment({
+    resource: {
+      id: ctCart.id,
+      version: ctCart.version,
+    },
+    paymentId: ctPayment.id,
+  });
+
+  const pspReference = randomUUID().toString();
+  const updatedPayment = await this.ctPaymentService.updatePayment({
+    id: ctPayment.id,
+    pspReference: pspReference,
+    paymentMethod: request.data.paymentMethod.type,
+    transaction: {
+      type: 'Authorization',
+      amount: ctPayment.amountPlanned,
+      interactionId: pspReference,
+      state: this.convertPaymentResultCode(request.data.paymentOutcome),
+    },
+  });
+
+  return {
+    paymentReference: updatedPayment.id,
+  };
+}
+
+// ✅ Helper
+type NovalnetConfig = {
+  testMode: string;
+  paymentAction: string;
+  dueDate: string;
+};
+
+function getNovalnetConfigValues(
+  type: string,
+  config: Record<string, any>
+): NovalnetConfig {
+  const upperType = type.toUpperCase();
+
+  const testModeKey = `novalnet_${upperType}_TestMode`;
+  const paymentActionKey = `novalnet_${upperType}_PaymentAction`;
+  const dueDateKey = `novalnet_${upperType}_DueDate`;
+
+  return {
+    testMode: String(config?.[testModeKey] ?? '0'),
+    paymentAction: String(config?.[paymentActionKey] ?? 'payment'),
+    dueDate: String(config?.[dueDateKey] ?? '3'),
+  };
+}
+
+// ✅ Already correct
+public getPaymentDueDate(configuredDueDate: number | string): string | null {
+  const days = Number(configuredDueDate);
+  if (isNaN(days)) {
+    return null;
+  }
+  const dueDate = new Date();
+  dueDate.setDate(dueDate.getDate() + days);
+  return dueDate.toISOString().split('T')[0];
+}
+
 	
   public async handleTransaction(transactionDraft: TransactionDraftDTO): Promise<TransactionResponseDTO> {
     const TRANSACTION_AUTHORIZATION_TYPE: TransactionType = 'Authorization';
