@@ -598,12 +598,14 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
     body: JSON.stringify(novalnetPayload),
   });
 
-  let parsedResponse: any = {};
-  try {
-    parsedResponse = await novalnetResponse.json();
-  } catch {
-    parsedResponse = { error: 'Unable to parse Novalnet response' };
-  }
+	let responseString = '';
+	try {
+	  const responseData = await novalnetResponse.json(); 
+	  responseString = JSON.stringify(responseData);
+	} catch (err) {
+	  responseString = 'Unable to parse Novalnet response';
+	}
+	const parsedResponse = JSON.parse(responseString); // convert JSON string to object
 
   const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid ?? 'N/A'}
   Test Order`;
