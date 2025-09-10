@@ -51,7 +51,7 @@ function getNovalnetConfigValues(
   };
 }
 
-function getpaymentduedate(configuredDueDate: number | string): string | null {
+function getPaymentDueDate(configuredDueDate: number | string): string | null {
   // Ensure it's a number
   const days = Number(configuredDueDate);
   if (isNaN(days)) {
@@ -544,7 +544,7 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
   const deliveryAddress = await this.ctcc(ctCart);
   const billingAddress = await this.ctbb(ctCart);
   const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
-  // const dueDateValue = getPaymentDueDate('4');
+  const dueDateValue = getPaymentDueDate(dueDate);
 
   // 🔐 Transaction data
   const transaction: Record<string, any> = {
@@ -554,9 +554,9 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
     currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'EUR'),
   };
 
-  // if (dueDateValue) {
-  //   transaction.due_date = dueDateValue;
-  // }
+  if (dueDateValue) {
+    transaction.due_date = dueDateValue;
+  }
 
   if (String(request.data.paymentMethod.type).toUpperCase() === 'DIRECT_DEBIT_SEPA') {
     transaction.create_token = 1;
