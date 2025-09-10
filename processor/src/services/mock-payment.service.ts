@@ -511,7 +511,7 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
   const deliveryAddress = await this.ctcc(ctCart);
   const billingAddress = await this.ctbb(ctCart);
   const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
-  const dueDateValue = this.getPaymentDueDate(dueDate);
+  const dueDateValue = getPaymentDueDate(dueDate);
 
   // 🔐 Transaction data
   const transaction: any = {
@@ -670,7 +670,7 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
   };
 }
 
-// ✅ Helper
+
 type NovalnetConfig = {
   testMode: string;
   paymentAction: string;
@@ -694,8 +694,8 @@ function getNovalnetConfigValues(
   };
 }
 
-// ✅ Already correct
-public getPaymentDueDate(configuredDueDate: number | string): string | null {
+
+function getPaymentDueDate(configuredDueDate: number | string): string | null {
   const days = Number(configuredDueDate);
   if (isNaN(days)) {
     return null;
