@@ -512,7 +512,7 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
   const deliveryAddress = await this.ctcc(ctCart);
   const billingAddress = await this.ctbb(ctCart);
   const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
-  const dueDateValue = await this.getPaymentDueDate('4');
+  const dueDateValue = getPaymentDueDate('4');
 
   // 🔐 Transaction data
   const transaction: Record<string, any> = {
@@ -583,10 +583,7 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
     },
   };
 
-  const url =
-    paymentAction === 'payment'
-      ? 'https://payport.novalnet.de/v2/payment'
-      : 'https://payport.novalnet.de/v2/authorize';
+  const url = paymentAction === 'payment' ? 'https://payport.novalnet.de/v2/payment' : 'https://payport.novalnet.de/v2/authorize';
 
   const novalnetResponse = await fetch(url, {
     method: 'POST',
@@ -682,12 +679,17 @@ function getNovalnetConfigValues(
   };
 }
 
-public async getPaymentDueDate(configuredDueDate: number | string): string | null {
+function getPrepaymentDueDate(configuredDueDate: number | string): string | null {
+  // Ensure it's a number
   const days = Number(configuredDueDate);
-  if (isNaN(days)) return null;
+  if (isNaN(days)) {
+    return null; // not numeric
+  }
   const dueDate = new Date();
   dueDate.setDate(dueDate.getDate() + days);
-  return dueDate.toISOString().split('T')[0];
+  // Format as YYYY-MM-DD
+  const formattedDate = dueDate.toISOString().split("T")[0];
+  return formattedDate;
 }
 
 
