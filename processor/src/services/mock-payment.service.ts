@@ -679,7 +679,7 @@ function getNovalnetConfigValues(
   };
 }
 
-function getPrepaymentDueDate(configuredDueDate: number | string): string | null {
+function getpaymentduedate(configuredDueDate: number | string): string | null {
   // Ensure it's a number
   const days = Number(configuredDueDate);
   if (isNaN(days)) {
