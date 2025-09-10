@@ -508,17 +508,18 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
   const ctCart = await this.ctCartService.getCart({
     id: getCartIdFromContext(),
   });
+
   const deliveryAddress = await this.ctcc(ctCart);
   const billingAddress = await this.ctbb(ctCart);
   const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
   const dueDateValue = getPaymentDueDate(dueDate);
 
   // 🔐 Transaction data
-  const transaction: any = {
-    test_mode: testMode === '0' ? '0' : '1',
+  const transaction: Record<string, any> = {
+    test_mode: testMode === '1' ? '1' : '0',
     payment_type: String(request.data.paymentMethod.type),
-    amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount),
-    currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode),
+    amount: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? '0'),
+    currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'EUR'),
   };
 
   if (dueDateValue) {
@@ -597,21 +598,19 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
     body: JSON.stringify(novalnetPayload),
   });
 
-  let responseString = '';
+  let parsedResponse: any = {};
   try {
-    const responseData = await novalnetResponse.json();
-    responseString = JSON.stringify(responseData);
-  } catch (err) {
-    responseString = 'Unable to parse Novalnet response';
+    parsedResponse = await novalnetResponse.json();
+  } catch {
+    parsedResponse = { error: 'Unable to parse Novalnet response' };
   }
 
-  const parsedResponse = JSON.parse(responseString);
-  const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid}
+  const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid ?? 'N/A'}
   Test Order`;
 
   let bankDetails = '';
   if (parsedResponse?.transaction?.bank_details) {
-    bankDetails = `Please transfer the amount of ${parsedResponse?.transaction?.amount} to the following account.
+    bankDetails = `Please transfer the amount of ${parsedResponse.transaction.amount} to the following account.
     Account holder: ${parsedResponse.transaction.bank_details.account_holder}
     IBAN: ${parsedResponse.transaction.bank_details.iban}
     BIC: ${parsedResponse.transaction.bank_details.bic}
@@ -622,21 +621,16 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
   }
 
   const ctPayment = await this.ctPaymentService.createPayment({
-    amountPlanned: await this.ctCartService.getPaymentAmount({
-      cart: ctCart,
-    }),
+    amountPlanned: await this.ctCartService.getPaymentAmount({ cart: ctCart }),
     paymentMethodInfo: {
       paymentInterface: getPaymentInterfaceFromContext() || 'mock',
     },
     paymentStatus: {
-      interfaceCode: responseString,
+      interfaceCode: JSON.stringify(parsedResponse),
       interfaceText: transactiondetails + '\n' + bankDetails,
     },
     ...(ctCart.customerId && {
-      customer: {
-        typeId: 'customer',
-        id: ctCart.customerId,
-      },
+      customer: { typeId: 'customer', id: ctCart.customerId },
     }),
     ...(!ctCart.customerId &&
       ctCart.anonymousId && {
@@ -645,17 +639,14 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
   });
 
   await this.ctCartService.addPayment({
-    resource: {
-      id: ctCart.id,
-      version: ctCart.version,
-    },
+    resource: { id: ctCart.id, version: ctCart.version },
     paymentId: ctPayment.id,
   });
 
   const pspReference = randomUUID().toString();
   const updatedPayment = await this.ctPaymentService.updatePayment({
     id: ctPayment.id,
-    pspReference: pspReference,
+    pspReference,
     paymentMethod: request.data.paymentMethod.type,
     transaction: {
       type: 'Authorization',
@@ -682,28 +673,21 @@ function getNovalnetConfigValues(
   config: Record<string, any>
 ): NovalnetConfig {
   const upperType = type.toUpperCase();
-
-  const testModeKey = `novalnet_${upperType}_TestMode`;
-  const paymentActionKey = `novalnet_${upperType}_PaymentAction`;
-  const dueDateKey = `novalnet_${upperType}_DueDate`;
-
   return {
-    testMode: String(config?.[testModeKey] ?? '0'),
-    paymentAction: String(config?.[paymentActionKey] ?? 'payment'),
-    dueDate: String(config?.[dueDateKey] ?? '3'),
+    testMode: String(config?.[`novalnet_${upperType}_TestMode`] ?? '0'),
+    paymentAction: String(config?.[`novalnet_${upperType}_PaymentAction`] ?? 'payment'),
+    dueDate: String(config?.[`novalnet_${upperType}_DueDate`] ?? '3'),
   };
 }
 
-
 function getPaymentDueDate(configuredDueDate: number | string): string | null {
   const days = Number(configuredDueDate);
-  if (isNaN(days)) {
-    return null;
-  }
+  if (isNaN(days)) return null;
   const dueDate = new Date();
   dueDate.setDate(dueDate.getDate() + days);
   return dueDate.toISOString().split('T')[0];
 }
+
 
 	
   public async handleTransaction(transactionDraft: TransactionDraftDTO): Promise<TransactionResponseDTO> {
