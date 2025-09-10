@@ -554,9 +554,9 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
     currency: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'EUR'),
   };
 
-  if (dueDateValue) {
-    transaction.due_date = dueDateValue;
-  }
+  // if (dueDateValue) {
+  //   transaction.due_date = dueDateValue;
+  // }
 
   if (String(request.data.paymentMethod.type).toUpperCase() === 'DIRECT_DEBIT_SEPA') {
     transaction.create_token = 1;
