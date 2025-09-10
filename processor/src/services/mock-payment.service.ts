@@ -32,6 +32,38 @@ import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/
 import { log } from '../libs/logger';
 import * as Context from '../libs/fastify/context/context';
 
+type NovalnetConfig = {
+  testMode: string;
+  paymentAction: string;
+  dueDate: string;
+};
+
+
+function getNovalnetConfigValues(
+  type: string,
+  config: Record<string, any>
+): NovalnetConfig {
+  const upperType = type.toUpperCase();
+  return {
+    testMode: String(config?.[`novalnet_${upperType}_TestMode`] ?? '0'),
+    paymentAction: String(config?.[`novalnet_${upperType}_PaymentAction`] ?? 'payment'),
+    dueDate: String(config?.[`novalnet_${upperType}_DueDate`] ?? '3'),
+  };
+}
+
+function getpaymentduedate(configuredDueDate: number | string): string | null {
+  // Ensure it's a number
+  const days = Number(configuredDueDate);
+  if (isNaN(days)) {
+    return null; // not numeric
+  }
+  const dueDate = new Date();
+  dueDate.setDate(dueDate.getDate() + days);
+  // Format as YYYY-MM-DD
+  const formattedDate = dueDate.toISOString().split("T")[0];
+  return formattedDate;
+}
+
 export class MockPaymentService extends AbstractPaymentService {
   constructor(opts: MockPaymentServiceOptions) {
     super(opts.ctCartService, opts.ctPaymentService);
@@ -661,39 +693,6 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
 }
 
 
-type NovalnetConfig = {
-  testMode: string;
-  paymentAction: string;
-  dueDate: string;
-};
-
-function getNovalnetConfigValues(
-  type: string,
-  config: Record<string, any>
-): NovalnetConfig {
-  const upperType = type.toUpperCase();
-  return {
-    testMode: String(config?.[`novalnet_${upperType}_TestMode`] ?? '0'),
-    paymentAction: String(config?.[`novalnet_${upperType}_PaymentAction`] ?? 'payment'),
-    dueDate: String(config?.[`novalnet_${upperType}_DueDate`] ?? '3'),
-  };
-}
-
-function getpaymentduedate(configuredDueDate: number | string): string | null {
-  // Ensure it's a number
-  const days = Number(configuredDueDate);
-  if (isNaN(days)) {
-    return null; // not numeric
-  }
-  const dueDate = new Date();
-  dueDate.setDate(dueDate.getDate() + days);
-  // Format as YYYY-MM-DD
-  const formattedDate = dueDate.toISOString().split("T")[0];
-  return formattedDate;
-}
-
-
-	
   public async handleTransaction(transactionDraft: TransactionDraftDTO): Promise<TransactionResponseDTO> {
     const TRANSACTION_AUTHORIZATION_TYPE: TransactionType = 'Authorization';
     const TRANSACTION_STATE_SUCCESS: TransactionState = 'Success';
