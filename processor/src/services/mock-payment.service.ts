@@ -512,7 +512,7 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
   const deliveryAddress = await this.ctcc(ctCart);
   const billingAddress = await this.ctbb(ctCart);
   const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
-  const dueDateValue = await this.getPaymentDueDate(dueDate);
+  const dueDateValue = await this.getPaymentDueDate('4');
 
   // 🔐 Transaction data
   const transaction: Record<string, any> = {
