@@ -130,18 +130,31 @@ console.log('handle-novalnetResponse');
 
     if (generatedChecksum !== query.checksum) {
       try {
-        const result = await opts.paymentService.createPaymentt({
-          data: {
-            interfaceId: query.tid,
-            status: Context.getCartIdFromContext(),
-            source: Context.getCartIdFromContext(),
-          },
-        });
-	 const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
+       // const result = await opts.paymentService.createPaymentt({
+        //  data: {
+        //    interfaceId: query.tid,
+         //   status: Context.getCartIdFromContext(),
+       //     source: Context.getCartIdFromContext(),
+        //  },
+       // });
+	 
+		  
+	 //const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
 	 // return reply.redirect(302, thirdPartyUrl);
-	 return reply.code(302).redirect(thirdPartyUrl);
+	 //return reply.code(302).redirect(thirdPartyUrl);
 
 	 // return reply.code(400).send(result);
+	const cartId = Context.getCartIdFromContext();
+   console.log("test cart context" + cartId);
+   const updatedPayment = await opts.paymentService.createPaymentt({
+     data: {
+       interfaceId: query.tid,
+       status: cartId,
+       source: cartId,
+     },
+   });
+   console.log(updatedPayment.id);
+    return reply.redirect(302, `/thank-you?paymentId=${updatedPayment.id}`);
       } catch (error) {
     	 return reply.code(400).send('Catch error failed');
       }
