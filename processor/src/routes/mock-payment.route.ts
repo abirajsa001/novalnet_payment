@@ -178,7 +178,7 @@ console.log('handle-novalnetResponse');
   // 4. Redirect to storefront
   return reply.redirect(
     302,
-    `https://your-frontend.site/thank-you?paymentId=${updatedPayment.id}`
+    `https://poc-novalnetpayments.frontend.site/en/thank-you/?paymentId=${updatedPayment.id}`
   );
       } catch (error) {
     	 return reply.code(400).send('Catch error failed');
