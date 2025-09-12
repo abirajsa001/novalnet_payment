@@ -144,17 +144,42 @@ console.log('handle-novalnetResponse');
 	 //return reply.code(302).redirect(thirdPartyUrl);
 
 	 // return reply.code(400).send(result);
-	const cartId = Context.getCartIdFromContext();
-   console.log("test cart context" + cartId);
-   const updatedPayment = await opts.paymentService.createPaymentt({
-     data: {
-       interfaceId: query.tid,
-       status: cartId,
-       source: cartId,
-     },
-   });
-   console.log(updatedPayment.id);
-    return reply.redirect(302, `/thank-you?paymentId=${updatedPayment.id}`);
+  const ctCart = await this.ctCartService.getCart({ id: cartId });
+
+  // 3. Same create / add / update logic
+  const ctPayment = await this.ctPaymentService.createPayment({
+    amountPlanned: await this.ctCartService.getPaymentAmount({ cart: ctCart }),
+    paymentMethodInfo: { paymentInterface: 'novalnet' },
+    paymentStatus: { interfaceCode: status, interfaceText: tid },
+    customer: ctCart.customerId
+      ? { typeId: 'customer', id: ctCart.customerId }
+      : undefined,
+    anonymousId: ctCart.anonymousId,
+  });
+
+  await this.ctCartService.addPayment({
+    resource: { id: ctCart.id, version: ctCart.version },
+    paymentId: ctPayment.id,
+  });
+
+  const pspReference = crypto.randomUUID();
+  const updatedPayment = await this.ctPaymentService.updatePayment({
+    id: ctPayment.id,
+    pspReference,
+    paymentMethod: 'IDEAL',
+    transaction: {
+      type: 'Authorization',
+      amount: ctPayment.amountPlanned,
+      interactionId: pspReference,
+      state: 'Success',
+    },
+  });
+
+  // 4. Redirect to storefront
+  return reply.redirect(
+    302,
+    `https://your-frontend.site/thank-you?paymentId=${updatedPayment.id}`
+  );
       } catch (error) {
     	 return reply.code(400).send('Catch error failed');
       }
