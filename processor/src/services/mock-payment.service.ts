@@ -764,6 +764,49 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
       };
     }
   }
+	// In MockPaymentService
+public async createPaymenttest(): Promise<{ paymentReference: string }> {
+  // 1. Get cartId from context
+  const cartId = getCartIdFromContext();
+
+  // 2. Fetch cart
+  const ctCart = await this.ctCartService.getCart({ id: cartId });
+
+  // 3. Calculate amount
+  const amountPlanned = await this.ctCartService.getPaymentAmount({ cart: ctCart });
+
+  // 4. Create a payment
+  const ctPayment = await this.ctPaymentService.createPayment({
+    amountPlanned,
+    paymentMethodInfo: { paymentInterface: 'novalnet' },
+    paymentStatus: { interfaceCode: 'Success', interfaceText: 'Auto-created' },
+    ...(ctCart.customerId ? { customer: { typeId: 'customer', id: ctCart.customerId } } : {}),
+    ...(ctCart.anonymousId ? { anonymousId: ctCart.anonymousId } : {}),
+  });
+
+  // 5. Add payment to cart
+  await this.ctCartService.addPayment({
+    resource: { id: ctCart.id, version: ctCart.version },
+    paymentId: ctPayment.id,
+  });
+
+  // 6. Update payment with transaction info
+  const updatedPayment = await this.ctPaymentService.updatePayment({
+    id: ctPayment.id,
+    pspReference: randomUUID(),
+    paymentMethod: 'IDEAL',
+    transaction: {
+      type: 'Authorization',
+      amount: ctPayment.amountPlanned,
+      interactionId: randomUUID(),
+      state: 'Success',
+    },
+  });
+
+  // 7. Return only what you need
+  return { paymentReference: updatedPayment.id };
+}
+
 
   private convertPaymentResultCode(resultCode: PaymentOutcome): string {
     switch (resultCode) {
