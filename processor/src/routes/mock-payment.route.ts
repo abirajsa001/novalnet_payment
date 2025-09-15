@@ -68,7 +68,7 @@ console.log('handle-novalnetResponse');
 
 });
 
-  fastify.post<{ Body: PaymentRequestSchemaDTO; Reply: any }>(
+  fastify.post<{ Body: PaymentRequestSchemaDTO; Reply: PaymentResponseSchemaDTO }>(
     '/payments',
     {
       preHandler: [opts.sessionHeaderAuthHook.authenticate()],
@@ -180,3 +180,5 @@ fastify.get<{
 );
 
 };
+
+
