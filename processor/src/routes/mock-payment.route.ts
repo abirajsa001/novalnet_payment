@@ -130,7 +130,9 @@ console.log('handle-novalnetResponse');
 
     if (generatedChecksum !== query.checksum) {
       try {
-    const result = await opts.paymentService.createPaymenttest();
+    const result = await opts.paymentService.testcreatepayment({
+        data: request.body,
+      });
 console.log(result);
     // result contains updatedPayment.id and other details
     return reply.redirect(
