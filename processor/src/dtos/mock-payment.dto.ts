@@ -28,6 +28,7 @@ export const PaymentRequestSchema = Type.Object({
     panHash: Type.Optional(Type.String()),
     uniqueId: Type.Optional(Type.String()),
     doRedirect: Type.Optional(Type.String()),
+    returnUrl: Type.Optional(Type.String()),
   }),
   paymentOutcome: PaymentOutcomeSchema,
 });
