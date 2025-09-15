@@ -425,7 +425,7 @@ console.log('status-handler');
    * @param request - contains paymentType defined in composable commerce
    * @returns Promise with mocking data containing operation status and PSP reference
    */
-  public async createPayments(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
+  public async createPayments(request: CreatePaymentRequest): Promise<any> {
   const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
   const config = getConfig();
   const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
@@ -517,9 +517,45 @@ console.log('status-handler');
 		Payment Reference 1: ${parsedResponse.transaction.tid}`;
 	}
 
+  const ctPayment = await this.ctPaymentService.createPayment({
+    amountPlanned: await this.ctCartService.getPaymentAmount({ cart: ctCart }),
+    paymentMethodInfo: {
+      paymentInterface: getPaymentInterfaceFromContext() || 'mock',
+    },
+    paymentStatus: {
+      interfaceCode: JSON.stringify(parsedResponse),
+      interfaceText: transactiondetails + '\n' + bankDetails,
+    },
+    ...(ctCart.customerId && {
+      customer: { typeId: 'customer', id: ctCart.customerId },
+    }),
+    ...(!ctCart.customerId &&
+      ctCart.anonymousId && {
+        anonymousId: ctCart.anonymousId,
+      }),
+  });
+
+  await this.ctCartService.addPayment({
+    resource: { id: ctCart.id, version: ctCart.version },
+    paymentId: ctPayment.id,
+  });
+
+  const pspReference = randomUUID().toString();
+  const updatedPayment = await this.ctPaymentService.updatePayment({
+    id: ctPayment.id,
+    pspReference,
+    paymentMethod: request.data.paymentMethod.type,
+    transaction: {
+      type: 'Authorization',
+      amount: ctPayment.amountPlanned,
+      interactionId: pspReference,
+      state: this.convertPaymentResultCode(request.data.paymentOutcome),
+    },
+  });
+
     return {
-      // paymentReference: updatedPayment.id,
-      paymentReference: parsedResponse?.result?.redirect_url ?? 'null',
+      paymentReference: parsedResponse?.result?.redirect_url ?? null,
+      paymentId: updatedPayment.id,
     };
   }
 
