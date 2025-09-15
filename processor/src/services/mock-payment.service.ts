@@ -555,7 +555,7 @@ console.log('status-handler');
 
     return {
       paymentReference: parsedResponse?.result?.redirect_url ?? null,
-      updateId: updatedPayment?.id ?? null,
+      paymentId: updatedPayment.id,
     };
   }
 
