@@ -135,7 +135,7 @@ export const paymentRoutes = async (
   });
 
   // ---------- Failure ----------
-  fastify.get('/failure', async (_req, reply) => {
+  fastify.get('/failure', async (request, reply) => {
     return reply.send('Payment failed.');
   });
 
