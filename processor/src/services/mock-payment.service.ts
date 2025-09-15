@@ -554,8 +554,8 @@ console.log('status-handler');
   });
 
     return {
-      paymentReference: parsedResponse?.result?.redirect_url ?? null
-      //updateId: updatedPayment?.id ?? null
+      paymentReference: parsedResponse?.result?.redirect_url ?? null,
+      updateId: updatedPayment?.id ?? null,
     };
   }
 
