@@ -17,8 +17,6 @@ export enum PaymentMethodType {
 export const PaymentResponseSchema = Type.Object({
   paymentReference: Type.String(),
 });
-
-
 console.log('mock-payment-dto.ts');
 export const PaymentOutcomeSchema = Type.Enum(PaymentOutcome);
 
@@ -36,4 +34,3 @@ export const PaymentRequestSchema = Type.Object({
 
 export type PaymentRequestSchemaDTO = Static<typeof PaymentRequestSchema>;
 export type PaymentResponseSchemaDTO = Static<typeof PaymentResponseSchema>;
-
