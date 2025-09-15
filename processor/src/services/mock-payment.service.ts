@@ -25,7 +25,7 @@ import { AbstractPaymentService } from './abstract-payment.service';
 import { getConfig } from '../config/config';
 import { appLogger, paymentSDK } from '../payment-sdk';
 import { CreatePaymentRequest, MockPaymentServiceOptions } from './types/mock-payment.type';
-import { PaymentMethodType, PaymentOutcome, PaymentResponseSchemaDTO } from '../dtos/mock-payment.dto';
+import { PaymentMethodType, PaymentOutcome, PaymentResponseSchemaDTO, PaymentRedirectResponseSchemaDTO} from '../dtos/mock-payment.dto';
 import { getCartIdFromContext, getPaymentInterfaceFromContext } from '../libs/fastify/context/context';
 import { randomUUID } from 'crypto';
 import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/transaction.dto';
@@ -425,7 +425,7 @@ console.log('status-handler');
    * @param request - contains paymentType defined in composable commerce
    * @returns Promise with mocking data containing operation status and PSP reference
    */
-  public async createPayments(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
+  public async createPayments(request: CreatePaymentRequest): Promise<PaymentRedirectResponseSchemaDTO> {
   const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
   const config = getConfig();
   const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
