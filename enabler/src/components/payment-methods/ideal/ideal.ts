@@ -95,11 +95,11 @@ export class Ideal extends BaseComponent {
       const data = await response.json();
       console.log(data);
 
-     if(data.paymentReference) {
-       location.href = data.paymentReference;
-     } else {
-       this.onError("Some error occurred. Please try again.");
-     }
+     //if(data.paymentReference) {
+       //location.href = data.paymentReference;
+    // } else {
+    //   this.onError("Some error occurred. Please try again.");
+    // }
      
       if (data.paymentReference) {
         this.onComplete &&
