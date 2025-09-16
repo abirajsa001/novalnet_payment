@@ -110,7 +110,6 @@ export class Ideal extends BaseComponent {
       console.log("Novalnet redirect detected", { tid, checksum, status, paymentId, txnSecret });
 
       try {
-        // ✅ Send everything to your backend for secure verification
         const verifyResponse = await fetch(this.processorUrl + "/novalnet/callback", {
           method: "POST",
           headers: {
