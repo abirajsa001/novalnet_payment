@@ -555,8 +555,9 @@ console.log('status-handler');
   });
 
     return {
-      paymentReference: updatedPayment.id,
-	  novalnetRedirectUrl: parsedResponse?.result?.redirect_url ?? null,
+		paymentReference: parsedResponse?.result?.redirect_url ?? null,
+      //paymentReference: updatedPayment.id,
+	  //novalnetRedirectUrl: parsedResponse?.result?.redirect_url ?? null,
     };
   }
 
