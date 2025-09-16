@@ -469,8 +469,8 @@ console.log('status-handler');
 	    payment_type: 'IDEAL',
 	    amount: '123',
 	    currency: 'EUR',
-	    return_url: returnUrl + '/success',
-	    error_return_url: returnUrl + '/failure',
+	    return_url: returnUrl,
+	    error_return_url: returnUrl,
 	  },
 	  custom: {
 	    input1: 'currencyCode',
