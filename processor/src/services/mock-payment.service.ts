@@ -427,7 +427,7 @@ console.log('status-handler');
    */
   public async createPayments(request: CreatePaymentRequest): Promise<any> {
   const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
-  const returnUrl = = String(request.data?.paymentMethod?.returnUrl ?? 'no url');
+  const returnUrl = String(request.data?.paymentMethod?.returnUrl ?? 'no url');
   const config = getConfig();
   const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
 	  
