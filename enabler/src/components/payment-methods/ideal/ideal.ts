@@ -10,7 +10,6 @@ import buttonStyles from "../../../style/button.module.scss";
 import {
   PaymentOutcome,
   PaymentRequestSchemaDTO,
-  PaymentRedirectRequestSchemaDTO,
 } from "../../../dtos/mock-payment.dto";
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
 // import { getConfig } from "../../../config/config";
@@ -74,12 +73,12 @@ export class Ideal extends BaseComponent {
       console.log('processorUrl');
      console.log(this.processorUrl);
       
-      const requestData: PaymentRedirectRequestSchemaDTO = {
+      const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
           type: this.paymentMethod,
+          returnUrl: "testurl",
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
-        returnUrl: "testurl",
       };
       console.log('requestDataIdeal');
     console.log(requestData);
