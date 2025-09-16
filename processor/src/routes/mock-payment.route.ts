@@ -153,25 +153,25 @@ console.log('handle-novalnetResponse');
   }
 });
 	
-fastify.post("/novalnet/callback", async (req, reply) => {
-  const { tid, checksum, status, paymentId, txnSecret } = req.body;
- const accessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
-  const verification = await fetch("https://payport.novalnet.de/v2/transaction/details", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
-    },
-    body: JSON.stringify({ tid }),
-  });
-  const novalnetData = await verification.json();
+// fastify.post("/novalnet/callback", async (req, reply) => {
+//   const { tid, checksum, status, paymentId, txnSecret } = req.body;
+//  const accessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
+//   const verification = await fetch("https://payport.novalnet.de/v2/transaction/details", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
+//     },
+//     body: JSON.stringify({ tid }),
+//   });
+//   const novalnetData = await verification.json();
 
-  if (novalnetData?.transaction?.status === "CONFIRMED") {
-    return reply.send({ success: true, paymentReference: tid });
-  }
+//   if (novalnetData?.transaction?.status === "CONFIRMED") {
+//     return reply.send({ success: true, paymentReference: tid });
+//   }
 
-  return reply.status(400).send({ success: false });
-});
+//   return reply.status(400).send({ success: false });
+// });
 
 
 fastify.get<{ 
