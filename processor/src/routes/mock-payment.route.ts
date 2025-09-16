@@ -9,6 +9,8 @@ import {
   PaymentRequestSchemaDTO,
   PaymentResponseSchema,
   PaymentResponseSchemaDTO,
+  PaymentRedirectRequestSchema,
+  PaymentRedirectRequestSchemaDTO,
 } from '../dtos/mock-payment.dto';
 import { MockPaymentService } from '../services/mock-payment.service';
 import { log } from '../libs/logger';
@@ -68,13 +70,13 @@ console.log('handle-novalnetResponse');
 
 });
 
-  fastify.post<{ Body: PaymentRequestSchemaDTO; Reply: PaymentResponseSchemaDTO }>(
+  fastify.post<{ Body: PaymentRedirectRequestSchemaDTO; Reply: PaymentResponseSchemaDTO }>(
     '/payments',
     {
       preHandler: [opts.sessionHeaderAuthHook.authenticate()],
 
       schema: {
-        body: PaymentRequestSchema,
+        body: PaymentRedirectRequestSchema,
         response: {
           200: PaymentResponseSchema,
         },
