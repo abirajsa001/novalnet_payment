@@ -480,7 +480,7 @@ console.log('status-handler');
 	    input3: 'customerEmail',
 	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
 	    input4: 'returnUrl',
-	    inputval4: String(returnUrl ?? "returnUrl not available"), 
+	    inputval4: returnUrl ?? "returnUrl not available", 
 		input5: 'TestMode',
 	    inputval5: String(testMode ?? '10004'), 
 	  }
