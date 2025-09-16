@@ -427,7 +427,7 @@ console.log('status-handler');
    */
   public async createPayments(request: CreatePaymentRequest): Promise<any> {
   const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
-  const returnUrl = request.data?.paymentMethod?.returnUrl ?? 'no url';
+  //const returnUrl = = String(request.data?.paymentMethod?.returnUrl ?? 'no url');
   const config = getConfig();
   const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
 	  
@@ -479,8 +479,8 @@ console.log('status-handler');
 	    inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
 	    input3: 'customerEmail',
 	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
-	    input4: 'returnUrl',
-	    inputval4: returnUrl ?? "returnUrl not available", 
+	    //input4: 'returnUrl',
+	    //inputval4: returnUrl ?? "returnUrl not available", 
 		input5: 'TestMode',
 	    inputval5: String(testMode ?? '10004'), 
 	  }
