@@ -175,9 +175,9 @@ fastify.get<{
     const resp = await opts.paymentService.createPayment({
       data: request.query,
     });
-	return reply.redirect(302, resp);
-    //const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
-    // return reply.redirect(302, thirdPartyUrl);
+	
+    const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
+    /return reply.redirect(302, thirdPartyUrl);
     //return reply.code(302).redirect(thirdPartyUrl);
     // return reply.status(200).send(resp);
   }
