@@ -152,6 +152,29 @@ console.log('handle-novalnetResponse');
     return reply.code(400).send('Missing required query parameters.');
   }
 });
+	
+fastify.post("/novalnet/callback", async (req, reply) => {
+  const { tid, checksum, status, paymentId, txnSecret } = req.body;
+
+  const verification = await fetch("https://payport.novalnet.de/v2/transaction/details", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": process.env.NOVALNET_PRIVATE_KEY,
+    },
+    body: JSON.stringify({ tid }),
+  });
+  const novalnetData = await verification.json();
+
+  if (novalnetData?.transaction?.status === "CONFIRMED") {
+    // Update commercetools payment resource here
+    await updateCommercetoolsPayment(paymentId, tid, novalnetData);
+
+    return reply.send({ success: true, paymentReference: tid });
+  }
+
+  return reply.status(400).send({ success: false });
+});
 
 
 fastify.get<{ 
