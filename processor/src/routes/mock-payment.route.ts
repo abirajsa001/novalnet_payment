@@ -155,12 +155,12 @@ console.log('handle-novalnetResponse');
 	
 fastify.post("/novalnet/callback", async (req, reply) => {
   const { tid, checksum, status, paymentId, txnSecret } = req.body;
-
+ const accessKey = 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=';
   const verification = await fetch("https://payport.novalnet.de/v2/transaction/details", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-API-Key": process.env.NOVALNET_PRIVATE_KEY,
+      'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
     },
     body: JSON.stringify({ tid }),
   });
