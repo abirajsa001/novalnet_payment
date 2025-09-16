@@ -532,7 +532,7 @@ const updatedPayment = await this.ctPaymentService.updatePayment({
 	    input4: 'processorurl',
 	    inputval4: String(processorURL ?? "processorURL not available"), 
 		input5: 'updatedPaymentId',
-	    inputval5: updatedPayment as any, 
+	    inputval5: String(updatedPayment.id ?? ''), 
 	  }
 	};
 
