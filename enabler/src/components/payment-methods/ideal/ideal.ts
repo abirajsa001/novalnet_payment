@@ -1,4 +1,4 @@
- import {
+import {
   ComponentOptions,
   PaymentComponent,
   PaymentComponentBuilder,
@@ -12,7 +12,6 @@ import {
   PaymentRequestSchemaDTO,
 } from "../../../dtos/mock-payment.dto";
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
-// import { getConfig } from "../../../config/config";
 
 export class IdealBuilder implements PaymentComponentBuilder {
   public componentHasSubmit = true;
@@ -34,55 +33,41 @@ export class Ideal extends BaseComponent {
   mount(selector: string) {
     document
       .querySelector(selector)
-      .insertAdjacentHTML("afterbegin", this._getTemplate());
+      ?.insertAdjacentHTML("afterbegin", this._getTemplate());
+
+    // 👉 Handle Novalnet redirect return immediately on page load
+    this._handleReturnFromRedirect();
 
     if (this.showPayButton) {
       document
         .querySelector("#purchaseOrderForm-paymentButton")
-        .addEventListener("click", (e) => {
+        ?.addEventListener("click", (e) => {
           e.preventDefault();
           this.submit();
         });
     }
   }
 
+  /**
+   * Called when the user clicks Pay (first step).
+   * This requests a redirect URL from your backend/processor.
+   */
   async submit() {
-    // here we would call the SDK to submit the payment
     this.sdk.init({ environment: this.environment });
-    console.log('submit-triggered');
+    console.log("submit-triggered");
 
     try {
-      // start original
-      const requestDatas: PaymentRequestSchemaDTO = {
-        paymentMethod: {
-          type: this.paymentMethod,
-        },
-        paymentOutcome: PaymentOutcome.AUTHORIZED,
-      };
-     
-      const responses = await fetch(this.processorUrl + "/test", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Session-Id": this.sessionId,
-        },
-        body: JSON.stringify(requestDatas),
-      });
-      console.log('responses-dataa');
-    console.log(responses);
-      console.log('processorUrl');
-     console.log(this.processorUrl);
-      
+      // Prepare the payload
       const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
           type: this.paymentMethod,
+          // returnUrl is where Novalnet will send the shopper back
           returnUrl: window.location.href,
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
-      console.log('requestDataIdeal');
-    console.log(requestData);
 
+      // Ask your processor to create the Novalnet redirect session
       const response = await fetch(this.processorUrl + "/payments", {
         method: "POST",
         headers: {
@@ -91,39 +76,81 @@ export class Ideal extends BaseComponent {
         },
         body: JSON.stringify(requestData),
       });
-      console.log('responseData-newdataIdeal');
-      console.log(response);
-      const data = await response.json();
-      console.log(data);
-     //console.log(data.novalnetRedirectUrl);
-     if(data.paymentReference) {
-       location.href = data.paymentReference;
-     } else {
-       this.onError("Some error occurred. Please try again.");
-     }
-     
-      if (data.paymentReference) {
-        this.onComplete &&
-          this.onComplete({
-            isSuccess: true,
-            paymentReference: data.paymentReference,
-          });
-      } else {
-        this.onError("Some error occurred. Please try again.");
-      }
 
+      const data = await response.json();
+      console.log("redirect-session-response", data);
+
+      // Redirect the shopper to Novalnet's page
+      if (data.paymentReference) {
+        window.location.href = data.paymentReference;
+      } else {
+        this.onError?.("Could not start redirect payment.");
+      }
     } catch (e) {
-      this.onError("Some error occurred. Please try again.");
+      console.error("submit-error", e);
+      this.onError?.("Some error occurred. Please try again.");
+    }
+  }
+
+  /**
+   * Runs automatically when the page is re-loaded after Novalnet redirects back.
+   * Reads query params and sends them to your backend for final verification.
+   */
+  private async _handleReturnFromRedirect() {
+    const params = new URLSearchParams(window.location.search);
+
+    // Check for the Novalnet return parameters
+    if (params.has("tid") && params.has("checksum")) {
+      const tid        = params.get("tid");
+      const checksum   = params.get("checksum");
+      const status     = params.get("status");
+      const paymentId  = params.get("step");  // or decode as needed
+      const txnSecret  = params.get("txn_secret");
+
+      console.log("Novalnet redirect detected", { tid, checksum, status, paymentId, txnSecret });
+
+      try {
+        // ✅ Send everything to your backend for secure verification
+        const verifyResponse = await fetch(this.processorUrl + "/novalnet/callback", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Session-Id": this.sessionId,
+          },
+          body: JSON.stringify({
+            tid,
+            checksum,
+            status,
+            paymentId,
+            txnSecret
+          }),
+        });
+
+        const result = await verifyResponse.json();
+        console.log("verification-result", result);
+
+        if (result.success) {
+          this.onComplete?.({
+            isSuccess: true,
+            paymentReference: result.paymentReference ?? tid,
+          });
+        } else {
+          this.onError?.("Payment verification failed.");
+        }
+      } catch (err) {
+        console.error("verification-error", err);
+        this.onError?.("Error verifying payment with backend.");
+      }
     }
   }
 
   private _getTemplate() {
     return this.showPayButton
       ? `
-    <div class="${styles.wrapper}">
-      <p>Pay easily with Ideal and transfer the shopping amount within the specified date.</p>
-      <button class="${buttonStyles.button} ${buttonStyles.fullWidth} ${styles.submitButton}" id="purchaseOrderForm-paymentButton">Pay</button>
-    </div>
+      <div class="${styles.wrapper}">
+        <p>Pay easily with iDEAL and transfer the shopping amount within the specified date.</p>
+        <button class="${buttonStyles.button} ${buttonStyles.fullWidth} ${styles.submitButton}" id="purchaseOrderForm-paymentButton">Pay</button>
+      </div>
     `
       : "";
   }
