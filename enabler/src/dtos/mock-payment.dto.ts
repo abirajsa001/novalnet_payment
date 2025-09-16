@@ -19,4 +19,14 @@ export const PaymentRequestSchema = Type.Object({
   paymentOutcome: PaymentOutcomeSchema,
 });
 
+export const PaymentRedirectRequestSchema = Type.Object({
+  paymentMethod: Type.Object({
+    type: Type.String(),
+  }),
+  paymentOutcome: PaymentOutcomeSchema,
+  returnUrl: Type.String(),
+});
+
+
 export type PaymentRequestSchemaDTO = Static<typeof PaymentRequestSchema>;
+export type PaymentRedirectRequestSchemaDTO = Static<typeof PaymentRedirectRequestSchema>;
