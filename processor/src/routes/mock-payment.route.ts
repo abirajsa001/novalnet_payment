@@ -167,9 +167,6 @@ fastify.post("/novalnet/callback", async (req, reply) => {
   const novalnetData = await verification.json();
 
   if (novalnetData?.transaction?.status === "CONFIRMED") {
-    // Update commercetools payment resource here
-    await updateCommercetoolsPayment(paymentId, tid, novalnetData);
-
     return reply.send({ success: true, paymentReference: tid });
   }
 
