@@ -74,11 +74,8 @@ export class Ideal extends BaseComponent {
      console.log(this.processorUrl);
       
       const requestData: PaymentRequestSchemaDTO = {
-        const { origin, pathname } = new URL(window.location.href);
-        const cleanUrl = origin + pathname;
         paymentMethod: {
           type: this.paymentMethod,
-           returnUrl: cleanUrl,
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
