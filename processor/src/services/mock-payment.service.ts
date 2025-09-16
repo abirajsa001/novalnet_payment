@@ -444,10 +444,6 @@ console.log('status-handler');
     paymentMethodInfo: {
       paymentInterface: getPaymentInterfaceFromContext() || 'mock',
     },
-    paymentStatus: {
-      interfaceCode: JSON.stringify(parsedResponse),
-      interfaceText: transactiondetails + '\n' + bankDetails,
-    },
     ...(ctCart.customerId && {
       customer: { typeId: 'customer', id: ctCart.customerId },
     }),
