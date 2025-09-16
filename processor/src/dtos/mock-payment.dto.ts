@@ -38,7 +38,7 @@ export const PaymentRedirectRequestSchema = Type.Object({
     type: Type.String(),
   }),
   paymentOutcome: PaymentOutcomeSchema,
-  returnUrl: Type.Optional(Type.String()),
+  returnUrl: Type.String(),
 });
 
 export type PaymentRequestSchemaDTO = Static<typeof PaymentRequestSchema>;
