@@ -96,11 +96,11 @@ export class Ideal extends BaseComponent {
       const data = await response.json();
       console.log(data);
      console.log(data.novalnetRedirectUrl);
-     if(data.novalnetRedirectUrl) {
+     //if(data.novalnetRedirectUrl) {
        location.href = data.novalnetRedirectUrl;
-     } else {
-       this.onError("Some error occurred. Please try again.");
-     }
+    // } else {
+      // this.onError("Some error occurred. Please try again.");
+   //  }
      
       if (data.paymentReference) {
         this.onComplete &&
