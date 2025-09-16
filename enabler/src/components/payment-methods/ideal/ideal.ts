@@ -35,8 +35,8 @@ export class Ideal extends BaseComponent {
       .querySelector(selector)
       ?.insertAdjacentHTML("afterbegin", this._getTemplate());
 
-    // 👉 Handle Novalnet redirect return immediately on page load
-    this._handleReturnFromRedirect();
+    //  Handle Novalnet redirect return immediately on page load
+    // this._handleReturnFromRedirect();
 
     if (this.showPayButton) {
       document
@@ -96,52 +96,54 @@ export class Ideal extends BaseComponent {
    * Runs automatically when the page is re-loaded after Novalnet redirects back.
    * Reads query params and sends them to your backend for final verification.
    */
-  private async _handleReturnFromRedirect() {
-    const params = new URLSearchParams(window.location.search);
+  // private async _handleReturnFromRedirect() {
+  //   if (typeof window === "undefined") return;
+    
+  //   const params = new URLSearchParams(window.location.search);
 
-    // Check for the Novalnet return parameters
-    if (params.has("tid") && params.has("checksum")) {
-      const tid        = params.get("tid");
-      const checksum   = params.get("checksum");
-      const status     = params.get("status");
-      const paymentId  = params.get("step");  // or decode as needed
-      const txnSecret  = params.get("txn_secret");
+  //   // Check for the Novalnet return parameters
+  //   if (params.has("tid") && params.has("checksum")) {
+  //     const tid        = params.get("tid");
+  //     const checksum   = params.get("checksum");
+  //     const status     = params.get("status");
+  //     const paymentId  = params.get("step");  // or decode as needed
+  //     const txnSecret  = params.get("txn_secret");
 
-      console.log("Novalnet redirect detected", { tid, checksum, status, paymentId, txnSecret });
+  //     console.log("Novalnet redirect detected", { tid, checksum, status, paymentId, txnSecret });
 
-      try {
-        const verifyResponse = await fetch(this.processorUrl + "/novalnet/callback", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Session-Id": this.sessionId,
-          },
-          body: JSON.stringify({
-            tid,
-            checksum,
-            status,
-            paymentId,
-            txnSecret
-          }),
-        });
+  //     try {
+  //       const verifyResponse = await fetch(this.processorUrl + "/novalnet/callback", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           "X-Session-Id": this.sessionId,
+  //         },
+  //         body: JSON.stringify({
+  //           tid,
+  //           checksum,
+  //           status,
+  //           paymentId,
+  //           txnSecret
+  //         }),
+  //       });
 
-        const result = await verifyResponse.json();
-        console.log("verification-result", result);
+  //       const result = await verifyResponse.json();
+  //       console.log("verification-result", result);
 
-        if (result.success) {
-          this.onComplete?.({
-            isSuccess: true,
-            paymentReference: result.paymentReference ?? tid,
-          });
-        } else {
-          this.onError?.("Payment verification failed.");
-        }
-      } catch (err) {
-        console.error("verification-error", err);
-        this.onError?.("Error verifying payment with backend.");
-      }
-    }
-  }
+  //       if (result.success) {
+  //         this.onComplete?.({
+  //           isSuccess: true,
+  //           paymentReference: result.paymentReference ?? tid,
+  //         });
+  //       } else {
+  //         this.onError?.("Payment verification failed.");
+  //       }
+  //     } catch (err) {
+  //       console.error("verification-error", err);
+  //       this.onError?.("Error verifying payment with backend.");
+  //     }
+  //   }
+  // }
 
   private _getTemplate() {
     return this.showPayButton
