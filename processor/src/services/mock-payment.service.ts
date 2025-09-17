@@ -369,8 +369,8 @@ const paymentRef = responseData?.custom?.paymentRef ?? '6223eddf-c167-4243-9d68-
       currency: 'EUR',
     },
 	custom: {
-		input1: 'currencyCode',
-		inputval1: JSON.stringify(parsedData),
+		input1: 'paymentRefTest',
+		inputval1: paymentRef,
 		input2: 'source',
 		inputval2: String(parsedData?.source ?? "getCartIdFromContext not available"),
     }
@@ -415,6 +415,8 @@ const paymentRef = responseData?.custom?.paymentRef ?? '6223eddf-c167-4243-9d68-
 	custom: {
 		input1: 'currencyCode',
 		inputval1: String('empty'),
+		input2: 'paymentRefTest',
+		inputval2: paymentRef,
     }
   };
 
