@@ -328,9 +328,7 @@ console.log('status-handler');
   });
   const responseData = await novalnetResponse.json();
 
- const paymentRef =
-  responseData?.custom?.find((item: any) => item.key === 'paymentRef')?.value ?? '6223eddf-c167-4243-9d68-b0e635d7856b
- ';
+const paymentRef = responseData?.custom?.paymentRef ?? '6223eddf-c167-4243-9d68-b0e635d7856b';
 
   const ctPayment = await this.ctPaymentService.getPayment({
     id: paymentRef,
