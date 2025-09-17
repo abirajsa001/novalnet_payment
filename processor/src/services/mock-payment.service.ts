@@ -327,6 +327,24 @@ console.log('status-handler');
     body: JSON.stringify(novalnetPayload),
   });
   const responseData = await novalnetResponse.json();
+
+  const paymentRef = responseData?.custom?.paymentRef ?? '';
+
+  const ctPayment = await this.ctPaymentService.getPayment({
+    id: paymentRef,
+  });
+
+  const updatedPayment = await this.ctPaymentService.updatePayment({
+    id: ctPayment.id,
+    pspReference: parsedData?.interfaceId,
+    transaction: {
+      type: 'Authorization',
+      amount: ctPayment.amountPlanned,
+      interactionId: parsedData?.interfaceId,
+      state: 'success',
+    },
+  });
+	 
 	  const novalnetPayloadss = {
     merchant: {
       signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
@@ -410,8 +428,7 @@ console.log('status-handler');
     body: JSON.stringify(novalnetPayloads),
   });	
   return {
-    success: parsedData ?? 'empty-response',
-    novalnetResponse: responseData,
+		paymentReference: updatedPayment.id,
   };
 }
 	
