@@ -84,7 +84,7 @@ console.log('handle-novalnetResponse');
       const resp = await opts.paymentService.createPayments({
         data: request.body,
       });
-		//return reply.redirect(302, resp.paymentReference);
+
       return reply.status(200).send(resp);
 
     },
@@ -137,10 +137,7 @@ console.log('handle-novalnetResponse');
             source: Context.getCartIdFromContext(),
           },
         });
-		  
-const updateId = result.paymentReference;
-const thirdPartyUrl = `https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=${updateId}`;
-
+	 const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
 	 // return reply.redirect(302, thirdPartyUrl);
 	 return reply.code(302).redirect(thirdPartyUrl);
 
@@ -175,14 +172,11 @@ fastify.get<{
     const resp = await opts.paymentService.createPayment({
       data: request.query,
     });
-	
     const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
-    /return reply.redirect(302, thirdPartyUrl);
-    //return reply.code(302).redirect(thirdPartyUrl);
+    // return reply.redirect(302, thirdPartyUrl);
+    return reply.code(302).redirect(thirdPartyUrl);
     // return reply.status(200).send(resp);
   }
 );
 
 };
-
-
