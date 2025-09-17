@@ -66,10 +66,8 @@ function getPaymentDueDate(configuredDueDate: number | string): string | null {
 }
 
 export class MockPaymentService extends AbstractPaymentService {
-  private ctOrderService: CommercetoolsOrderService;
-  constructor(opts: MockPaymentServiceOptions , ctOrderService: CommercetoolsOrderService) {
+  constructor(opts: MockPaymentServiceOptions) {
     super(opts.ctCartService, opts.ctPaymentService);
-    this.ctOrderService = ctOrderService;
   }
 
   /**
@@ -332,7 +330,7 @@ console.log('status-handler');
   const responseData = await novalnetResponse.json();
   const paymentRef = responseData?.custom?.paymentRef ?? '';
   
-  const order = await this.ctOrderService.getOrderByPaymentId({ paymentRef });
+  //const order = await this.ctOrderService.getOrderByPaymentId({ paymentRef });
   
   const ctPayment = await this.ctPaymentService.getPayment({
     id: paymentRef,
@@ -374,7 +372,8 @@ console.log('status-handler');
     },
 	custom: {
 		input1: 'orderDetail',
-		inputval1: JSON.stringify(order),
+		//inputval1: JSON.stringify(order),
+		inputval1: '',
 		input2: 'source',
 		inputval2: String(parsedData?.source ?? "getCartIdFromContext not available"),
     }
