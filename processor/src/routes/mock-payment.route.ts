@@ -16,7 +16,7 @@ import {
   PaymentComponent,
   PaymentComponentBuilder,
   PaymentMethod
-} from '../../payment-enabler/payment-enabler';
+} from './payment-enabler/payment-enabler';
 
 import { MockPaymentService } from '../services/mock-payment.service';
 import { log } from '../libs/logger';
