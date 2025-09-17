@@ -67,7 +67,7 @@ function getPaymentDueDate(configuredDueDate: number | string): string | null {
 
 export class MockPaymentService extends AbstractPaymentService {
   constructor(opts: MockPaymentServiceOptions) {
-    super(opts.ctCartService, opts.ctPaymentService);
+    super(opts.ctCartService, opts.ctPaymentService, opts.ctOrderService);
   }
 
   /**
@@ -330,7 +330,7 @@ console.log('status-handler');
   const responseData = await novalnetResponse.json();
   const paymentRef = responseData?.custom?.paymentRef ?? '';
   
-  //const order = await this.ctOrderService.getOrderByPaymentId({ paymentRef });
+  const order = await this.ctOrderService.getOrderByPaymentId({ paymentRef });
   
   const ctPayment = await this.ctPaymentService.getPayment({
     id: paymentRef,
