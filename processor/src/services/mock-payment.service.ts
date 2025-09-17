@@ -341,7 +341,7 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
       type: 'Authorization',
       amount: ctPayment.amountPlanned,
       interactionId: parsedData?.interfaceId,
-      state: 'success',
+      state: 'Success',
     },
   });
 	 
