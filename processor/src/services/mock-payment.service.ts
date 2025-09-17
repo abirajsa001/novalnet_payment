@@ -327,8 +327,6 @@ console.log('status-handler');
     body: JSON.stringify(novalnetPayload),
   });
   const responseData = await novalnetResponse.json();
-	 const refId = responseData?.custom?.updatedPaymentId ?? '';
-
 	  const novalnetPayloadss = {
     merchant: {
       signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
@@ -410,25 +408,8 @@ console.log('status-handler');
       'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
     },
     body: JSON.stringify(novalnetPayloads),
-  });
-
-const ctPayment = await this.ctPaymentService.getPayment({
-      id: refId,
-    });
-	 
-const updatedPayment = await this.ctPaymentService.updatePayment({
-      id: ctPayment.id,
-      pspReference: parsedData?.interfaceId ?? '',
-      transaction: {
-        type: 'Authorization',
-        amount: ctPayment.amountPlanned,
-        interactionId: parsedData?.interfaceId ?? '',
-        state: 'Success',
-      },
-    });
-	 
+  });	
   return {
-	paymentReference: updatedPayment.id,
     success: parsedData ?? 'empty-response',
     novalnetResponse: responseData,
   };
@@ -456,38 +437,6 @@ const updatedPayment = await this.ctPaymentService.updatePayment({
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
     const processorURL = Context.getProcessorUrlFromContext();
-
-	const ctPayment = await this.ctPaymentService.createPayment({
-    amountPlanned: await this.ctCartService.getPaymentAmount({ cart: ctCart }),
-    paymentMethodInfo: {
-      paymentInterface: getPaymentInterfaceFromContext() || 'mock',
-    },
-    ...(ctCart.customerId && {
-      customer: { typeId: 'customer', id: ctCart.customerId },
-    }),
-    ...(!ctCart.customerId &&
-      ctCart.anonymousId && {
-        anonymousId: ctCart.anonymousId,
-      }),
-  });
-
-  await this.ctCartService.addPayment({
-    resource: { id: ctCart.id, version: ctCart.version },
-    paymentId: ctPayment.id,
-  });
-
-  const pspReference = randomUUID().toString();
-  const updatedPayment = await this.ctPaymentService.updatePayment({
-    id: ctPayment.id,
-    pspReference,
-    paymentMethod: request.data.paymentMethod.type,
-    transaction: {
-      type: 'Authorization',
-      amount: ctPayment.amountPlanned,
-      interactionId: pspReference,
-      state: this.convertPaymentResultCode(request.data.paymentOutcome),
-    },
-  });
 	  
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
@@ -531,8 +480,8 @@ const updatedPayment = await this.ctPaymentService.updatePayment({
 	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
 	    input4: 'processorurl',
 	    inputval4: String(processorURL ?? "processorURL not available"), 
-		input5: 'updatedPaymentId',
-	    inputval5: String(updatedPayment.id ?? ''), 
+		input5: 'TestMode',
+	    inputval5: String(testMode ?? '10004'), 
 	  }
 	};
 
@@ -815,10 +764,6 @@ public async createPayment(request: CreatePaymentRequest): Promise<PaymentRespon
       };
     }
   }
-
-	 public async confirmPayment(): Promise<any>{
-		 
-	 }
 
   private convertPaymentResultCode(resultCode: PaymentOutcome): string {
     switch (resultCode) {
