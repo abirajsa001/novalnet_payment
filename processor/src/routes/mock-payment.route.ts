@@ -11,13 +11,6 @@ import {
   PaymentResponseSchemaDTO,
 } from '../dtos/mock-payment.dto';
 
-import {
-  ComponentOptions,
-  PaymentComponent,
-  PaymentComponentBuilder,
-  PaymentMethod
-} from './payment-enabler/payment-enabler';
-
 import { MockPaymentService } from '../services/mock-payment.service';
 import { log } from '../libs/logger';
 type PaymentRoutesOptions = {
