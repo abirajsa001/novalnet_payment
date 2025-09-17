@@ -6,6 +6,7 @@
   TransactionType,
   TransactionState,
   ErrorInvalidOperation,
+  CommercetoolsOrderService,
 } from '@commercetools/connect-payments-sdk';
 import {
   CancelPaymentRequest,
@@ -65,8 +66,10 @@ function getPaymentDueDate(configuredDueDate: number | string): string | null {
 }
 
 export class MockPaymentService extends AbstractPaymentService {
-  constructor(opts: MockPaymentServiceOptions) {
+  private ctOrderService: CommercetoolsOrderService;
+  constructor(opts: MockPaymentServiceOptions , ctOrderService: CommercetoolsOrderService) {
     super(opts.ctCartService, opts.ctPaymentService);
+    this.ctOrderService = ctOrderService;
   }
 
   /**
@@ -327,24 +330,25 @@ console.log('status-handler');
     body: JSON.stringify(novalnetPayload),
   });
   const responseData = await novalnetResponse.json();
-
-const paymentRef = responseData?.custom?.paymentRef ?? '';
-
+  const paymentRef = responseData?.custom?.paymentRef ?? '';
+  
+  const order = await this.ctOrderService.getOrderByPaymentId({ paymentRef });
+  
   const ctPayment = await this.ctPaymentService.getPayment({
     id: paymentRef,
   });
 
   const updatedPayment = await this.ctPaymentService.updatePayment({
     id: ctPayment.id,
-    pspReference: parsedData?.interfaceId,
+    pspReference: paymentRef,
     transaction: {
       type: 'Authorization',
       amount: ctPayment.amountPlanned,
-      interactionId: parsedData?.interfaceId,
-      state: 'Success',
+      interactionId: paymentRef,
+      state: 'success',
     },
   });
-	 
+
 	  const novalnetPayloadss = {
     merchant: {
       signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
@@ -365,12 +369,12 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
     transaction: {
       test_mode: '1',
       payment_type: 'PREPAYMENT',
-      amount: 173,
+      amount: 132,
       currency: 'EUR',
     },
 	custom: {
-		input1: 'paymentRefTest',
-		inputval1: paymentRef,
+		input1: 'orderDetail',
+		inputval1: JSON.stringify(order),
 		input2: 'source',
 		inputval2: String(parsedData?.source ?? "getCartIdFromContext not available"),
     }
@@ -415,8 +419,6 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
 	custom: {
 		input1: 'currencyCode',
 		inputval1: String('empty'),
-		input2: 'paymentRefTest',
-		inputval2: paymentRef,
     }
   };
 
@@ -430,7 +432,7 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
     body: JSON.stringify(novalnetPayloads),
   });	
   return {
-		paymentReference: updatedPayment.id,
+      paymentReference: updatedPayment.id,
   };
 }
 	
