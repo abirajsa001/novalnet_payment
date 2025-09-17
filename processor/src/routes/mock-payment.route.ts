@@ -85,8 +85,8 @@ console.log('handle-novalnetResponse');
       const resp = await opts.paymentService.createPayments({
         data: request.body,
       });
-		return reply.code(302).redirect(resp.paymentReference);
-      //return reply.status(200).send(resp);
+
+      return reply.status(200).send(resp);
 
     },
   );
