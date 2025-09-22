@@ -27,7 +27,7 @@ import { getConfig } from '../config/config';
 import { appLogger, paymentSDK } from '../payment-sdk';
 import { CreatePaymentRequest, MockPaymentServiceOptions } from './types/mock-payment.type';
 import { PaymentMethodType, PaymentOutcome, PaymentResponseSchemaDTO } from '../dtos/mock-payment.dto';
-import { getCartIdFromContext, getPaymentInterfaceFromContext } from '../libs/fastify/context/context';
+import { getCartIdFromContext, getPaymentInterfaceFromContext, getMerchantReturnUrlFromContext } from '../libs/fastify/context/context';
 import { randomUUID } from 'crypto';
 import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/transaction.dto';
 import { log } from '../libs/logger';
@@ -448,6 +448,7 @@ console.log('status-handler');
   public async createPayments(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
   const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
   const config = getConfig();
+  const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;	  
   const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
 	  
     const ctCart = await this.ctCartService.getCart({
