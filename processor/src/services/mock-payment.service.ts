@@ -6,7 +6,6 @@
   TransactionType,
   TransactionState,
   ErrorInvalidOperation,
-  CommercetoolsOrderService,
 } from '@commercetools/connect-payments-sdk';
 import {
   CancelPaymentRequest,
@@ -27,7 +26,7 @@ import { getConfig } from '../config/config';
 import { appLogger, paymentSDK } from '../payment-sdk';
 import { CreatePaymentRequest, MockPaymentServiceOptions } from './types/mock-payment.type';
 import { PaymentMethodType, PaymentOutcome, PaymentResponseSchemaDTO } from '../dtos/mock-payment.dto';
-import { getCartIdFromContext, getPaymentInterfaceFromContext, getMerchantReturnUrlFromContext } from '../libs/fastify/context/context';
+import { getCartIdFromContext, getPaymentInterfaceFromContext } from '../libs/fastify/context/context';
 import { randomUUID } from 'crypto';
 import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/transaction.dto';
 import { log } from '../libs/logger';
@@ -67,7 +66,7 @@ function getPaymentDueDate(configuredDueDate: number | string): string | null {
 
 export class MockPaymentService extends AbstractPaymentService {
   constructor(opts: MockPaymentServiceOptions) {
-    super(opts.ctCartService, opts.ctPaymentService, opts.ctOrderService);
+    super(opts.ctCartService, opts.ctPaymentService);
   }
 
   /**
@@ -328,25 +327,24 @@ console.log('status-handler');
     body: JSON.stringify(novalnetPayload),
   });
   const responseData = await novalnetResponse.json();
-  const paymentRef = responseData?.custom?.paymentRef ?? '';
-  
-  const order = await this.ctOrderService.getOrderByPaymentId({ paymentRef });
-  
+
+const paymentRef = responseData?.custom?.paymentRef ?? '';
+
   const ctPayment = await this.ctPaymentService.getPayment({
     id: paymentRef,
   });
 
   const updatedPayment = await this.ctPaymentService.updatePayment({
     id: ctPayment.id,
-    pspReference: paymentRef,
+    pspReference: parsedData?.interfaceId,
     transaction: {
       type: 'Authorization',
       amount: ctPayment.amountPlanned,
-      interactionId: paymentRef,
-      state: 'success',
+      interactionId: parsedData?.interfaceId,
+      state: 'Success',
     },
   });
-
+	 
 	  const novalnetPayloadss = {
     merchant: {
       signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
@@ -367,13 +365,12 @@ console.log('status-handler');
     transaction: {
       test_mode: '1',
       payment_type: 'PREPAYMENT',
-      amount: 132,
+      amount: 173,
       currency: 'EUR',
     },
 	custom: {
-		input1: 'orderDetail',
-		//inputval1: JSON.stringify(order),
-		inputval1: '',
+		input1: 'paymentRefTest',
+		inputval1: paymentRef,
 		input2: 'source',
 		inputval2: String(parsedData?.source ?? "getCartIdFromContext not available"),
     }
@@ -418,6 +415,8 @@ console.log('status-handler');
 	custom: {
 		input1: 'currencyCode',
 		inputval1: String('empty'),
+		input2: 'paymentRefTest',
+		inputval2: paymentRef,
     }
   };
 
@@ -431,7 +430,7 @@ console.log('status-handler');
     body: JSON.stringify(novalnetPayloads),
   });	
   return {
-      paymentReference: updatedPayment.id,
+		paymentReference: updatedPayment.id,
   };
 }
 	
@@ -448,7 +447,6 @@ console.log('status-handler');
   public async createPayments(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
   const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
   const config = getConfig();
-  //const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;	  
   const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
 	  
     const ctCart = await this.ctCartService.getCart({
@@ -493,9 +491,6 @@ console.log('status-handler');
   
 
   const paymentRef = updatedPayment.id;
-  // const returnUrl = new URL(merchantReturnUrl);
-  // returnUrl.searchParams.append("cartId", ctCart.id);
-  // returnUrl.searchParams.append("paymentReference", paymentRef);
 	  
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
@@ -528,11 +523,11 @@ console.log('status-handler');
 	    amount: '123',
 	    currency: 'EUR',
 	    return_url: `${processorURL}/success`,
-	    error_return_url: `${processorURL}/failure`,
+	    error_return_url: `${processorURL}/payments`,
 	  },
 	  custom: {
-	    input1: 'merchantReturnUrl',
-	    inputval1: String('test' ?? 'empty'),
+	    input1: 'currencyCode',
+	    inputval1: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'empty'),
 	    input2: 'transaction amount',
 	    inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
 	    input3: 'customerEmail',
