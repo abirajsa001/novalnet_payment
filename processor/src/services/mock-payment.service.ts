@@ -491,8 +491,13 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
     });
   
 
-  const paymentRef = updatedPayment.id;
-	  
+ 	const paymentRef = updatedPayment.id;
+	const returnUrlObj = new URL(merchantReturnUrl);
+	returnUrlObj.searchParams.set('cartId', ctCart.id);
+	returnUrlObj.searchParams.set('paymentReference', paymentRef);
+
+    const returnUrl = returnUrlObj.toString();
+	  log.info(returnUrl);
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
