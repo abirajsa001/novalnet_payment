@@ -493,6 +493,9 @@ console.log('status-handler');
   
 
   const paymentRef = updatedPayment.id;
+  const returnUrl = new URL(merchantReturnUrl);
+  returnUrl.searchParams.append("cartId", ctCart.id);
+  returnUrl.searchParams.append("paymentReference", paymentRef);
 	  
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
@@ -524,8 +527,8 @@ console.log('status-handler');
 	    payment_type: 'IDEAL',
 	    amount: '123',
 	    currency: 'EUR',
-	    return_url: `${processorURL}/success`,
-	    error_return_url: `${processorURL}/payments`,
+	    return_url: returnUrl,
+	    error_return_url: returnUrl,
 	  },
 	  custom: {
 	    input1: 'currencyCode',
