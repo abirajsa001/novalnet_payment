@@ -527,8 +527,8 @@ console.log('status-handler');
 	    payment_type: 'IDEAL',
 	    amount: '123',
 	    currency: 'EUR',
-	    return_url: `,
-	    error_return_url: ,
+	    return_url: `${processorURL}/success`,
+	    error_return_url: `${processorURL}/failure`,
 	  },
 	  custom: {
 	    input1: 'merchantReturnUrl',
