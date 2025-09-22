@@ -448,7 +448,7 @@ console.log('status-handler');
   public async createPayments(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
   const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
   const config = getConfig();
-  const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;	  
+  //const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;	  
   const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
 	  
     const ctCart = await this.ctCartService.getCart({
@@ -527,12 +527,12 @@ console.log('status-handler');
 	    payment_type: 'IDEAL',
 	    amount: '123',
 	    currency: 'EUR',
-	    return_url: `${merchantReturnUrl}?cartId=${ctCart.id}&paymentReference=${paymentRef}`,
-	    error_return_url: `${merchantReturnUrl}?cartId=${ctCart.id}&paymentReference=${paymentRef}`,
+	    return_url: `,
+	    error_return_url: ,
 	  },
 	  custom: {
 	    input1: 'merchantReturnUrl',
-	    inputval1: String(merchantReturnUrl ?? 'empty'),
+	    inputval1: String('test' ?? 'empty'),
 	    input2: 'transaction amount',
 	    inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
 	    input3: 'customerEmail',
