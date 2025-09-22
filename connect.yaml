@@ -59,6 +59,9 @@ deployAs:
         - key: NOVALNET_PREPAYMENT_PAYMENT_ACTION_MINIMUM_AMOUNT
           description: Novalnet unique identifier test description data.
           required: true
+        - key: MERCHANT_RETURN_URL
+          description: Merchant return URL
+          required: true
       securedConfiguration:
         - key: CTP_CLIENT_SECRET
           description: "commercetools client secret"
