@@ -312,6 +312,8 @@ console.log('status-handler');
 
  public async createPaymentt({ data }: { data: any }) {
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+  const config = getConfig();
+  const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
@@ -328,8 +330,8 @@ console.log('status-handler');
   });
   const responseData = await novalnetResponse.json();
 
-const paymentRef = responseData?.custom?.paymentRef ?? '';
-
+	const paymentRef = responseData?.custom?.paymentRef ?? '';
+	const cartId  = responseData?.custom?.cartId ?? '';
   const ctPayment = await this.ctPaymentService.getPayment({
     id: paymentRef,
   });
@@ -344,7 +346,11 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
       state: 'Success',
     },
   });
-	 
+
+const returnUrlObj = new URL(merchantReturnUrl);
+returnUrlObj.searchParams.set('cartId', cartId);
+returnUrlObj.searchParams.set('paymentReference', updatedPayment.id);
+const redirectUrl = returnUrlObj.toString(); 
 	  const novalnetPayloadss = {
     merchant: {
       signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
@@ -430,7 +436,7 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
     body: JSON.stringify(novalnetPayloads),
   });	
   return {
-		paymentReference: updatedPayment.id,
+		paymentReference: redirectUrl,
   };
 }
 	
@@ -492,12 +498,12 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
   
 
  	const paymentRef = updatedPayment.id;
-	const returnUrlObj = new URL(merchantReturnUrl);
-	returnUrlObj.searchParams.set('cartId', ctCart.id);
-	returnUrlObj.searchParams.set('paymentReference', paymentRef);
+	//const returnUrlObj = new URL(merchantReturnUrl);
+	//returnUrlObj.searchParams.set('cartId', ctCart.id);
+	//returnUrlObj.searchParams.set('paymentReference', paymentRef);
 
-    const returnUrl = returnUrlObj.toString();
-	  log.info(returnUrl);
+   // const returnUrl = returnUrlObj.toString();
+	 // log.info(returnUrl);
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
@@ -528,8 +534,8 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
 	    payment_type: 'IDEAL',
 	    amount: '123',
 	    currency: 'EUR',
-	    return_url: returnUrl,
-	    error_return_url: returnUrl,
+	    return_url: `${processorURL}/success`,
+	    error_return_url: `${processorURL}/payments`,
 	  },
 	  custom: {
 	    input1: 'currencyCode',
@@ -538,8 +544,8 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
 	    inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
 	    input3: 'customerEmail',
 	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
-	    input4: 'processorurl',
-	    inputval4: String(processorURL ?? "processorURL not available"), 
+	    input4: 'cartId',
+	    inputval4: String(ctCart.id ?? "cart id not available"), 
 		  input5: 'paymentRef',
 	    inputval5: String(paymentRef ?? 'no paymentRef'), 
 	  }
