@@ -139,9 +139,9 @@ console.log('handle-novalnetResponse');
           },
         });
 	
-	 //const updateId = result?.paymentReference ?? '';
-	 const thirdPartyUrl = result?.paymentReference ?? '';
-	 //const thirdPartyUrl = `https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=${updateId}`;
+	 const updateId = result?.paymentReference ?? '';
+	 //const thirdPartyUrl = result?.paymentReference ?? '';
+	 const thirdPartyUrl = `https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=${updateId}`;
 	 //const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
 	 //return reply.redirect(302, thirdPartyUrl);
 	 return reply.code(302).redirect(thirdPartyUrl);
