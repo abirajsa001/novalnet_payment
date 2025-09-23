@@ -314,6 +314,7 @@ console.log('status-handler');
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
   const config = getConfig();
   const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
+	 log.info(merchantReturnUrl);
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
@@ -347,7 +348,9 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
     },
   });
 	const redirectUrl = new URL(merchantReturnUrl);
+	 log.info(redirectUrl);
     redirectUrl.searchParams.append('paymentReference', updatedPayment.id);
+	 log.info(redirectUrl);
 	  const novalnetPayloadss = {
     merchant: {
       signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
@@ -418,8 +421,8 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
 	custom: {
 		input1: 'currencyCode',
 		inputval1: String('empty'),
-		input2: 'paymentRefTest',
-		inputval2: paymentRef,
+		input2: 'redirectUrl',
+		inputval2: redirectUrl,
     }
   };
 
