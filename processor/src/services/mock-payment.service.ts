@@ -26,7 +26,7 @@ import { getConfig } from '../config/config';
 import { appLogger, paymentSDK } from '../payment-sdk';
 import { CreatePaymentRequest, MockPaymentServiceOptions } from './types/mock-payment.type';
 import { PaymentMethodType, PaymentOutcome, PaymentResponseSchemaDTO } from '../dtos/mock-payment.dto';
-import { getCartIdFromContext, getPaymentInterfaceFromContext, getMerchantReturnUrlFromContext } from '../libs/fastify/context/context';
+import { getCartIdFromContext, getPaymentInterfaceFromContext } from '../libs/fastify/context/context';
 import { randomUUID } from 'crypto';
 import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/transaction.dto';
 import { log } from '../libs/logger';
@@ -312,8 +312,6 @@ console.log('status-handler');
 
  public async createPaymentt({ data }: { data: any }) {
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
-  // const config = getConfig();
-  // const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
@@ -330,8 +328,8 @@ console.log('status-handler');
   });
   const responseData = await novalnetResponse.json();
 
-	const paymentRef = responseData?.custom?.paymentRef ?? '';
-	//const cartId  = responseData?.custom?.cartId ?? '';
+const paymentRef = responseData?.custom?.paymentRef ?? '';
+
   const ctPayment = await this.ctPaymentService.getPayment({
     id: paymentRef,
   });
@@ -346,11 +344,7 @@ console.log('status-handler');
       state: 'Success',
     },
   });
-
-// const returnUrlObj = new URL(merchantReturnUrl);
-// returnUrlObj.searchParams.set('cartId', cartId);
-// returnUrlObj.searchParams.set('paymentReference', updatedPayment.id);
-// const redirectUrl = returnUrlObj.toString(); 
+	 
 	  const novalnetPayloadss = {
     merchant: {
       signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
@@ -453,7 +447,6 @@ console.log('status-handler');
   public async createPayments(request: CreatePaymentRequest): Promise<PaymentResponseSchemaDTO> {
   const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
   const config = getConfig();
-  const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
   const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
 	  
     const ctCart = await this.ctCartService.getCart({
@@ -497,14 +490,8 @@ console.log('status-handler');
     });
   
 
- 	const paymentRef = updatedPayment.id;
-	//const cartId = ctCart.id;
-	//const returnUrlObj = new URL(merchantReturnUrl);
-	//returnUrlObj.searchParams.set('cartId', ctCart.id);
-	//returnUrlObj.searchParams.set('paymentReference', paymentRef);
-
-   // const returnUrl = returnUrlObj.toString();
-	 // log.info(returnUrl);
+  const paymentRef = updatedPayment.id;
+	  
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
@@ -547,7 +534,7 @@ console.log('status-handler');
 	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
 	    input4: 'processorurl',
 	    inputval4: String(processorURL ?? "processorURL not available"), 
-		input5: 'paymentRef',
+		  input5: 'paymentRef',
 	    inputval5: String(paymentRef ?? 'no paymentRef'), 
 	  }
 	};
