@@ -332,6 +332,7 @@ console.log('status-handler');
   const responseData = await novalnetResponse.json();
 
 const paymentRef = responseData?.custom?.paymentRef ?? '';
+const cartId = responseData?.custom?.cartId ?? ''; 
 
   const ctPayment = await this.ctPaymentService.getPayment({
     id: paymentRef,
@@ -349,6 +350,7 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
   });
 	const redirectUrl = new URL(merchantReturnUrl);
 	 log.info(redirectUrl);
+	redirectUrl.searchParams.append('cartId', cartId);
     redirectUrl.searchParams.append('paymentReference', updatedPayment.id);
 	 log.info(redirectUrl);
 	  const novalnetPayloadss = {
@@ -497,7 +499,7 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
   
 
   const paymentRef = updatedPayment.id;
-	  
+  const cartId = ctCart.id;
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
@@ -538,9 +540,9 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
 	    inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
 	    input3: 'customerEmail',
 	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
-	    input4: 'processorurl',
-	    inputval4: String(processorURL ?? "processorURL not available"), 
-		  input5: 'paymentRef',
+	    input4: 'cartId',
+	    inputval4: String(cartId ?? "cartId not available"), 
+		input5: 'paymentRef',
 	    inputval5: String(paymentRef ?? 'no paymentRef'), 
 	  }
 	};
