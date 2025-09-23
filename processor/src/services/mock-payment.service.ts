@@ -347,7 +347,7 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
     },
   });
 	const redirectUrl = new URL(merchantReturnUrl);
-    redirectUrl.searchParams.append('paymentReference', paymentReference);
+    redirectUrl.searchParams.append('paymentReference', updatedPayment.id);
 	  const novalnetPayloadss = {
     merchant: {
       signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
