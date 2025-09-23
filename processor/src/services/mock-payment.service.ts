@@ -436,7 +436,7 @@ console.log('status-handler');
     body: JSON.stringify(novalnetPayloads),
   });	
   return {
-		paymentReference: paymentRef,
+		paymentReference: updatedPayment.id,
   };
 }
 	
@@ -498,7 +498,7 @@ console.log('status-handler');
   
 
  	const paymentRef = updatedPayment.id;
-	const cartId = ctCart.id;
+	//const cartId = ctCart.id;
 	//const returnUrlObj = new URL(merchantReturnUrl);
 	//returnUrlObj.searchParams.set('cartId', ctCart.id);
 	//returnUrlObj.searchParams.set('paymentReference', paymentRef);
@@ -545,8 +545,8 @@ console.log('status-handler');
 	    inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
 	    input3: 'customerEmail',
 	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
-	    input4: 'cartId',
-	    inputval4: String(cartId ?? "cart id not available"), 
+	    input4: 'processorurl',
+	    inputval4: String(processorURL ?? "processorURL not available"), 
 		input5: 'paymentRef',
 	    inputval5: String(paymentRef ?? 'no paymentRef'), 
 	  }
