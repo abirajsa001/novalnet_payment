@@ -433,7 +433,7 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
     body: JSON.stringify(novalnetPayloads),
   });	
   return {
-		paymentReference: redirectUrl,
+		paymentReference: redirectUrl.toString(),
   };
 }
 	
