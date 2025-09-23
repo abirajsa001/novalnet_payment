@@ -26,7 +26,7 @@ import { getConfig } from '../config/config';
 import { appLogger, paymentSDK } from '../payment-sdk';
 import { CreatePaymentRequest, MockPaymentServiceOptions } from './types/mock-payment.type';
 import { PaymentMethodType, PaymentOutcome, PaymentResponseSchemaDTO } from '../dtos/mock-payment.dto';
-import { getCartIdFromContext, getPaymentInterfaceFromContext } from '../libs/fastify/context/context';
+import { getCartIdFromContext, getPaymentInterfaceFromContext, getMerchantReturnUrlFromContext } from '../libs/fastify/context/context';
 import { randomUUID } from 'crypto';
 import { TransactionDraftDTO, TransactionResponseDTO } from '../dtos/operations/transaction.dto';
 import { log } from '../libs/logger';
@@ -312,6 +312,8 @@ console.log('status-handler');
 
  public async createPaymentt({ data }: { data: any }) {
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+  const config = getConfig();
+  const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
@@ -344,7 +346,8 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
       state: 'Success',
     },
   });
-	 
+	const redirectUrl = new URL(merchantReturnUrl);
+    redirectUrl.searchParams.append('paymentReference', paymentReference);
 	  const novalnetPayloadss = {
     merchant: {
       signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
@@ -430,7 +433,7 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
     body: JSON.stringify(novalnetPayloads),
   });	
   return {
-		paymentReference: updatedPayment.id,
+		paymentReference: redirectUrl,
   };
 }
 	
