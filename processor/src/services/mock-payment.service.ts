@@ -464,6 +464,7 @@ const cartId = responseData?.custom?.cartId ?? '';
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
     const processorURL = Context.getProcessorUrlFromContext();
+	const sessionId = Context.getCtSessionIdFromContext();
 
     const ctPayment = await this.ctPaymentService.createPayment({
       amountPlanned: await this.ctCartService.getPaymentAmount({ cart: ctCart }),
@@ -500,6 +501,12 @@ const cartId = responseData?.custom?.cartId ?? '';
 
   const paymentRef = updatedPayment.id;
   const cartId = ctCart.id;
+  
+  const url = new URL('/success', processorURL);
+  url.searchParams.append('paymentReference', paymentRef);
+  url.searchParams.append('ctsid', sessionId);
+  const returnUrl = url.toString();
+  
       // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
@@ -530,8 +537,8 @@ const cartId = responseData?.custom?.cartId ?? '';
 	    payment_type: 'IDEAL',
 	    amount: '123',
 	    currency: 'EUR',
-	    return_url: `${processorURL}/success`,
-	    error_return_url: `${processorURL}/payments`,
+	    return_url: returnUrl,
+	    error_return_url: returnUrl,
 	  },
 	  custom: {
 	    input1: 'currencyCode',
