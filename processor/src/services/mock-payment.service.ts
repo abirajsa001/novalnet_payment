@@ -498,6 +498,7 @@ const redirectUrl = returnUrlObj.toString();
   
 
  	const paymentRef = updatedPayment.id;
+	const cartId = ctCart.id;
 	//const returnUrlObj = new URL(merchantReturnUrl);
 	//returnUrlObj.searchParams.set('cartId', ctCart.id);
 	//returnUrlObj.searchParams.set('paymentReference', paymentRef);
@@ -545,8 +546,8 @@ const redirectUrl = returnUrlObj.toString();
 	    input3: 'customerEmail',
 	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
 	    input4: 'cartId',
-	    inputval4: String(ctCart.id ?? "cart id not available"), 
-		  input5: 'paymentRef',
+	    inputval4: String(cartId ?? "cart id not available"), 
+		input5: 'paymentRef',
 	    inputval5: String(paymentRef ?? 'no paymentRef'), 
 	  }
 	};
