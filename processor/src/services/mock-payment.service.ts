@@ -350,7 +350,7 @@ const cartId = responseData?.custom?.cartId ?? '';
   });
 	const redirectUrl = new URL(merchantReturnUrl);
 	 log.info(redirectUrl);
-	redirectUrl.searchParams.append('cartId', cartId);
+	//redirectUrl.searchParams.append('cartId', cartId);
     redirectUrl.searchParams.append('paymentReference', updatedPayment.id);
 	 log.info(redirectUrl);
 	  const novalnetPayloadss = {
