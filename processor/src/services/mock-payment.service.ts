@@ -312,8 +312,8 @@ console.log('status-handler');
 
  public async createPaymentt({ data }: { data: any }) {
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
-  const config = getConfig();
-  const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
+  // const config = getConfig();
+  // const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
@@ -331,7 +331,7 @@ console.log('status-handler');
   const responseData = await novalnetResponse.json();
 
 	const paymentRef = responseData?.custom?.paymentRef ?? '';
-	const cartId  = responseData?.custom?.cartId ?? '';
+	//const cartId  = responseData?.custom?.cartId ?? '';
   const ctPayment = await this.ctPaymentService.getPayment({
     id: paymentRef,
   });
@@ -347,10 +347,10 @@ console.log('status-handler');
     },
   });
 
-const returnUrlObj = new URL(merchantReturnUrl);
-returnUrlObj.searchParams.set('cartId', cartId);
-returnUrlObj.searchParams.set('paymentReference', updatedPayment.id);
-const redirectUrl = returnUrlObj.toString(); 
+// const returnUrlObj = new URL(merchantReturnUrl);
+// returnUrlObj.searchParams.set('cartId', cartId);
+// returnUrlObj.searchParams.set('paymentReference', updatedPayment.id);
+// const redirectUrl = returnUrlObj.toString(); 
 	  const novalnetPayloadss = {
     merchant: {
       signature: '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc',
@@ -436,7 +436,7 @@ const redirectUrl = returnUrlObj.toString();
     body: JSON.stringify(novalnetPayloads),
   });	
   return {
-		paymentReference: redirectUrl,
+		paymentReference: paymentRef,
   };
 }
 	
