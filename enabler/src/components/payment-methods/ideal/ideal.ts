@@ -53,26 +53,8 @@ export class Ideal extends BaseComponent {
 
     try {
       // start original
-      const requestDatas: PaymentRequestSchemaDTO = {
-        paymentMethod: {
-          type: this.paymentMethod,
-        },
-        paymentOutcome: PaymentOutcome.AUTHORIZED,
-      };
-     
-      const responses = await fetch(this.processorUrl + "/test", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Session-Id": this.sessionId,
-        },
-        body: JSON.stringify(requestDatas),
-      });
-      console.log('responses-dataa');
-    console.log(responses);
-      console.log('processorUrl');
+     console.log('processorUrl');
      console.log(this.processorUrl);
-      
       const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
           type: this.paymentMethod,
