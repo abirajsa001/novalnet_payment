@@ -14,7 +14,7 @@ import {
   PaymentResult,
 } from "./payment-enabler";
 import { DropinEmbeddedBuilder } from "../dropin/dropin-embedded";
-import { checkoutFlow } from '@commercetools/checkout-browser-sdk';
+
 
 declare global {
   interface ImportMeta {
