@@ -7,6 +7,7 @@
   TransactionState,
   ErrorInvalidOperation,
 } from '@commercetools/connect-payments-sdk';
+import { checkoutFlow } from '@commercetools/checkout-browser-sdk';
 import {
   CancelPaymentRequest,
   CapturePaymentRequest,
