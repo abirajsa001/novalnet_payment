@@ -3,7 +3,7 @@ import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest} fr
 import { getCartIdFromContext } from '../libs/fastify/context/context';
 import crypto from 'crypto';
 import * as Context from '../libs/fastify/context/context';
-import { checkoutFlow } from '@commercetools/checkout-browser-sdk';
+
 
 import {
   PaymentRequestSchema,
