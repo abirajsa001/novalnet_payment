@@ -133,7 +133,6 @@ console.log('handle-novalnetResponse');
 
       //if (generatedChecksum === query.checksum) {
         try {
-          // Update payment in commercetools
           const result = await opts.paymentService.createPaymentt({
             data: {
               interfaceId: query.tid,
@@ -141,8 +140,7 @@ console.log('handle-novalnetResponse');
               paymentReference: query.paymentReference,
             },
           });
-
-          // Create success page with postMessage to parent window
+			
           const successPageHtml = `
             <!DOCTYPE html>
             <html>
