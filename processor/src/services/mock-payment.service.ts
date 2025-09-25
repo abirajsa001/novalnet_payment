@@ -334,10 +334,18 @@ console.log('status-handler');
 const paymentRef = responseData?.custom?.paymentRef ?? '';
 const cartId = responseData?.custom?.cartId ?? ''; 
 
-  const ctPayment = await this.ctPaymentService.getPayment({
-    id: paymentRef,
-  });
-
+const ctPayment = await this.ctPaymentService.createPayment({
+	id: paymentRef,
+    amountPlanned: { centAmount: 173, currencyCode: 'EUR' },
+    paymentMethodInfo: {
+      paymentInterface: 'novalnet',
+    },
+    paymentStatus: {
+      interfaceCode: 'test-novalnet',
+      interfaceText: 'novalnet-test',
+    },
+});
+	 
   const updatedPayment = await this.ctPaymentService.updatePayment({
     id: ctPayment.id,
     pspReference: parsedData?.interfaceId,
