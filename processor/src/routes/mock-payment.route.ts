@@ -97,7 +97,7 @@ fastify.get('/callback', async (request, reply) => {
     return reply.send('sucess');
 });
 
-fastify.get('/webhook', async (request, reply) => {
+fastify.post('/webhook', async (request, reply) => {
     return reply.send('sucess');
 });
 	
