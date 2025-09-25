@@ -509,7 +509,6 @@ const cartId = responseData?.custom?.cartId ?? '';
   
   log.info('Return URL created:', returnUrl);
   
-      // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
 	    signature: String(getConfig()?.novalnetPrivateKey ?? '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc'),
@@ -576,7 +575,7 @@ const cartId = responseData?.custom?.cartId ?? '';
 	const parsedResponse = JSON.parse(responseString); // convert JSON string to object
 	const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid}
 	Test Order`;
-	let bankDetails = ''; // Use `let` instead of `const` so we can reassign it
+	let bankDetails = '';
 	if (parsedResponse?.transaction?.bank_details) {
 	  bankDetails = `Please transfer the amount of ${parsedResponse?.transaction?.amount} to the following account.
 		Account holder: ${parsedResponse.transaction.bank_details.account_holder}
