@@ -1,4 +1,4 @@
- import {
+import {
   statusHandler,
   healthCheckCommercetoolsPermissions,
   Cart,
@@ -334,9 +334,9 @@ console.log('status-handler');
 const paymentRef = responseData?.custom?.paymentRef ?? '';
 const cartId = responseData?.custom?.cartId ?? ''; 
 
-  const ctPayment = await this.ctPaymentService.getPayment({
-    id: paymentRef,
-  });
+const ctPayment = await this.ctPaymentService.getPayment({
+	id: paymentRef,
+});
 
   const updatedPayment = await this.ctPaymentService.updatePayment({
     id: ctPayment.id,
@@ -507,7 +507,8 @@ const cartId = responseData?.custom?.cartId ?? '';
   url.searchParams.append('ctsid', sessionId);
   const returnUrl = url.toString();
   
-      // 🔐 Call Novalnet API server-side (no CORS issue)
+  log.info('Return URL created:', returnUrl);
+  
 	const novalnetPayload = {
 	  merchant: {
 	    signature: String(getConfig()?.novalnetPrivateKey ?? '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc'),
@@ -541,16 +542,16 @@ const cartId = responseData?.custom?.cartId ?? '';
 	    error_return_url: returnUrl,
 	  },
 	  custom: {
-	    input1: 'currencyCode',
-	    inputval1: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'empty'),
-	    input2: 'transaction amount',
-	    inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
-	    input3: 'customerEmail',
-	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
-	    input4: 'cartId',
-	    inputval4: String(cartId ?? "cartId not available"), 
-		input5: 'paymentRef',
-	    inputval5: String(paymentRef ?? 'no paymentRef'), 
+	    input1: 'paymentRef',
+	    inputval1: String(paymentRef ?? 'no paymentRef'),
+	    input2: 'cartId', 
+	    inputval2: String(cartId ?? 'no cartId'),
+	    input3: 'currencyCode',
+	    inputval3: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'EUR'),
+	    input4: 'customerEmail',
+	    inputval4: String(parsedCart.customerEmail ?? 'Email not available'),
+	    input5: 'sessionId',
+	    inputval5: String(sessionId ?? 'no sessionId'),
 	  }
 	};
 
@@ -574,7 +575,7 @@ const cartId = responseData?.custom?.cartId ?? '';
 	const parsedResponse = JSON.parse(responseString); // convert JSON string to object
 	const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid}
 	Test Order`;
-	let bankDetails = ''; // Use `let` instead of `const` so we can reassign it
+	let bankDetails = '';
 	if (parsedResponse?.transaction?.bank_details) {
 	  bankDetails = `Please transfer the amount of ${parsedResponse?.transaction?.amount} to the following account.
 		Account holder: ${parsedResponse.transaction.bank_details.account_holder}
