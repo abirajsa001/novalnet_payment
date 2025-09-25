@@ -1,4 +1,4 @@
- import {
+import {
   ComponentOptions,
   PaymentComponent,
   PaymentComponentBuilder,
@@ -47,22 +47,16 @@ export class Ideal extends BaseComponent {
   }
 
   async submit() {
-    // here we would call the SDK to submit the payment
     this.sdk.init({ environment: this.environment });
     console.log('submit-triggered');
 
     try {
-      // start original
-     console.log('processorUrl');
-     console.log(this.processorUrl);
       const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
           type: this.paymentMethod,
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
       };
-      console.log('requestDataIdeal');
-    console.log(requestData);
 
       const response = await fetch(this.processorUrl + "/payments", {
         method: "POST",
@@ -72,32 +66,62 @@ export class Ideal extends BaseComponent {
         },
         body: JSON.stringify(requestData),
       });
-      console.log('responseData-newdataIdeal');
-      console.log(response);
+      
       const data = await response.json();
-      console.log(data);
+      console.log('Payment response:', data);
 
-
-     if(data.paymentReference) {
-       //location.href = data.paymentReference;
-      window.location.assign(data.paymentReference);
-     } else {
-       this.onError("Some error occurred. Please try again.");
-     }
-     
       if (data.paymentReference) {
-        this.onComplete &&
-          this.onComplete({
-            isSuccess: true,
-            paymentReference: data.paymentReference,
-          });
+        // Set up message listener for redirect return
+        this.setupRedirectListener();
+        
+        // Open payment page in popup or redirect
+        const paymentWindow = window.open(
+          data.paymentReference,
+          'novalnet_payment',
+          'width=800,height=600,scrollbars=yes,resizable=yes'
+        );
+        
+        // Fallback if popup is blocked
+        if (!paymentWindow) {
+          window.location.href = data.paymentReference;
+        }
       } else {
-        this.onError("Some error occurred. Please try again.");
+        this.onError("Payment initialization failed. Please try again.");
       }
 
     } catch (e) {
+      console.error('Payment submission error:', e);
       this.onError("Some error occurred. Please try again.");
     }
+  }
+
+  private setupRedirectListener() {
+    const messageHandler = (event: MessageEvent) => {
+      console.log('Received payment message:', event.data);
+      
+      if (event.data && event.data.type === 'PAYMENT_SUCCESS') {
+        window.removeEventListener('message', messageHandler);
+        
+        this.onComplete && this.onComplete({
+          isSuccess: true,
+          paymentReference: event.data.paymentReference,
+        });
+      } else if (event.data && event.data.type === 'PAYMENT_FAILURE') {
+        window.removeEventListener('message', messageHandler);
+        
+        this.onComplete && this.onComplete({
+          isSuccess: false,
+          paymentReference: event.data.paymentReference,
+        });
+      }
+    };
+    
+    window.addEventListener('message', messageHandler);
+    
+    // Set timeout to handle cases where popup doesn't send message
+    setTimeout(() => {
+      window.removeEventListener('message', messageHandler);
+    }, 300000); // 5 minutes timeout
   }
 
   private _getTemplate() {
