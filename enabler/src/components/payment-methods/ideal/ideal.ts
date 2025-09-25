@@ -71,17 +71,13 @@ export class Ideal extends BaseComponent {
       console.log('Payment response:', data);
 
       if (data.paymentReference) {
-        // Set up message listener for redirect return
         this.setupRedirectListener();
-        
-        // Open payment page in popup or redirect
         const paymentWindow = window.open(
           data.paymentReference,
           'novalnet_payment',
           'width=800,height=600,scrollbars=yes,resizable=yes'
         );
         
-        // Fallback if popup is blocked
         if (!paymentWindow) {
           window.location.href = data.paymentReference;
         }
@@ -117,11 +113,9 @@ export class Ideal extends BaseComponent {
     };
     
     window.addEventListener('message', messageHandler);
-    
-    // Set timeout to handle cases where popup doesn't send message
     setTimeout(() => {
       window.removeEventListener('message', messageHandler);
-    }, 300000); // 5 minutes timeout
+    }, 300000);
   }
 
   private _getTemplate() {
