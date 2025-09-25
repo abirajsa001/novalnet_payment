@@ -1,4 +1,4 @@
-import {
+ import {
   statusHandler,
   healthCheckCommercetoolsPermissions,
   Cart,
@@ -334,17 +334,10 @@ console.log('status-handler');
 const paymentRef = responseData?.custom?.paymentRef ?? '';
 const cartId = responseData?.custom?.cartId ?? ''; 
 
-const ctPayment = await this.ctPaymentService.createPayment({
-    amountPlanned: { centAmount: 173, currencyCode: 'EUR' },
-    paymentMethodInfo: {
-      paymentInterface: 'novalnet',
-    },
-    paymentStatus: {
-      interfaceCode: 'test-novalnet',
-      interfaceText: 'novalnet-test',
-    },
-});
-	 
+  const ctPayment = await this.ctPaymentService.getPayment({
+    id: paymentRef,
+  });
+
   const updatedPayment = await this.ctPaymentService.updatePayment({
     id: ctPayment.id,
     pspReference: parsedData?.interfaceId,
@@ -478,10 +471,6 @@ const ctPayment = await this.ctPaymentService.createPayment({
       paymentMethodInfo: {
         paymentInterface: getPaymentInterfaceFromContext() || 'mock',
       },
-	 paymentStatus: {
-      interfaceCode: '123456789',
-      interfaceText: '987654321',
-    },
       ...(ctCart.customerId && {
         customer: { typeId: 'customer', id: ctCart.customerId },
       }),
@@ -518,8 +507,7 @@ const ctPayment = await this.ctPaymentService.createPayment({
   url.searchParams.append('ctsid', sessionId);
   const returnUrl = url.toString();
   
-  log.info('Return URL created:', returnUrl);
-  
+      // 🔐 Call Novalnet API server-side (no CORS issue)
 	const novalnetPayload = {
 	  merchant: {
 	    signature: String(getConfig()?.novalnetPrivateKey ?? '7ibc7ob5|tuJEH3gNbeWJfIHah||nbobljbnmdli0poys|doU3HJVoym7MQ44qf7cpn7pc'),
@@ -553,16 +541,16 @@ const ctPayment = await this.ctPaymentService.createPayment({
 	    error_return_url: returnUrl,
 	  },
 	  custom: {
-	    input1: 'paymentRef',
-	    inputval1: String(paymentRef ?? 'no paymentRef'),
-	    input2: 'cartId', 
-	    inputval2: String(cartId ?? 'no cartId'),
-	    input3: 'currencyCode',
-	    inputval3: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'EUR'),
-	    input4: 'customerEmail',
-	    inputval4: String(parsedCart.customerEmail ?? 'Email not available'),
-	    input5: 'sessionId',
-	    inputval5: String(sessionId ?? 'no sessionId'),
+	    input1: 'currencyCode',
+	    inputval1: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'empty'),
+	    input2: 'transaction amount',
+	    inputval2: String(parsedCart?.taxedPrice?.totalGross?.centAmount ?? 'empty'),
+	    input3: 'customerEmail',
+	    inputval3: String(parsedCart.customerEmail ?? "Email not available"),
+	    input4: 'cartId',
+	    inputval4: String(cartId ?? "cartId not available"), 
+		input5: 'paymentRef',
+	    inputval5: String(paymentRef ?? 'no paymentRef'), 
 	  }
 	};
 
@@ -586,7 +574,7 @@ const ctPayment = await this.ctPaymentService.createPayment({
 	const parsedResponse = JSON.parse(responseString); // convert JSON string to object
 	const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid}
 	Test Order`;
-	let bankDetails = '';
+	let bankDetails = ''; // Use `let` instead of `const` so we can reassign it
 	if (parsedResponse?.transaction?.bank_details) {
 	  bankDetails = `Please transfer the amount of ${parsedResponse?.transaction?.amount} to the following account.
 		Account holder: ${parsedResponse.transaction.bank_details.account_holder}
