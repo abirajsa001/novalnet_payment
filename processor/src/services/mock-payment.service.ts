@@ -349,13 +349,13 @@ const ctPayment = await this.ctPaymentService.getPayment({
     },
   });
 
-  await this.ctPaymentService.updatePayment({
-    id: updatedPayment.id,
-    paymentStatus: {
-      interfaceCode: 'updated-novalnet',
-      interfaceText: 'novalnet-updated-status',
-    },
-  });
+  // await this.ctPaymentService.updatePayment({
+  //   id: updatedPayment.id,
+  //   paymentStatus: {
+  //     interfaceCode: 'updated-novalnet',
+  //     interfaceText: 'novalnet-updated-status',
+  //   },
+  // });
 	 
 	const redirectUrl = new URL(merchantReturnUrl);
 	 log.info(redirectUrl);
