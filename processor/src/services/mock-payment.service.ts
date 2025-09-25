@@ -335,7 +335,6 @@ const paymentRef = responseData?.custom?.paymentRef ?? '';
 const cartId = responseData?.custom?.cartId ?? ''; 
 
 const ctPayment = await this.ctPaymentService.createPayment({
-	id: paymentRef,
     amountPlanned: { centAmount: 173, currencyCode: 'EUR' },
     paymentMethodInfo: {
       paymentInterface: 'novalnet',
