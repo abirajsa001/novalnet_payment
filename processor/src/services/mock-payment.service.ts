@@ -314,7 +314,7 @@ console.log('status-handler');
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
   const config = getConfig();
   const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
-  log.info(merchantReturnUrl);
+	 log.info(merchantReturnUrl);
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
@@ -333,11 +333,19 @@ console.log('status-handler');
 
 const paymentRef = responseData?.custom?.paymentRef ?? '';
 const cartId = responseData?.custom?.cartId ?? ''; 
-const ctPayment = await this.ctPaymentService.getPayment({
-	id: paymentRef,
-});
 
-const updatedPayment = await this.ctPaymentService.updatePayment({
+const ctPayment = await this.ctPaymentService.createPayment({
+    amountPlanned: { centAmount: 173, currencyCode: 'EUR' },
+    paymentMethodInfo: {
+      paymentInterface: 'novalnet',
+    },
+    paymentStatus: {
+      interfaceCode: 'test-novalnet',
+      interfaceText: 'novalnet-test',
+    },
+});
+	 
+  const updatedPayment = await this.ctPaymentService.updatePayment({
     id: ctPayment.id,
     pspReference: parsedData?.interfaceId,
     transaction: {
@@ -346,7 +354,7 @@ const updatedPayment = await this.ctPaymentService.updatePayment({
       interactionId: parsedData?.interfaceId,
       state: 'Success',
     },
-});
+  });
 	const redirectUrl = new URL(merchantReturnUrl);
 	 log.info(redirectUrl);
 	//redirectUrl.searchParams.append('cartId', cartId);
@@ -455,16 +463,58 @@ const updatedPayment = await this.ctPaymentService.updatePayment({
   const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
   const config = getConfig();
   const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
-  const ctCart = await this.ctCartService.getCart({
-    id: getCartIdFromContext(),
-  });
+	  
+    const ctCart = await this.ctCartService.getCart({
+      id: getCartIdFromContext(),
+    });
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
     const processorURL = Context.getProcessorUrlFromContext();
 	const sessionId = Context.getCtSessionIdFromContext();
 
+    const ctPayment = await this.ctPaymentService.createPayment({
+      amountPlanned: await this.ctCartService.getPaymentAmount({ cart: ctCart }),
+      paymentMethodInfo: {
+        paymentInterface: getPaymentInterfaceFromContext() || 'mock',
+      },
+	 paymentStatus: {
+      interfaceCode: '123456789',
+      interfaceText: '987654321',
+    },
+      ...(ctCart.customerId && {
+        customer: { typeId: 'customer', id: ctCart.customerId },
+      }),
+      ...(!ctCart.customerId &&
+        ctCart.anonymousId && {
+          anonymousId: ctCart.anonymousId,
+        }),
+    });
+  
+    await this.ctCartService.addPayment({
+      resource: { id: ctCart.id, version: ctCart.version },
+      paymentId: ctPayment.id,
+    });
+  
+    const pspReference = randomUUID().toString();
+    const updatedPayment = await this.ctPaymentService.updatePayment({
+      id: ctPayment.id,
+      pspReference,
+      paymentMethod: request.data.paymentMethod.type,
+      transaction: {
+        type: 'Authorization',
+        amount: ctPayment.amountPlanned,
+        interactionId: pspReference,
+        state: this.convertPaymentResultCode(request.data.paymentOutcome),
+      },
+    });
+  
+
+  const paymentRef = updatedPayment.id;
+  const cartId = ctCart.id;
+  
   const url = new URL('/success', processorURL);
+  url.searchParams.append('paymentReference', paymentRef);
   url.searchParams.append('ctsid', sessionId);
   const returnUrl = url.toString();
   
@@ -503,12 +553,16 @@ const updatedPayment = await this.ctPaymentService.updatePayment({
 	    error_return_url: returnUrl,
 	  },
 	  custom: {
-	    input1: 'currencyCode',
-	    inputval1: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'EUR'),
-	    input2: 'customerEmail',
-	    inputval2: String(parsedCart.customerEmail ?? 'Email not available'),
-	    input3: 'sessionId',
-	    inputval3: String(sessionId ?? 'no sessionId'),
+	    input1: 'paymentRef',
+	    inputval1: String(paymentRef ?? 'no paymentRef'),
+	    input2: 'cartId', 
+	    inputval2: String(cartId ?? 'no cartId'),
+	    input3: 'currencyCode',
+	    inputval3: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? 'EUR'),
+	    input4: 'customerEmail',
+	    inputval4: String(parsedCart.customerEmail ?? 'Email not available'),
+	    input5: 'sessionId',
+	    inputval5: String(sessionId ?? 'no sessionId'),
 	  }
 	};
 
