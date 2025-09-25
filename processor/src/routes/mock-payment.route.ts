@@ -92,6 +92,11 @@ console.log('handle-novalnetResponse');
     },
   );
 
+
+fastify.get('/callback', async (request, reply) => {
+    return reply.send(request);
+});
+	
  fastify.post<{ Body: PaymentRequestSchemaDTO; Reply: PaymentResponseSchemaDTO }>(
     '/payment',
     {
