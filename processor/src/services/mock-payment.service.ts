@@ -364,24 +364,14 @@ const cartId = responseData?.custom?.cartId ?? '';
     const updatedPayment = await this.ctPaymentService.updatePayment({
       id: ctPayment.id,
       pspReference,
-      paymentMethod: request.data.paymentMethod.type,
       transaction: {
         type: 'Authorization',
         amount: ctPayment.amountPlanned,
         interactionId: pspReference,
-        state: this.convertPaymentResultCode(request.data.paymentOutcome),
+        state: 'Success',
       },
     });
 
-
-  // await this.ctPaymentService.updatePayment({
-  //   id: updatedPayment.id,
-  //   paymentStatus: {
-  //     interfaceCode: 'updated-novalnet',
-  //     interfaceText: 'novalnet-updated-status',
-  //   },
-  // });
-	 
 	const redirectUrl = new URL(merchantReturnUrl);
 	 log.info(redirectUrl);
 	//redirectUrl.searchParams.append('cartId', cartId);
@@ -490,7 +480,9 @@ const cartId = responseData?.custom?.cartId ?? '';
   const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
   const config = getConfig();
   const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
-
+  const ctCart = await this.ctCartService.getCart({
+    id: getCartIdFromContext(),
+  });
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
