@@ -151,7 +151,7 @@ console.log('handle-novalnetResponse');
                   if (window.opener) {
                     window.opener.postMessage({
                       type: 'PAYMENT_SUCCESS',
-                      paymentReference: '${query.paymentReference || query.tid}',
+                      paymentReference: '${query.paymentReference}',
                       transactionId: '${query.tid}'
                     }, '*');
                     window.close();
@@ -201,7 +201,7 @@ console.log('handle-novalnetResponse');
             if (window.opener) {
               window.opener.postMessage({
                 type: 'PAYMENT_FAILURE',
-                paymentReference: '${query.paymentReference || query.tid || ''}',
+                paymentReference: '${query.paymentReference || ''}',
                 transactionId: '${query.tid || ''}'
               }, '*');
               window.close();
