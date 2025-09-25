@@ -337,12 +337,15 @@ const ctPayment = await this.ctPaymentService.getPayment({
 	id: paymentRef,
 });
 
-await this.ctPaymentService.updatePayment({
-  id: ctPayment.id,
-  paymentStatus: {
-    interfaceCode: JSON.stringify(responseData),
-    interfaceText: `Novalnet TID: ${responseData?.transaction?.tid || 'N/A'}`,
-  },
+const updatedPayment = await this.ctPaymentService.updatePayment({
+    id: ctPayment.id,
+    pspReference: parsedData?.interfaceId,
+    transaction: {
+      type: 'Authorization',
+      amount: ctPayment.amountPlanned,
+      interactionId: parsedData?.interfaceId,
+      state: 'Success',
+    },
 });
 	const redirectUrl = new URL(merchantReturnUrl);
 	 log.info(redirectUrl);
