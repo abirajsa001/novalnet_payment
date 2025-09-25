@@ -314,7 +314,7 @@ console.log('status-handler');
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
   const config = getConfig();
   const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
-	 log.info(merchantReturnUrl);
+  log.info(merchantReturnUrl);
   const novalnetPayload = {
     transaction: {
       tid: parsedData?.interfaceId ?? '',
@@ -333,21 +333,46 @@ console.log('status-handler');
 
 const paymentRef = responseData?.custom?.paymentRef ?? '';
 const cartId = responseData?.custom?.cartId ?? ''; 
+    const ctCart = await this.ctCartService.getCart({
+      id: getCartIdFromContext(),
+    });
 
-const ctPayment = await this.ctPaymentService.getPayment({
-	id: paymentRef,
-});
-	 
-  const updatedPayment = await this.ctPaymentService.updatePayment({
-    id: ctPayment.id,
-    pspReference: parsedData?.interfaceId,
-    transaction: {
-      type: 'Authorization',
-      amount: ctPayment.amountPlanned,
-      interactionId: parsedData?.interfaceId,
-      state: 'Success',
+	      const ctPayment = await this.ctPaymentService.createPayment({
+      amountPlanned: await this.ctCartService.getPaymentAmount({ cart: ctCart }),
+      paymentMethodInfo: {
+        paymentInterface: getPaymentInterfaceFromContext() || 'mock',
+      },
+	 paymentStatus: {
+      interfaceCode: '123456789',
+      interfaceText: '987654321',
     },
-  });
+      ...(ctCart.customerId && {
+        customer: { typeId: 'customer', id: ctCart.customerId },
+      }),
+      ...(!ctCart.customerId &&
+        ctCart.anonymousId && {
+          anonymousId: ctCart.anonymousId,
+        }),
+    });
+  
+    await this.ctCartService.addPayment({
+      resource: { id: ctCart.id, version: ctCart.version },
+      paymentId: ctPayment.id,
+    });
+  
+    const pspReference = randomUUID().toString();
+    const updatedPayment = await this.ctPaymentService.updatePayment({
+      id: ctPayment.id,
+      pspReference,
+      paymentMethod: request.data.paymentMethod.type,
+      transaction: {
+        type: 'Authorization',
+        amount: ctPayment.amountPlanned,
+        interactionId: pspReference,
+        state: this.convertPaymentResultCode(request.data.paymentOutcome),
+      },
+    });
+
 
   // await this.ctPaymentService.updatePayment({
   //   id: updatedPayment.id,
@@ -465,56 +490,13 @@ const ctPayment = await this.ctPaymentService.getPayment({
   const type = String(request.data?.paymentMethod?.type ?? 'INVOICE');
   const config = getConfig();
   const { testMode, paymentAction } = getNovalnetConfigValues(type, config);
-	  
-    const ctCart = await this.ctCartService.getCart({
-      id: getCartIdFromContext(),
-    });
+
     const deliveryAddress = await this.ctcc(ctCart);
     const billingAddress  = await this.ctbb(ctCart);
     const parsedCart = typeof ctCart === 'string' ? JSON.parse(ctCart) : ctCart;
     const processorURL = Context.getProcessorUrlFromContext();
 	const sessionId = Context.getCtSessionIdFromContext();
 
-    const ctPayment = await this.ctPaymentService.createPayment({
-      amountPlanned: await this.ctCartService.getPaymentAmount({ cart: ctCart }),
-      paymentMethodInfo: {
-        paymentInterface: getPaymentInterfaceFromContext() || 'mock',
-      },
-	 paymentStatus: {
-      interfaceCode: '123456789',
-      interfaceText: '987654321',
-    },
-      ...(ctCart.customerId && {
-        customer: { typeId: 'customer', id: ctCart.customerId },
-      }),
-      ...(!ctCart.customerId &&
-        ctCart.anonymousId && {
-          anonymousId: ctCart.anonymousId,
-        }),
-    });
-  
-    await this.ctCartService.addPayment({
-      resource: { id: ctCart.id, version: ctCart.version },
-      paymentId: ctPayment.id,
-    });
-  
-    const pspReference = randomUUID().toString();
-    const updatedPayment = await this.ctPaymentService.updatePayment({
-      id: ctPayment.id,
-      pspReference,
-      paymentMethod: request.data.paymentMethod.type,
-      transaction: {
-        type: 'Authorization',
-        amount: ctPayment.amountPlanned,
-        interactionId: pspReference,
-        state: this.convertPaymentResultCode(request.data.paymentOutcome),
-      },
-    });
-  
-
-  const paymentRef = updatedPayment.id;
-  const cartId = ctCart.id;
-  
   const url = new URL('/success', processorURL);
   url.searchParams.append('ctsid', sessionId);
   const returnUrl = url.toString();
