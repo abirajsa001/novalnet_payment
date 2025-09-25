@@ -348,6 +348,10 @@ const ctPayment = await this.ctPaymentService.createPayment({
   const updatedPayment = await this.ctPaymentService.updatePayment({
     id: ctPayment.id,
     pspReference: parsedData?.interfaceId,
+    paymentStatus: {
+      interfaceCode: 'updated-novalnet',
+      interfaceText: 'novalnet-updated-status',
+    },
     transaction: {
       type: 'Authorization',
       amount: ctPayment.amountPlanned,
@@ -355,6 +359,7 @@ const ctPayment = await this.ctPaymentService.createPayment({
       state: 'Success',
     },
   });
+	 
 	const redirectUrl = new URL(merchantReturnUrl);
 	 log.info(redirectUrl);
 	//redirectUrl.searchParams.append('cartId', cartId);
