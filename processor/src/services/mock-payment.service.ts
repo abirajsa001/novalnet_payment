@@ -478,6 +478,10 @@ const ctPayment = await this.ctPaymentService.createPayment({
       paymentMethodInfo: {
         paymentInterface: getPaymentInterfaceFromContext() || 'mock',
       },
+	 paymentStatus: {
+      interfaceCode: '123456789',
+      interfaceText: '987654321',
+    },
       ...(ctCart.customerId && {
         customer: { typeId: 'customer', id: ctCart.customerId },
       }),
