@@ -330,14 +330,14 @@ console.log('status-handler');
     body: JSON.stringify(novalnetPayload),
   });
   const responseData = await novalnetResponse.json();
-    const ctCart = await this.ctCartService.getCart({
-      id: getCartIdFromContext(),
-    });
-	 
 const paymentRef = responseData?.custom?.paymentRef ?? '';
 const cartId = responseData?.custom?.cartId ?? ''; 
 
-	     const ctPayment = await this.ctPaymentService.createPayment({
+ const ctCart = await this.ctCartService.getCart({
+      id: getCartIdFromContext(),
+});
+	 
+  const ctPayment = await this.ctPaymentService.createPayment({
       amountPlanned: await this.ctCartService.getPaymentAmount({ cart: ctCart }),
       paymentMethodInfo: {
         paymentInterface: getPaymentInterfaceFromContext() || 'mock',
@@ -351,24 +351,11 @@ const cartId = responseData?.custom?.cartId ?? '';
         }),
     });
 	 
-const ctPayment = await this.ctPaymentService.getPayment({
-	id: paymentRef,
-});
 
-  const updatedPayment = await this.ctPaymentService.updatePayment({
-    id: ctPayment.id,
-    pspReference: parsedData?.interfaceId,
-    transaction: {
-      type: 'Authorization',
-      amount: ctPayment.amountPlanned,
-      interactionId: parsedData?.interfaceId,
-      state: 'Success',
-    },
-  });
 	const redirectUrl = new URL(merchantReturnUrl);
 	 log.info(redirectUrl);
-	//redirectUrl.searchParams.append('cartId', cartId);
-    redirectUrl.searchParams.append('paymentReference', updatedPayment.id);
+	// redirectUrl.searchParams.append('cartId', cartId);
+    // redirectUrl.searchParams.append('paymentReference', updatedPayment.id);
 	 log.info(redirectUrl);
 	  const novalnetPayloadss = {
     merchant: {
@@ -394,10 +381,8 @@ const ctPayment = await this.ctPaymentService.getPayment({
       currency: 'EUR',
     },
 	custom: {
-		input1: 'paymentRefTest',
-		inputval1: paymentRef,
-		input2: 'source',
-		inputval2: String(parsedData?.source ?? "getCartIdFromContext not available"),
+		input1: 'source',
+		inputval1: String(parsedData?.source ?? "getCartIdFromContext not available"),
     }
   };
 
