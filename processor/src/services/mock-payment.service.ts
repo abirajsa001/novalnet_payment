@@ -337,6 +337,20 @@ console.log('status-handler');
 const paymentRef = responseData?.custom?.paymentRef ?? '';
 const cartId = responseData?.custom?.cartId ?? ''; 
 
+	     const ctPayment = await this.ctPaymentService.createPayment({
+      amountPlanned: await this.ctCartService.getPaymentAmount({ cart: ctCart }),
+      paymentMethodInfo: {
+        paymentInterface: getPaymentInterfaceFromContext() || 'mock',
+      },
+      ...(ctCart.customerId && {
+        customer: { typeId: 'customer', id: ctCart.customerId },
+      }),
+      ...(!ctCart.customerId &&
+        ctCart.anonymousId && {
+          anonymousId: ctCart.anonymousId,
+        }),
+    });
+	 
 const ctPayment = await this.ctPaymentService.getPayment({
 	id: paymentRef,
 });
