@@ -350,6 +350,24 @@ const cartId = responseData?.custom?.cartId ?? '';
           anonymousId: ctCart.anonymousId,
         }),
     });
+
+
+	await this.ctCartService.addPayment({
+      resource: { id: ctCart.id, version: ctCart.version },
+      paymentId: ctPayment.id,
+    });
+  
+    const pspReference = randomUUID().toString();
+    const updatedPayment = await this.ctPaymentService.updatePayment({
+      id: ctPayment.id,
+      pspReference,
+      transaction: {
+        type: 'Authorization',
+        amount: ctPayment.amountPlanned,
+        interactionId: pspReference,
+        state: 'Success',
+      },
+    });
 	 
 
 	const redirectUrl = new URL(merchantReturnUrl);
