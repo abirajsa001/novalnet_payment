@@ -364,11 +364,11 @@ const cartId = responseData?.custom?.cartId ?? '';
     const pspReference = randomUUID().toString();
     const updatedPayment = await this.ctPaymentService.updatePayment({
       id: ctPayment.id,
-      pspReference,
+       pspReference: parsedData?.interfaceId,
       transaction: {
         type: 'Authorization',
         amount: ctPayment.amountPlanned,
-        interactionId: pspReference,
+        interactionId: parsedData?.interfaceId,
         state: 'Success',
       },
     });
