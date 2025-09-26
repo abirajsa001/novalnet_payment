@@ -330,7 +330,10 @@ console.log('status-handler');
     body: JSON.stringify(novalnetPayload),
   });
   const responseData = await novalnetResponse.json();
-
+    const ctCart = await this.ctCartService.getCart({
+      id: getCartIdFromContext(),
+    });
+	 
 const paymentRef = responseData?.custom?.paymentRef ?? '';
 const cartId = responseData?.custom?.cartId ?? ''; 
 
