@@ -342,6 +342,10 @@ const cartId = responseData?.custom?.cartId ?? '';
       paymentMethodInfo: {
         paymentInterface: getPaymentInterfaceFromContext() || 'mock',
       },
+	 paymentStatus: {
+      interfaceCode: 'test',
+      interfaceText: 'demo',
+     },
       ...(ctCart.customerId && {
         customer: { typeId: 'customer', id: ctCart.customerId },
       }),
