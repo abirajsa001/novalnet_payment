@@ -14,11 +14,6 @@ import {
 import { checkoutFlow } from '@commercetools/checkout-browser-sdk';
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
 
-const flow = checkoutFlow({
-  paymentReference: new URLSearchParams(window.location.search).get("paymentReference")!,
-});
-
-flow.start();
 
 export class IdealBuilder implements PaymentComponentBuilder {
   public componentHasSubmit = true;
