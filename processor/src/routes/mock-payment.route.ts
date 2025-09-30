@@ -166,8 +166,6 @@ export const paymentRoutes = async (
         .digest("hex");
       log.info("generatedChecksum");
       log.info(generatedChecksum);
-      log.info("checksum");
-      log.info(query.checksum);
       if (generatedChecksum === query.checksum) {
         try {
         const result = await opts.paymentService.createPaymentt({
