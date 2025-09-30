@@ -22,7 +22,7 @@ export class IdealBuilder implements PaymentComponentBuilder {
     return new Ideal(this.baseOptions, config);
   }
 }
-
+ 
 export class Ideal extends BaseComponent {
   private showPayButton: boolean;
 
