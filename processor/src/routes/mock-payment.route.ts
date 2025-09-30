@@ -156,11 +156,18 @@ export const paymentRoutes = async (
 
     if (query.tid && query.status && query.checksum && query.txn_secret) {
       const tokenString = `${query.tid}${query.txn_secret}${query.status}${accessKey}`;
+      log.info("query");
+      log.info(query);
+      log.info("tokenString");
+      log.info(tokenString);
       const generatedChecksum = crypto
         .createHash("sha256")
         .update(tokenString)
         .digest("hex");
-
+      log.info("generatedChecksum");
+      log.info(generatedChecksum);
+      log.info("checksum");
+      log.info(query.checksum);
       if (generatedChecksum === query.checksum) {
         try {
         const result = await opts.paymentService.createPaymentt({
