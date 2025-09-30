@@ -11,9 +11,8 @@ import {
   PaymentOutcome,
   PaymentRequestSchemaDTO,
 } from "../../../dtos/mock-payment.dto";
-import { checkoutFlow } from '@commercetools/checkout-browser-sdk';
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
-
+import { checkoutFlow } from '@commercetools/checkout-browser-sdk';
 
 export class IdealBuilder implements PaymentComponentBuilder {
   public componentHasSubmit = true;
