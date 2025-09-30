@@ -12,7 +12,7 @@ import {
   PaymentRequestSchemaDTO,
 } from "../../../dtos/mock-payment.dto";
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
-// import { getConfig } from "../../../config/config";
+import { checkoutFlow } from '@commercetools/checkout-browser-sdk';
 
 export class IdealBuilder implements PaymentComponentBuilder {
   public componentHasSubmit = true;
