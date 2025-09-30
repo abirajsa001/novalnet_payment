@@ -14,6 +14,16 @@ import {
 import { checkoutFlow } from '@commercetools/checkout-browser-sdk';
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
 
+checkoutFlow({
+  region: '{region}',
+  projectKey: '{projectKey}',
+  sessionId: '{sessionId}',
+  locale: '{locale}',
+  logInfo: true,
+  logWarn: true,
+  logError: true,
+  paymentReference: '{paymentReference}',
+});
 
 export class IdealBuilder implements PaymentComponentBuilder {
   public componentHasSubmit = true;
