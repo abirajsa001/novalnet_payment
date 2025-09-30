@@ -11,7 +11,7 @@ import {
   PaymentOutcome,
   PaymentRequestSchemaDTO,
 } from "../../../dtos/mock-payment.dto";
-import { checkoutFlow } from '@commercetools/checkout-browser-sdk';
+
 import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
 
 
