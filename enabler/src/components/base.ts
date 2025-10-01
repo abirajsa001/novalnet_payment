@@ -1,6 +1,8 @@
 import { FakeSdk } from '../fake-sdk';
 import { ComponentOptions, PaymentComponent, PaymentMethod, PaymentResult } from '../payment-enabler/payment-enabler';
 import { BaseOptions } from "../payment-enabler/payment-enabler-mock";
+import { checkoutFlow } from '@commercetools/checkout-browser-sdk';
+
 
 export type ElementOptions = {
   paymentMethod: PaymentMethod;
