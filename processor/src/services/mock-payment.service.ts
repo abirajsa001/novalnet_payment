@@ -554,7 +554,7 @@ export class MockPaymentService extends AbstractPaymentService {
   ): Promise<PaymentResponseSchemaDTO> {
     log.info("=== IDEAL PAYMENT START ===");
     log.info("Request data:", JSON.stringify(request.data, null, 2));
-    
+    log.info(getFutureOrderNumberFromContext());
     const type = String(request.data?.paymentMethod?.type ?? "INVOICE");
     log.info("Payment type:", type);
     
@@ -709,8 +709,8 @@ export class MockPaymentService extends AbstractPaymentService {
         ),
         input4: "customerEmail",
         inputval4: String(parsedCart.customerEmail ?? "Email not available"),
-        input5: "sessionId",
-        inputval5: String(sessionId ?? "no sessionId"),
+        input5: "getFutureOrderNumberFromContext",
+        inputval5: String(getFutureOrderNumberFromContext ?? "getFutureOrderNumberFromContext"),
       },
     };
 
