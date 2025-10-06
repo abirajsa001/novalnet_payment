@@ -710,7 +710,7 @@ export class MockPaymentService extends AbstractPaymentService {
         input4: "customerEmail",
         inputval4: String(parsedCart.customerEmail ?? "Email not available"),
         input5: "getFutureOrderNumberFromContext",
-        inputval5: String(getFutureOrderNumberFromContext ?? "getFutureOrderNumberFromContext"),
+        inputval5: String(getFutureOrderNumberFromContext() ?? "getFutureOrderNumberFromContext"),
       },
     };
 
