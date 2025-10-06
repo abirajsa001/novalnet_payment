@@ -653,7 +653,7 @@ export class MockPaymentService extends AbstractPaymentService {
     url.searchParams.append("paymentReference", paymentRef);
     url.searchParams.append("ctsid", sessionId);
     const returnUrl = url.toString();
-
+const orderNumber = getFutureOrderNumberFromContext();
     const novalnetPayload = {
       merchant: {
         signature: String(getConfig()?.novalnetPrivateKey ?? ""),
@@ -710,7 +710,7 @@ export class MockPaymentService extends AbstractPaymentService {
         input4: "customerEmail",
         inputval4: String(parsedCart.customerEmail ?? "Email not available"),
         input5: "getFutureOrderNumberFromContext",
-        inputval5: String(getFutureOrderNumberFromContext() ?? "getFutureOrderNumberFromContext"),
+        inputval5: String(orderNumber ?? "getFutureOrderNumberFromContext"),
       },
     };
 
