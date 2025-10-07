@@ -702,7 +702,7 @@ const orderNumber = getFutureOrderNumberFromContext();
       custom: {
         input1: "paymentRef",
         inputval1: String(paymentRef ?? "no paymentRef"),
-        input2: "ReturnurlContext",
+        input2: "ReturnurlContexts",
         inputval2: String(ReturnurlContext ?? "no merchantReturnURL"),
         input3: "currencyCode",
         inputval3: String(
