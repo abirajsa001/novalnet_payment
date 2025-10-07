@@ -103,7 +103,7 @@ export const paymentRoutes = async (
         const resp = await opts.paymentService.createPayments({
           data: request.body,
         });
-        log.info("Payment service response:", JSON.stringify(resp, null, 2));
+        log.info("Payment service response data:", JSON.stringify(resp, null, 2));
 
         return reply.code(302).redirect(resp.txnSecret);
       } catch (error) {
