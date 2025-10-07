@@ -105,7 +105,7 @@ export const paymentRoutes = async (
         });
         log.info("Payment service response:", JSON.stringify(resp, null, 2));
         // return reply.status(200).send(resp);
-        return reply.redirect(res.result.redirect_url);
+        return reply.redirect(resp.redirecturl);
       } catch (error) {
         log.error("Payment route error:", error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';

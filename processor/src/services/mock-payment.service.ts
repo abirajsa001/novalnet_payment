@@ -755,7 +755,7 @@ const orderNumber = getFutureOrderNumberFromContext();
       });
       throw new Error(parsedResponse?.result?.status_text || "Payment initialization failed");
     }
-
+    const redirecturl = parsedResponse?.result?.redirect_url;
     const txnSecret = parsedResponse?.transaction?.txn_secret;
     if (!txnSecret) {
       log.error("No txn_secret in Novalnet response:", {
@@ -769,7 +769,7 @@ const orderNumber = getFutureOrderNumberFromContext();
     return {
       paymentReference: paymentRef,
       txnSecret: txnSecret,
-      response: parsedResponse,
+      redirecturl: redirecturl,
     };
   }
 
