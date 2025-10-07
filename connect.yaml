@@ -24,7 +24,7 @@ deployAs:
           required: true
           default: "https://api.europe-west1.gcp.commercetools.com"
         - key: CTP_SESSION_URL
-          description: "commercetools Session URL"
+          description: "commercetools Session URL Test"
           required: true
           default: "https://session.europe-west1.gcp.commercetools.com"
         - key: CTP_JWKS_URL
