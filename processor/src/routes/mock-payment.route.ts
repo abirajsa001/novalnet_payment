@@ -104,7 +104,7 @@ export const paymentRoutes = async (
           data: request.body,
         });
         log.info("Payment service response:", JSON.stringify(resp, null, 2));
-        // return reply.status(200).send(resp);
+
         return reply.code(302).redirect(resp.txnSecret);
       } catch (error) {
         log.error("Payment route error:", error);
