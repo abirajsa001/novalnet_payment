@@ -71,6 +71,7 @@ export class Ideal extends BaseComponent {
         },
         body: JSON.stringify(requestData),
       });
+      console.log('Response :', response);
       console.log('Response status:', response.status);
       console.log('Response headers:', Object.fromEntries(response.headers.entries()));
       

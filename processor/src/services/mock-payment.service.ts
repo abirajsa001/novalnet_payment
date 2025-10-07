@@ -768,7 +768,8 @@ const redirectResult = parsedResponse?.result?.redirect_url;
     log.info("=== IDEAL PAYMENT SUCCESS ===, returning txn_secret:", txnSecret);
     return {
       paymentReference: paymentRef,
-      txnSecret: redirectResult,
+      txnSecret: parstxnSecretedResponse,
+      response: parsedResponse,
     };
   }
 
