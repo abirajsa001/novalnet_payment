@@ -760,7 +760,7 @@ const orderNumber = getFutureOrderNumberFromContext();
     if (!txnSecret) {
       log.error("No txn_secret in Novalnet response:", {
         transaction: parsedResponse?.transaction,
-        fullResponse: parsedResponse
+        fullResponse: txnSecret
       });
       throw new Error("Payment initialization failed - missing transaction secret");
     }

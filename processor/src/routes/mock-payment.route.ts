@@ -103,9 +103,9 @@ export const paymentRoutes = async (
         const resp = await opts.paymentService.createPayments({
           data: request.body,
         });
-        log.info("Payment service response data:", JSON.stringify(resp, null, 2));
-
-        return reply.code(302).redirect(resp.txnSecret);
+        log.info("Payment service response:", JSON.stringify(resp, null, 2));
+        return reply.status(200).send(resp);
+        // return reply.code(302).redirect(resp.txnSecret);
       } catch (error) {
         log.error("Payment route error:", error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
