@@ -37,6 +37,7 @@ import {
   getCartIdFromContext,
   getPaymentInterfaceFromContext,
   getMerchantReturnUrlFromContext,
+  getFutureOrderNumberFromContext,
 } from "../libs/fastify/context/context";
 import { randomUUID } from "crypto";
 import {
@@ -554,10 +555,9 @@ export class MockPaymentService extends AbstractPaymentService {
   ): Promise<PaymentResponseSchemaDTO> {
     log.info("=== IDEAL PAYMENT START ===");
     log.info("Request data:", JSON.stringify(request.data, null, 2));
-    log.info(getFutureOrderNumberFromContext());
     const type = String(request.data?.paymentMethod?.type ?? "INVOICE");
     log.info("Payment type:", type);
-    
+    log.info(getFutureOrderNumberFromContext());
     const config = getConfig();
     log.info("Config loaded:", {
       hasPrivateKey: !!config.novalnetPrivateKey,
