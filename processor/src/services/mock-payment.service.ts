@@ -768,8 +768,7 @@ const orderNumber = getFutureOrderNumberFromContext();
     log.info("=== IDEAL PAYMENT SUCCESS ===, returning txn_secret:", txnSecret);
     return {
       paymentReference: paymentRef,
-      txnSecret: txnSecret,
-      redirecturl: redirecturl,
+      txnSecret: redirecturl,
     };
   }
 
