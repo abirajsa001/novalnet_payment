@@ -655,6 +655,7 @@ export class MockPaymentService extends AbstractPaymentService {
     url.searchParams.append("ctsid", sessionId);
     const returnUrl = url.toString();
 const orderNumber = getFutureOrderNumberFromContext();
+    const merchantReturnURL = getMerchantReturnUrlFromContext();
     const novalnetPayload = {
       merchant: {
         signature: String(getConfig()?.novalnetPrivateKey ?? ""),
@@ -702,8 +703,8 @@ const orderNumber = getFutureOrderNumberFromContext();
       custom: {
         input1: "paymentRef",
         inputval1: String(paymentRef ?? "no paymentRef"),
-        input2: "cartId",
-        inputval2: String(paymentCartId ?? "no cartId"),
+        input2: "merchantReturnURL",
+        inputval2: String(merchantReturnURL ?? "no merchantReturnURL"),
         input3: "currencyCode",
         inputval3: String(
           parsedCart?.taxedPrice?.totalGross?.currencyCode ?? "EUR",
