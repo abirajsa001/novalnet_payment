@@ -755,12 +755,12 @@ const orderNumber = getFutureOrderNumberFromContext();
       });
       throw new Error(parsedResponse?.result?.status_text || "Payment initialization failed");
     }
-    const redirecturl = parsedResponse?.result?.redirect_url;
+
     const txnSecret = parsedResponse?.transaction?.txn_secret;
     if (!txnSecret) {
       log.error("No txn_secret in Novalnet response:", {
         transaction: parsedResponse?.transaction,
-        fullResponse: txnSecret
+        fullResponse: parsedResponse
       });
       throw new Error("Payment initialization failed - missing transaction secret");
     }
@@ -768,7 +768,7 @@ const orderNumber = getFutureOrderNumberFromContext();
     log.info("=== IDEAL PAYMENT SUCCESS ===, returning txn_secret:", txnSecret);
     return {
       paymentReference: paymentRef,
-      txnSecret: redirecturl,
+      txnSecret: txnSecret,
     };
   }
 
