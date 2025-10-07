@@ -769,7 +769,7 @@ const redirectResult = parsedResponse?.result?.redirect_url;
     return {
       paymentReference: paymentRef,
       txnSecret: parstxnSecretedResponse,
-      response: parsedResponse,
+      response: redirectResult,
     };
   }
 

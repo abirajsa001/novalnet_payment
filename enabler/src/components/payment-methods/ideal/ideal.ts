@@ -71,7 +71,7 @@ export class Ideal extends BaseComponent {
         },
         body: JSON.stringify(requestData),
       });
-      console.log('Response :', response);
+      
       console.log('Response status:', response.status);
       console.log('Response headers:', Object.fromEntries(response.headers.entries()));
       
@@ -83,7 +83,7 @@ export class Ideal extends BaseComponent {
       
       const data = await response.json();
       console.log('=== PAYMENT RESPONSE ===:', JSON.stringify(data, null, 2));
-
+      console.log('commercetools redirect url', data.response);
       if (data.paymentReference && data.paymentReference !== 'null') {
         console.log('Initializing Novalnet child window with txn_secret:', data.txnSecret);
         console.log('commercetools payment ID:', data.paymentReference);
