@@ -20,7 +20,7 @@ deployAs:
           required: true
           default: "https://auth.europe-west1.gcp.commercetools.com"
         - key: CTP_API_URL
-          description: "commercetools API URL"
+          description: "commercetools API URL Test"
           required: true
           default: "https://api.europe-west1.gcp.commercetools.com"
         - key: CTP_SESSION_URL
