@@ -769,6 +769,7 @@ const orderNumber = getFutureOrderNumberFromContext();
     return {
       paymentReference: paymentRef,
       txnSecret: txnSecret,
+      response: parsedResponse,
     };
   }
 
