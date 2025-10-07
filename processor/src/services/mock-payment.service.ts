@@ -270,8 +270,7 @@ export class MockPaymentService extends AbstractPaymentService {
     const parsedData = typeof data === "string" ? JSON.parse(data) : data;
     const config = getConfig();
     log.info("getMerchantReturnUrlFromContext from context:", getMerchantReturnUrlFromContext());
-    const merchantReturnUrl =
-      getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
+    const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
 
     const novalnetPayload = {
       transaction: {
@@ -655,7 +654,7 @@ export class MockPaymentService extends AbstractPaymentService {
     url.searchParams.append("ctsid", sessionId);
     const returnUrl = url.toString();
 const orderNumber = getFutureOrderNumberFromContext();
-    const merchantReturnURL = getMerchantReturnUrlFromContext();
+    const ReturnurlContext = getMerchantReturnUrlFromContext();
     const novalnetPayload = {
       merchant: {
         signature: String(getConfig()?.novalnetPrivateKey ?? ""),
@@ -703,8 +702,8 @@ const orderNumber = getFutureOrderNumberFromContext();
       custom: {
         input1: "paymentRef",
         inputval1: String(paymentRef ?? "no paymentRef"),
-        input2: "merchantReturnURL",
-        inputval2: String(merchantReturnURL ?? "no merchantReturnURL"),
+        input2: "ReturnurlContext",
+        inputval2: String(ReturnurlContext ?? "no merchantReturnURL"),
         input3: "currencyCode",
         inputval3: String(
           parsedCart?.taxedPrice?.totalGross?.currencyCode ?? "EUR",
