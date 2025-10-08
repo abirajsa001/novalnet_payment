@@ -171,15 +171,15 @@ export const paymentRoutes = async (
         try {
 
           const paymentId = query.paymentReference;
-
-          const projectKey = getConfig().projectKey;
-          log.info("projectKey Value:", projectKey);
+          
+          const projectKeyValue = String(getConfig()?.projectKey);
+          log.info("projectKey Value:", projectKeyValue);
           // const apiRoot = createApiRoot({
           //   projectKey,
-          //   clientId: process.env.CTP_CLIENT_ID!,
-          //   clientSecret: process.env.CTP_CLIENT_SECRET!,
-          //   authHost: process.env.CTP_AUTH_URL,
-          //   apiHost: process.env.CTP_API_URL,
+          //   clientId: getConfig().clientId,
+          //   clientSecret: getConfig().clientSecret,
+          //   authHost: getConfig().authUrl,
+          //   apiHost: getConfig().apiUrl,
           // });
           
           // const { body: orderPagedResult } = await apiRoot.orders().get({
