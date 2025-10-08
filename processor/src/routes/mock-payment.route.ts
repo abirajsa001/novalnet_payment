@@ -172,50 +172,9 @@ export const paymentRoutes = async (
 
           const paymentId = query.paymentReference;
           
-          // const projectKey = 'newprojectkey';
-          // log.info("projectKey Value:", projectKey);
-          // const apiRoot = createApiRoot({
-          //   projectKey,
-          //   clientId: 'PvpIwckG4tM69ATbESCg362e',
-          //   clientSecret: 'hLSoCgHZu7er7zNVhnqTWgFsTuJllBXL',
-          //   authHost: 'https://auth.europe-west1.gcp.commercetools.com',
-          //   apiHost: 'https://api.europe-west1.gcp.commercetools.com',
-          // });
-          
-          // const { body: orderPagedResult } = await apiRoot.orders().get({
-          //   queryArgs: { where: paymentInfo(payments(id="${paymentId}")) },
-          // }).execute();
-          
-          // const order = orderPagedResult.results[0];
-         
-          // if (!order) {
-          //  log.info("Order not found for paymentId:", paymentId);
-          //   return reply.status(404).send("Order not found");
-          // }
+          const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
+          return reply.code(302).redirect(thirdPartyUrl);
 
-          // log.info("Order object received:", JSON.stringify(order, null, 2));
-          // return reply.redirect(`/thank-you/?orderId=${order.id}`);
-
-
-          // const ctOrderService = new CommercetoolsOrderService(request);
-          // const order = await ctOrderService.getOrderByPaymentId({ paymentId });
-          // log.info("order object recieved:", JSON.stringify(order, null, 2));
-          // if (!order) {
-          //   log.info("order object not recieved:");
-          //   return res.status(404).send("Order not found");
-          // }
-    
-        // const result = await opts.paymentService.createPaymentt({
-        //   data: {
-        //     interfaceId: query.tid,
-        //     status: query.status,
-        //     paymentReference: paymentId,
-        //   },
-        // });
-
-        // const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
-        const thankyouPageUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/';
-        return reply.redirect(thankyouPageUrl);
         } catch (error) {
           log.error("Error processing payment:", error);
           return reply.code(400).send("Payment processing failed");
