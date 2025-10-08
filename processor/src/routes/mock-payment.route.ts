@@ -188,11 +188,11 @@ export const paymentRoutes = async (
           const order = orderPagedResult.results[0];
          
           if (!order) {
-            console.log("Order not found for paymentId:", paymentId);
+           log.info("Order not found for paymentId:", paymentId);
             return reply.status(404).send("Order not found");
           }
           
-          console.log("Order object received:", JSON.stringify(order, null, 2));
+          log.info("Order object received:", JSON.stringify(order, null, 2));
           return reply.redirect(`/thank-you/?orderId=${order.id}`);
 
 
