@@ -1,4 +1,4 @@
-import { SessionHeaderAuthenticationHook } from "@commercetools/connect-payments-sdk";
+import { CommercetoolsOrderService, SessionHeaderAuthenticationHook } from "@commercetools/connect-payments-sdk";
 import {
   FastifyInstance,
   FastifyPluginOptions,
@@ -154,19 +154,23 @@ export const paymentRoutes = async (
     };
 
     const accessKey = String(getConfig()?.novalnetPublicKey ?? "");
-
+    const reverseKey =  accessKey.split("").reverse().join("");
     if (query.tid && query.status && query.checksum && query.txn_secret) {
-      const tokenString = `${query.tid}${query.txn_secret}${query.status}${accessKey}`;
-      log.info("query");
-      log.info(query);
-      log.info("tokenString");
-      log.info(tokenString);
+      const tokenString = `${query.tid}${query.txn_secret}${query.status}${reverseKey}`;
+      log.info("query", query);
+      log.info("tokenString", tokenString);
       const generatedChecksum = crypto
         .createHash("sha256")
         .update(tokenString)
         .digest("hex");
-      log.info("generatedChecksum");
-      log.info(generatedChecksum);
+      log.info("generatedChecksum", generatedChecksum);
+
+      // const paymentId = query.paymentReference;
+      // const order = await ctOrderService.getOrderByPaymentId({ paymentId });
+      // if (!order) {
+      //   return res.status(404).send("Order not found");
+      // }
+
       if (generatedChecksum === query.checksum) {
         try {
         const result = await opts.paymentService.createPaymentt({
