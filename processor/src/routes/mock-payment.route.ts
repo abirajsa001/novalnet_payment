@@ -172,7 +172,7 @@ export const paymentRoutes = async (
 
           const paymentId = query.paymentReference;
 
-          const projectKey = process.env.CTP_PROJECT_KEY!;
+          const projectKey = getConfig().projectKey;
           log.info("projectKey Value:", projectKey);
           // const apiRoot = createApiRoot({
           //   projectKey,
