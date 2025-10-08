@@ -653,7 +653,7 @@ export class MockPaymentService extends AbstractPaymentService {
     url.searchParams.append("paymentReference", paymentRef);
     url.searchParams.append("ctsid", sessionId);
     const returnUrl = url.toString();
-    const orderNumber = getFutureOrderNumberFromContext();
+   const orderNumber = getFutureOrderNumberFromContext();
     const ReturnurlContext = getMerchantReturnUrlFromContext();
     const novalnetPayload = {
       merchant: {
@@ -705,7 +705,9 @@ export class MockPaymentService extends AbstractPaymentService {
         input2: "ReturnurlContexts",
         inputval2: String(ReturnurlContext ?? "no merchantReturnURL"),
         input3: "currencyCode",
-        inputval3: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? "EUR"),
+        inputval3: String(
+          parsedCart?.taxedPrice?.totalGross?.currencyCode ?? "EUR",
+        ),
         input4: "customerEmail",
         inputval4: String(parsedCart.customerEmail ?? "Email not available"),
         input5: "getFutureOrderNumberFromContext",
@@ -753,7 +755,7 @@ export class MockPaymentService extends AbstractPaymentService {
       });
       throw new Error(parsedResponse?.result?.status_text || "Payment initialization failed");
     }
-    const redirectResult = parsedResponse?.result?.redirect_url;
+const redirectResult = parsedResponse?.result?.redirect_url;
     const txnSecret = parsedResponse?.transaction?.txn_secret;
     if (!txnSecret) {
       log.error("No txn_secret in Novalnet response:", {

@@ -172,12 +172,12 @@ export const paymentRoutes = async (
 
           const paymentId = query.paymentReference;
           const ctOrderService = new CommercetoolsOrderService();
-          const order = await ctOrderService.getOrderByPaymentId({ paymentId });
-          log.info("order object recieved:", JSON.stringify(order, null, 2));
-          if (!order) {
-            log.info("order object not recieved:");
-            return res.status(404).send("Order not found");
-          }
+          // const order = await ctOrderService.getOrderByPaymentId({ paymentId });
+          // log.info("order object recieved:", JSON.stringify(order, null, 2));
+          // if (!order) {
+          //   log.info("order object not recieved:");
+          //   return res.status(404).send("Order not found");
+          // }
     
         // const result = await opts.paymentService.createPaymentt({
         //   data: {
