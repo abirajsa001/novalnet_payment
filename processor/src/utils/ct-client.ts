@@ -1,5 +1,6 @@
 import { ClientBuilder } from '@commercetools/sdk-client-v2';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
+import fetch from 'node-fetch';
 
 const projectKey = process.env.CTP_PROJECT_KEY!;
 const authUrl = process.env.CTP_AUTH_URL || 'https://auth.europe-west1.gcp.commercetools.com';
