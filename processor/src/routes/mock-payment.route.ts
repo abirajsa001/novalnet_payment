@@ -157,7 +157,7 @@ export const paymentRoutes = async (
     const reverseKey =  accessKey.split("").reverse().join("");
     if (query.tid && query.status && query.checksum && query.txn_secret) {
       const tokenString = `${query.tid}${query.txn_secret}${query.status}${reverseKey}`;
-      log.info("query", query);
+      log.info("query:", JSON.stringify(query, null, 2));
       log.info("queryChecksum", query.checksum);
       log.info("tokenString", tokenString);
       const generatedChecksum = crypto
@@ -166,21 +166,26 @@ export const paymentRoutes = async (
         .digest("hex");
       log.info("generatedChecksum", generatedChecksum);
 
-      // const paymentId = query.paymentReference;
-      // const order = await ctOrderService.getOrderByPaymentId({ paymentId });
-      // if (!order) {
-      //   return res.status(404).send("Order not found");
-      // }
 
       if (generatedChecksum === query.checksum) {
         try {
-        const result = await opts.paymentService.createPaymentt({
-          data: {
-            interfaceId: query.tid,
-            status: query.status,
-            paymentReference: query.paymentReference,
-          },
-        });
+
+          const paymentId = query.paymentReference;
+          const ctOrderService = new CommercetoolsOrderService();
+          const order = await ctOrderService.getOrderByPaymentId({ paymentId });
+          log.info("order object recieved:", JSON.stringify(order, null, 2));
+          if (!order) {
+            log.info("order object not recieved:");
+            return res.status(404).send("Order not found");
+          }
+    
+        // const result = await opts.paymentService.createPaymentt({
+        //   data: {
+        //     interfaceId: query.tid,
+        //     status: query.status,
+        //     paymentReference: query.paymentReference,
+        //   },
+        // });
 
         const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
         return reply.code(302).redirect(thirdPartyUrl);
