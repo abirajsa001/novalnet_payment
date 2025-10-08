@@ -1,4 +1,6 @@
 import { SessionHeaderAuthenticationHook } from "@commercetools/connect-payments-sdk";
+import { getApiRoot } from '../utils/ct-client';
+
 import {
   FastifyInstance,
   FastifyPluginOptions,
@@ -171,6 +173,18 @@ export const paymentRoutes = async (
       log.info(generatedChecksum);
       if (generatedChecksum === query.checksum) {
         try {
+
+          const paymentId = query.paymentReference;
+          const apiRoot = await getApiRoot() as any;
+
+          const { body: orderPagedResult } = await apiRoot
+            .orders()
+            .get({ queryArgs: { where: `paymentInfo(payments(id="${paymentId}"))` } })
+            .execute();
+      
+          const order = orderPagedResult.results[0];
+          if (!order) return reply.code(404).send('Order not found');
+
 
         const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you';
         return reply.code(302).redirect(thirdPartyUrl);
