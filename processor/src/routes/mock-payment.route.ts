@@ -153,7 +153,7 @@ export const paymentRoutes = async (
       ctsid?: string;
     };
 
-    const accessKey = String(getConfig()?.novalnetPrivateKey ?? "");
+    const accessKey = String(getConfig()?.novalnetPublicKey ?? "");
 
     if (query.tid && query.status && query.checksum && query.txn_secret) {
       const tokenString = `${query.tid}${query.txn_secret}${query.status}${accessKey}`;
@@ -202,14 +202,17 @@ export const paymentRoutes = async (
     const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
     return reply.code(302).redirect(thirdPartyUrl);
   });
-  
+
   fastify.get("/callback", async (request, reply) => {
     return reply.send("sucess");
   });
 
-  fastify.post("/webhook", async (request, reply) => {
-    return reply.send("sucess");
-  });
+fastify.post('/webhook', async (req: FastifyRequest, reply: FastifyReply) => {
+  const rawBody = req.body;
+  const rawString = JSON.stringify(req.body);
+  
+  return reply.send(rawBody);
+});
 
   fastify.get<{
     Querystring: PaymentRequestSchemaDTO;

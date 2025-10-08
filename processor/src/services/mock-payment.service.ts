@@ -705,9 +705,7 @@ export class MockPaymentService extends AbstractPaymentService {
         input2: "ReturnurlContexts",
         inputval2: String(ReturnurlContext ?? "no merchantReturnURL"),
         input3: "currencyCode",
-        inputval3: String(
-          parsedCart?.taxedPrice?.totalGross?.currencyCode ?? "EUR",
-        ),
+        inputval3: String(parsedCart?.taxedPrice?.totalGross?.currencyCode ?? "EUR"),
         input4: "customerEmail",
         inputval4: String(parsedCart.customerEmail ?? "Email not available"),
         input5: "getFutureOrderNumberFromContext",
