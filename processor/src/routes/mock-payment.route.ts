@@ -213,9 +213,9 @@ export const paymentRoutes = async (
         //   },
         // });
 
-        const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
+        // const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
         const thankyouPageUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/';
-        return reply.code(302).redirect(thankyouPageUrl);
+        return reply.redirect(thankyouPageUrl);
         } catch (error) {
           log.error("Error processing payment:", error);
           return reply.code(400).send("Payment processing failed");
