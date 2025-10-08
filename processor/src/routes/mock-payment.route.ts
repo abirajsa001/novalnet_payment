@@ -1,4 +1,4 @@
-import { CommercetoolsOrderService, SessionHeaderAuthenticationHook } from "@commercetools/connect-payments-sdk";
+import { CommercetoolsOrderService, SessionHeaderAuthenticationHook, createApiRoot } from "@commercetools/connect-payments-sdk";
 import {
   FastifyInstance,
   FastifyPluginOptions,
@@ -171,6 +171,35 @@ export const paymentRoutes = async (
         try {
 
           const paymentId = query.paymentReference;
+
+          const projectKey = process.env.CTP_PROJECT_KEY!;
+          const apiRoot = createApiRoot({
+            projectKey,
+            clientId: process.env.CTP_CLIENT_ID!,
+            clientSecret: process.env.CTP_CLIENT_SECRET!,
+            authHost: process.env.CTP_AUTH_URL,
+            apiHost: process.env.CTP_API_URL,
+          });
+          
+          const paymentId = query.paymentReference;
+          
+          // Query orders by paymentId
+          const { body: orderPagedResult } = await apiRoot.orders().get({
+            queryArgs: { where: paymentInfo(payments(id="${paymentId}")) },
+          }).execute();
+          
+          const order = orderPagedResult.results[0];
+          
+          if (!order) {
+            console.log("Order not found for paymentId:", paymentId);
+            return reply.status(404).send("Order not found");
+          }
+          
+          console.log("Order object received:", JSON.stringify(order, null, 2));
+          
+          // Redirect shopper to thank-you page
+          return reply.code(302).redirect(thirdPartyUrl);
+
           // const ctOrderService = new CommercetoolsOrderService(request);
           // const order = await ctOrderService.getOrderByPaymentId({ paymentId });
           // log.info("order object recieved:", JSON.stringify(order, null, 2));
