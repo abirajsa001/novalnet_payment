@@ -189,12 +189,12 @@ export const paymentRoutes = async (
          
           if (!order) {
             console.log("Order not found for paymentId:", paymentId);
-            return res.status(404).send("Order not found");
+            return reply.status(404).send("Order not found");
           }
           
           console.log("Order object received:", JSON.stringify(order, null, 2));
-          const orderIdValue = order.id;
-          return res.redirect("/thank-you/?orderId=",orderIdValue);
+          return reply.redirect(`/thank-you/?orderId=${order.id}`);
+
 
           // const ctOrderService = new CommercetoolsOrderService(request);
           // const order = await ctOrderService.getOrderByPaymentId({ paymentId });
