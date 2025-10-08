@@ -162,6 +162,7 @@ export const paymentRoutes = async (
       log.info(query);
       log.info("tokenString");
       log.info(tokenString);
+      log.info("tokenStringlogged");
       const generatedChecksum = crypto
         .createHash("sha256")
         .update(tokenString)
