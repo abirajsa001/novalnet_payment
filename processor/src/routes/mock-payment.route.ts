@@ -176,10 +176,10 @@ export const paymentRoutes = async (
           log.info("projectKey Value:", projectKeyValue);
           // const apiRoot = createApiRoot({
           //   projectKey,
-          //   clientId: getConfig().clientId,
-          //   clientSecret: getConfig().clientSecret,
-          //   authHost: getConfig().authUrl,
-          //   apiHost: getConfig().apiUrl,
+          //   clientId: getConfig()?.clientId,
+          //   clientSecret: getConfig()?.clientSecret,
+          //   authHost: getConfig()?.authUrl,
+          //   apiHost: getConfig()?.apiUrl,
           // });
           
           // const { body: orderPagedResult } = await apiRoot.orders().get({
