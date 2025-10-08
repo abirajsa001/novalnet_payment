@@ -172,15 +172,15 @@ export const paymentRoutes = async (
 
           const paymentId = query.paymentReference;
           
-          const projectKeyValue = String(getConfig()?.projectKey);
-          log.info("projectKey Value:", projectKeyValue);
-          // const apiRoot = createApiRoot({
-          //   projectKey,
-          //   clientId: String(getConfig()?.clientId),
-          //   clientSecret: String(getConfig()?.clientSecret),
-          //   authHost: String(getConfig()?.authUrl),
-          //   apiHost: String(getConfig()?.apiUrl),
-          // });
+          const projectKey = 'newprojectkey';
+          log.info("projectKey Value:", projectKey);
+          const apiRoot = createApiRoot({
+            projectKey,
+            clientId: 'PvpIwckG4tM69ATbESCg362e',
+            clientSecret: 'hLSoCgHZu7er7zNVhnqTWgFsTuJllBXL',
+            authHost: 'https://auth.europe-west1.gcp.commercetools.com',
+            apiHost: 'https://api.europe-west1.gcp.commercetools.com',
+          });
           
           // const { body: orderPagedResult } = await apiRoot.orders().get({
           //   queryArgs: { where: paymentInfo(payments(id="${paymentId}")) },
