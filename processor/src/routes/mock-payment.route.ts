@@ -173,27 +173,28 @@ export const paymentRoutes = async (
           const paymentId = query.paymentReference;
 
           const projectKey = process.env.CTP_PROJECT_KEY!;
-          const apiRoot = createApiRoot({
-            projectKey,
-            clientId: process.env.CTP_CLIENT_ID!,
-            clientSecret: process.env.CTP_CLIENT_SECRET!,
-            authHost: process.env.CTP_AUTH_URL,
-            apiHost: process.env.CTP_API_URL,
-          });
+          log.info("projectKey Value:", projectKey);
+          // const apiRoot = createApiRoot({
+          //   projectKey,
+          //   clientId: process.env.CTP_CLIENT_ID!,
+          //   clientSecret: process.env.CTP_CLIENT_SECRET!,
+          //   authHost: process.env.CTP_AUTH_URL,
+          //   apiHost: process.env.CTP_API_URL,
+          // });
           
-          const { body: orderPagedResult } = await apiRoot.orders().get({
-            queryArgs: { where: paymentInfo(payments(id="${paymentId}")) },
-          }).execute();
+          // const { body: orderPagedResult } = await apiRoot.orders().get({
+          //   queryArgs: { where: paymentInfo(payments(id="${paymentId}")) },
+          // }).execute();
           
-          const order = orderPagedResult.results[0];
+          // const order = orderPagedResult.results[0];
          
-          if (!order) {
-           log.info("Order not found for paymentId:", paymentId);
-            return reply.status(404).send("Order not found");
-          }
-          
-          log.info("Order object received:", JSON.stringify(order, null, 2));
-          return reply.redirect(`/thank-you/?orderId=${order.id}`);
+          // if (!order) {
+          //  log.info("Order not found for paymentId:", paymentId);
+          //   return reply.status(404).send("Order not found");
+          // }
+
+          // log.info("Order object received:", JSON.stringify(order, null, 2));
+          // return reply.redirect(`/thank-you/?orderId=${order.id}`);
 
 
           // const ctOrderService = new CommercetoolsOrderService(request);
