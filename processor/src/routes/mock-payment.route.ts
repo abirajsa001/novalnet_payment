@@ -1,4 +1,4 @@
-import { SessionHeaderAuthenticationHook, createApiRoot } from "@commercetools/connect-payments-sdk";
+import { SessionHeaderAuthenticationHook } from "@commercetools/connect-payments-sdk";
 import {
   FastifyInstance,
   FastifyPluginOptions,
@@ -171,15 +171,6 @@ export const paymentRoutes = async (
       log.info(generatedChecksum);
       if (generatedChecksum === query.checksum) {
         try {
-        const projectKeyValue = String(getConfig()?.projectKey);
-        const apiRoot = createApiRoot({
-          projectKeyValue,
-          clientId: String(getConfig()?.clientId),
-          clientSecret: String(getConfig()?.clientSecret),
-          authHost: String(getConfig()?.authUrl),
-          apiHost: String(getConfig()?.apiUrl),
-        });
-        const paymentId = query.paymentReference;
 
         const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you';
         return reply.code(302).redirect(thirdPartyUrl);
