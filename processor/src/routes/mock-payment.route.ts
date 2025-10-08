@@ -103,7 +103,7 @@ export const paymentRoutes = async (
         const resp = await opts.paymentService.createPayments({
           data: request.body,
         });
-        
+
         log.info("Payment service response:", JSON.stringify(resp, null, 2));
         return reply.status(200).send(resp);
       } catch (error) {
@@ -177,35 +177,8 @@ export const paymentRoutes = async (
           },
         });
 
-        const successPageHtml = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <title>Payment Successful</title>
-              <script>
-                window.onload = function() {
-                  if (window.opener) {
-                    window.opener.postMessage(JSON.stringify({
-                      status_code: '100',
-                      status: 100,
-                      paymentReference: '${result.paymentReference}',
-                      commercetoolsPaymentId: '${result.paymentReference}'
-                    }), '*');
-                    window.close();
-                  } else {
-                  }
-                };
-              </script>
-            </head>
-            <body>
-              <h1>Payment Successful!</h1>
-              <p>Your payment has been processed successfully.</p>
-              <p>Redirecting...</p>
-            </body>
-            </html>
-          `;
-
-        return reply.type("text/html").send(successPageHtml);
+        const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
+        return reply.code(302).redirect(thirdPartyUrl);
         } catch (error) {
           log.error("Error processing payment:", error);
           return reply.code(400).send("Payment processing failed");
@@ -226,70 +199,10 @@ export const paymentRoutes = async (
       paymentReference?: string;
     };
 
-    const failurePageHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Payment Failed</title>
-        <script>
-          window.onload = function() {
-            if (window.opener) {
-              window.opener.postMessage(JSON.stringify({
-                nnpf_postMsg: 'payment_cancel',
-                status_code: '${query.status || "FAILURE"}',
-                paymentReference: '${query.paymentReference}',
-                commercetoolsPaymentId: '${query.paymentReference}'
-                tid: '${query.tid || ""}'
-              }), '*');
-              window.close();
-            } else {
-              setTimeout(() => {
-                window.location.href = '/payment-complete?success=false&paymentReference=${query.paymentReference || query.tid || ""}';
-              }, 2000);
-            }
-          };
-        </script>
-      </head>
-      <body>
-        <h1>Payment Failed</h1>
-        <p>Your payment could not be processed.</p>
-        <p>Redirecting...</p>
-      </body>
-      </html>
-    `;
-
-    return reply.type("text/html").send(failurePageHtml);
+    const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
+    return reply.code(302).redirect(thirdPartyUrl);
   });
-
-  fastify.get("/payment-complete", async (request, reply) => {
-    const query = request.query as {
-      success?: string;
-      paymentReference?: string;
-    };
-
-    const isSuccess = query.success === "true";
-    const paymentRef = query.paymentReference || "";
-
-    const completePage = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Payment ${isSuccess ? "Complete" : "Failed"}</title>
-      </head>
-      <body>
-        <h1>Payment ${isSuccess ? "Successful" : "Failed"}</h1>
-        ${
-          isSuccess
-            ? `<p>Payment Reference: ${paymentRef}</p><p>Thank you for your purchase!</p>`
-            : "<p>Payment was not successful. Please try again.</p>"
-        }
-      </body>
-      </html>
-    `;
-
-    return reply.type("text/html").send(completePage);
-  });
-
+  
   fastify.get("/callback", async (request, reply) => {
     return reply.send("sucess");
   });

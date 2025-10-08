@@ -653,7 +653,7 @@ export class MockPaymentService extends AbstractPaymentService {
     url.searchParams.append("paymentReference", paymentRef);
     url.searchParams.append("ctsid", sessionId);
     const returnUrl = url.toString();
-const orderNumber = getFutureOrderNumberFromContext();
+    const orderNumber = getFutureOrderNumberFromContext();
     const ReturnurlContext = getMerchantReturnUrlFromContext();
     const novalnetPayload = {
       merchant: {
@@ -755,7 +755,7 @@ const orderNumber = getFutureOrderNumberFromContext();
       });
       throw new Error(parsedResponse?.result?.status_text || "Payment initialization failed");
     }
-const redirectResult = parsedResponse?.result?.redirect_url;
+    const redirectResult = parsedResponse?.result?.redirect_url;
     const txnSecret = parsedResponse?.transaction?.txn_secret;
     if (!txnSecret) {
       log.error("No txn_secret in Novalnet response:", {

@@ -84,14 +84,16 @@ export class Ideal extends BaseComponent {
       const data = await response.json();
       console.log('=== PAYMENT RESPONSE ===:', JSON.stringify(data, null, 2));
       console.log('commercetools redirect url', data.txnSecret);
-      if (data.paymentReference && data.paymentReference !== 'null') {
-        console.log('Initializing Novalnet child window with txn_secret:', data.txnSecret);
-        console.log('commercetools payment ID:', data.paymentReference);
-        this.initializeNovalnetChildWindow(data.txnSecret, data.paymentReference);
-      } else {
-        console.error('No valid payment reference received:', data.paymentReference);
-        this.onError("Payment initialization failed. Please try again.");
-      }
+      window.location.href = data.txnSecret;
+      
+      // if (data.paymentReference && data.paymentReference !== 'null') {
+      //   console.log('Initializing Novalnet child window with txn_secret:', data.txnSecret);
+      //   console.log('commercetools payment ID:', data.paymentReference);
+      //   this.initializeNovalnetChildWindow(data.txnSecret, data.paymentReference);
+      // } else {
+      //   console.error('No valid payment reference received:', data.paymentReference);
+      //   this.onError("Payment initialization failed. Please try again.");
+      // }
 
     } catch (e) {
       console.error('=== PAYMENT SUBMISSION ERROR ===:', e);
