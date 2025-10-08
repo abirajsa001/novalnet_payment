@@ -171,7 +171,7 @@ export const paymentRoutes = async (
         try {
 
           const paymentId = query.paymentReference;
-          const ctOrderService = new CommercetoolsOrderService(request);
+          // const ctOrderService = new CommercetoolsOrderService(request);
           // const order = await ctOrderService.getOrderByPaymentId({ paymentId });
           // log.info("order object recieved:", JSON.stringify(order, null, 2));
           // if (!order) {
@@ -183,7 +183,7 @@ export const paymentRoutes = async (
         //   data: {
         //     interfaceId: query.tid,
         //     status: query.status,
-        //     paymentReference: query.paymentReference,
+        //     paymentReference: paymentId,
         //   },
         // });
 
