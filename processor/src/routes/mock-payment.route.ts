@@ -158,6 +158,7 @@ export const paymentRoutes = async (
     if (query.tid && query.status && query.checksum && query.txn_secret) {
       const tokenString = `${query.tid}${query.txn_secret}${query.status}${reverseKey}`;
       log.info("query", query);
+      log.info("queryChecksum", query.checksum);
       log.info("tokenString", tokenString);
       const generatedChecksum = crypto
         .createHash("sha256")
