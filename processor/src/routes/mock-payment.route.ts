@@ -154,9 +154,10 @@ export const paymentRoutes = async (
     };
 
     const accessKey = String(getConfig()?.novalnetPublicKey ?? "");
+    const reverseKey =  accessKey.split("").reverse().join("");
 
     if (query.tid && query.status && query.checksum && query.txn_secret) {
-      const tokenString = `${query.tid}${query.txn_secret}${query.status}${accessKey}`;
+      const tokenString = `${query.tid}${query.txn_secret}${query.status}${reverseKey}`;
       log.info("query");
       log.info(query);
       log.info("tokenString");
