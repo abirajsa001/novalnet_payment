@@ -183,22 +183,20 @@ export const paymentRoutes = async (
           
           const paymentId = query.paymentReference;
           
-          // Query orders by paymentId
-          const { body: orderPagedResult } = await apiRoot.orders().get({
-            queryArgs: { where: paymentInfo(payments(id="${paymentId}")) },
-          }).execute();
+
+          // const { body: orderPagedResult } = await apiRoot.orders().get({
+          //   queryArgs: { where: paymentInfo(payments(id="${paymentId}")) },
+          // }).execute();
           
-          const order = orderPagedResult.results[0];
+          // const order = orderPagedResult.results[0];
           
-          if (!order) {
-            console.log("Order not found for paymentId:", paymentId);
-            return reply.status(404).send("Order not found");
-          }
+          // if (!order) {
+          //   console.log("Order not found for paymentId:", paymentId);
+          //   return reply.status(404).send("Order not found");
+          // }
           
-          console.log("Order object received:", JSON.stringify(order, null, 2));
-          
-          // Redirect shopper to thank-you page
-          return reply.code(302).redirect(thirdPartyUrl);
+          // console.log("Order object received:", JSON.stringify(order, null, 2));
+          // return reply.code(302).redirect(thirdPartyUrl);
 
           // const ctOrderService = new CommercetoolsOrderService(request);
           // const order = await ctOrderService.getOrderByPaymentId({ paymentId });
