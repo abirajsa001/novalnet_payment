@@ -1,6 +1,5 @@
 import { SessionHeaderAuthenticationHook } from "@commercetools/connect-payments-sdk";
-// import { getApiRoot } from '../utils/ct-client';
-import { apiRoot } from '../utils/ct-client';
+import { getOrderIdFromOrderNumber } from '../services/order.service';
 
 import {
   FastifyInstance,
@@ -154,6 +153,7 @@ export const paymentRoutes = async (
       txn_secret?: string;
       paymentReference?: string;
       ctsid?: string;
+      orderNumber?: string;
     };
 
     const accessKey = String(getConfig()?.novalnetPublicKey ?? "");
@@ -161,37 +161,21 @@ export const paymentRoutes = async (
 
     if (query.tid && query.status && query.checksum && query.txn_secret) {
       const tokenString = `${query.tid}${query.txn_secret}${query.status}${reverseKey}`;
-      log.info("query");
-      log.info(query);
-      log.info("tokenString");
-      log.info(tokenString);
-      log.info("tokenStringlogged");
+      
+      log.info(query.orderNumber, 'orderNumber')
+
       const generatedChecksum = crypto
         .createHash("sha256")
         .update(tokenString)
         .digest("hex");
-      log.info("generatedChecksum");
-      log.info(generatedChecksum);
+      
       if (generatedChecksum === query.checksum) {
         try {
-
-          const paymentId = query.paymentReference;
-          // const apiRoot = await getApiRoot() as any;
-
-          const { body: orderPagedResult } = await apiRoot
-          .withProjectKey({ projectKey: 'newprojectkey' })
-          .orders()
-          .get({
-            queryArgs: { where: `paymentInfo(payments(id="${paymentId}"))` },
-          })
-          .execute();
-      
-          const order = orderPagedResult.results[0];
-          if (!order) return reply.code(404).send('Order not found');
-
-
-        const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you';
-        return reply.code(302).redirect(thirdPartyUrl);
+          const orderId = await getOrderIdFromOrderNumber(query.orderNumber);
+          if (!orderId) return reply.code(404).send('Order not found');
+          
+          const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=' + orderId;
+          return reply.code(302).redirect(thirdPartyUrl);
         } catch (error) {
           log.error("Error processing payment:", error);
           return reply.code(400).send("Payment processing failed");
