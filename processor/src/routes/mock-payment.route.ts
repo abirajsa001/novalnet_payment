@@ -1,5 +1,6 @@
 import { SessionHeaderAuthenticationHook } from "@commercetools/connect-payments-sdk";
-import { getApiRoot } from '../utils/ct-client';
+// import { getApiRoot } from '../utils/ct-client';
+import { apiRoot } from '../utils/ct-client';
 
 import {
   FastifyInstance,
@@ -175,12 +176,15 @@ export const paymentRoutes = async (
         try {
 
           const paymentId = query.paymentReference;
-          const apiRoot = await getApiRoot() as any;
+          // const apiRoot = await getApiRoot() as any;
 
           const { body: orderPagedResult } = await apiRoot
-            .orders()
-            .get({ queryArgs: { where: `paymentInfo(payments(id="${paymentId}"))` } })
-            .execute();
+          .withProjectKey({ projectKey: process.env.CTP_PROJECT_KEY! })
+          .orders()
+          .get({
+            queryArgs: { where: `paymentInfo(payments(id="${paymentId}"))` },
+          })
+          .execute();
       
           const order = orderPagedResult.results[0];
           if (!order) return reply.code(404).send('Order not found');
