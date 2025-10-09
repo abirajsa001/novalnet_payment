@@ -15,17 +15,17 @@ const clientId = 'PvpIwckG4tM69ATbESCg362e';
 const clientSecret = 'hLSoCgHZu7er7zNVhnqTWgFsTuJllBXL';
 
 export function getApiRoot() {
-  // const client = new ClientBuilder()
-  //   .withProjectKey(projectKey)
-  //   .withClientCredentialsFlow({
-  //     host: authUrl,
-  //     projectKey,
-  //     credentials: { clientId, clientSecret },
-  //     fetch, // global fetch in Node 18+
-  //   })
-  //   .withHttpMiddleware({ host: apiUrl, fetch })
-  //   .build();
+  const client = new ClientBuilder()
+    .withProjectKey(projectKey)
+    .withClientCredentialsFlow({
+      host: authUrl,
+      projectKey,
+      credentials: { clientId, clientSecret },
+      fetch, // global fetch in Node 18+
+    })
+    .withHttpMiddleware({ host: apiUrl, fetch })
+    .build();
 
-  // // Must scope API to project key to access resources like orders()
-  // return createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
+  // Must scope API to project key to access resources like orders()
+  return createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
 }
