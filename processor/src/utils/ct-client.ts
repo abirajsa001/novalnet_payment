@@ -2,11 +2,11 @@ import { ClientBuilder } from '@commercetools/sdk-client-v2';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 import fetch, { RequestInit, Response } from 'node-fetch';
 
-const projectKey = process.env.CTP_PROJECT_KEY!;
-const authUrl = process.env.CTP_AUTH_URL || 'https://auth.europe-west1.gcp.commercetools.com';
-const apiUrl = process.env.CTP_API_URL || 'https://api.europe-west1.gcp.commercetools.com';
-const clientId = process.env.CTP_CLIENT_ID!;
-const clientSecret = process.env.CTP_CLIENT_SECRET!;
+const projectKey = 'newprojectkey';
+const authUrl = 'https://auth.europe-west1.gcp.commercetools.com';
+const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
+const clientId = 'PvpIwckG4tM69ATbESCg362e';
+const clientSecret = 'hLSoCgHZu7er7zNVhnqTWgFsTuJllBXL';
 
 // Create commercetools API client
 const client = new ClientBuilder()

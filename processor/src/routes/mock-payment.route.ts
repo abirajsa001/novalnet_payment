@@ -179,7 +179,7 @@ export const paymentRoutes = async (
           // const apiRoot = await getApiRoot() as any;
 
           const { body: orderPagedResult } = await apiRoot
-          .withProjectKey({ projectKey: process.env.CTP_PROJECT_KEY! })
+          .withProjectKey({ projectKey: 'newprojectkey' })
           .orders()
           .get({
             queryArgs: { where: `paymentInfo(payments(id="${paymentId}"))` },
