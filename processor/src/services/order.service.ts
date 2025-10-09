@@ -1,9 +1,9 @@
 import { getApiRoot } from '../utils/ct-client';
 import { Order } from '@commercetools/platform-sdk';
 
-export async function getOrderByOrderNumber(orderNumber: string): Promise<Order | null> {
+export function getOrderByOrderNumber(orderNumber: string): Promise<Order | null> {
   try {
-    const apiRoot = getApiRoot();
+    // const apiRoot = getApiRoot();
 
     // const response = await apiRoot
     //   .orders()
@@ -20,6 +20,8 @@ export async function getOrderByOrderNumber(orderNumber: string): Promise<Order 
 }
 
 export async function getOrderIdFromOrderNumber(orderNumber: string): Promise<string | null> {
-  const order = await getOrderByOrderNumber(orderNumber);
-  return order ? order.id : null;
+  // const order = await getOrderByOrderNumber(orderNumber);
+  // const order = await getOrderByOrderNumber(orderNumber);
+  // return order ? order.id : null;
+  return null;
 }
