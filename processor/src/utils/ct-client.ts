@@ -1,6 +1,5 @@
 import { ClientBuilder } from '@commercetools/sdk-client-v2';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
-import fetch, { RequestInit, Response } from 'node-fetch';
 
 const projectKey = 'newprojectkey';
 const authUrl = 'https://auth.europe-west1.gcp.commercetools.com';
@@ -8,7 +7,11 @@ const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
 const clientId = 'PvpIwckG4tM69ATbESCg362e';
 const clientSecret = 'hLSoCgHZu7er7zNVhnqTWgFsTuJllBXL';
 
-// Create commercetools API client
+// Define fetch dynamically
+const fetchFn = (...args: [RequestInfo, RequestInit?]): Promise<Response> =>
+  import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
+// Build commercetools client
 const client = new ClientBuilder()
   .withProjectKey(projectKey)
   .withClientCredentialsFlow({
@@ -18,11 +21,11 @@ const client = new ClientBuilder()
       clientId,
       clientSecret,
     },
-    fetch: fetch as (url: string, init?: RequestInit) => Promise<Response>,
+    fetch: fetchFn,
   })
   .withHttpMiddleware({
     host: apiUrl,
-    fetch: fetch as (url: string, init?: RequestInit) => Promise<Response>,
+    fetch: fetchFn,
   })
   .build();
 
