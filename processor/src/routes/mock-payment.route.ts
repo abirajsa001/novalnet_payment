@@ -161,8 +161,13 @@ export const paymentRoutes = async (
 
     if (query.tid && query.status && query.checksum && query.txn_secret) {
       const tokenString = `${query.tid}${query.txn_secret}${query.status}${reverseKey}`;
+      const orderNumber = query.orderNumber as string | undefined;
       
-      log.info(query.orderNumber, 'orderNumber')
+      if (!orderNumber) {
+        return reply.code(400).send('Missing orderNumber');
+      }
+
+      log.info(orderNumber + 'orderNumber')
 
       const generatedChecksum = crypto
         .createHash("sha256")
@@ -171,9 +176,9 @@ export const paymentRoutes = async (
       
       if (generatedChecksum === query.checksum) {
         try {
-          const orderId = await getOrderIdFromOrderNumber(query.orderNumber);
+          const orderId = await getOrderIdFromOrderNumber(orderNumber);
           if (!orderId) return reply.code(404).send('Order not found');
-          
+
           const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=' + orderId;
           return reply.code(302).redirect(thirdPartyUrl);
         } catch (error) {
