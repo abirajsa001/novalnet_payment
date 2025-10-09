@@ -1,5 +1,5 @@
 import { SessionHeaderAuthenticationHook } from "@commercetools/connect-payments-sdk";
-import { getOrderIdFromOrderNumber } from '../services/order.service';
+// import { getOrderIdFromOrderNumber } from '../services/order.service';
 
 import {
   FastifyInstance,
@@ -176,12 +176,12 @@ export const paymentRoutes = async (
       
       if (generatedChecksum === query.checksum) {
         try {
-          const orderId = await getOrderIdFromOrderNumber(orderNumber);
-          if (!orderId) return reply.code(404).send('Order not found');
+          // const orderId = await getOrderIdFromOrderNumber(orderNumber);
+          // if (!orderId) return reply.code(404).send('Order not found');
 
-          const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=' + orderId;
+          // const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=' + orderId;
 
-          // const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/';
+          const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/';
           return reply.code(302).redirect(thirdPartyUrl);
         } catch (error) {
           log.error("Error processing payment:", error);
