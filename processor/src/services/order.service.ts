@@ -1,4 +1,4 @@
-// // import { getApiRoot } from '../utils/ct-client';
+//  import { getApiRoot } from '../utils/ct-client';
 // import { Order } from '@commercetools/platform-sdk';
 
 // export async function getOrderByOrderNumber(orderNumber: string): Promise<any | null> {
@@ -27,6 +27,8 @@
 //   return order?.id ?? null;
 // }
 // src/services/order-service.ts (or your current file)
+
+
 import type { Order } from '@commercetools/platform-sdk';
 
 export async function getOrderByOrderNumber(orderNumber: string): Promise<any | null> {
