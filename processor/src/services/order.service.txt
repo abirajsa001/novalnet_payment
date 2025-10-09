@@ -13,9 +13,9 @@ export async function getOrderByOrderNumber(orderNumber: string): Promise<Order 
 
     return response.body;
   } catch (error: any) {
-    if (error.statusCode === 404) return null;
-    console.error('Error fetching order:', error);
-    throw error;
+    // if (error.statusCode === 404) return null;
+    // console.error('Error fetching order:', error);
+    // throw error;
   }
 }
 
