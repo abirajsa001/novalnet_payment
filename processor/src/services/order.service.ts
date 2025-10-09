@@ -1,5 +1,5 @@
 import { getApiRoot } from '../utils/ct-client';
-import type { Order } from '@commercetools/platform-sdk';
+import { Order } from '@commercetools/platform-sdk';
 
 export async function getOrderByOrderNumber(orderNumber: string): Promise<Order | null> {
   try {
