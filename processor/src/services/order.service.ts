@@ -19,9 +19,9 @@ import { Order } from '@commercetools/platform-sdk';
 //   }
 // }
 
-export function getOrderIdFromOrderNumber(orderNumber: string): Promise<string | null> {
+// export function getOrderIdFromOrderNumber(orderNumber: string): Promise<string | null> {
   // const order = await getOrderByOrderNumber(orderNumber);
   // const order = await getOrderByOrderNumber(orderNumber);
   // return order ? order.id : null;
-  return null;
-}
+  // return null;
+// }
