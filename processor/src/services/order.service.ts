@@ -1,27 +1,28 @@
-import { getApiRoot } from '../utils/ct-client';
+// import { getApiRoot } from '../utils/ct-client';
 import { Order } from '@commercetools/platform-sdk';
 
-// export function getOrderByOrderNumber(orderNumber: string): Promise<Order | null> {
-//   try {
-    // const apiRoot = getApiRoot();
+export async function getOrderByOrderNumber(orderNumber: string): Promise<any | null> {
+  try {
+    // Lazy import to prevent bundler from resolving SDK during build
+    const { getApiRoot } = await import('../utils/ct-client.js');
+    const apiRoot = getApiRoot();
 
-    // const response = await apiRoot
-    //   .orders()
-    //   .withOrderNumber({ orderNumber })
-    //   .get()
-    //   .execute();
+    const response = await apiRoot
+      .orders()
+      .withOrderNumber({ orderNumber })
+      .get()
+      .execute();
 
-    // return response.body;
-  // } catch (error: any) {
-    // if (error.statusCode === 404) return null;
-    // console.error('Error fetching order:', error);
-    // throw error;
-//   }
-// }
+    return response.body;
+  } catch (error: any) {
+    // Optional: handle specific 404 cases
+    if (error?.statusCode === 404) return null;
+    console.error('Error fetching order:', error);
+    return null;
+  }
+}
 
-// export function getOrderIdFromOrderNumber(orderNumber: string): Promise<string | null> {
-  // const order = await getOrderByOrderNumber(orderNumber);
-  // const order = await getOrderByOrderNumber(orderNumber);
-  // return order ? order.id : null;
-  // return null;
-// }
+export async function getOrderIdFromOrderNumber(orderNumber: string): Promise<string | null> {
+  const order = await getOrderByOrderNumber(orderNumber);
+  return order?.id ?? null;
+}
