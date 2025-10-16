@@ -298,63 +298,6 @@ export class MockPaymentService extends AbstractPaymentService {
       }
 
       responseData = await novalnetResponse.json();
-          const cartId = getCartIdFromContext();
-    log.info("Cart ID from context:", cartId);
-      const ctCart = await this.ctCartService.getCart({
-  id: cartId,
-});
-log.info("Cart retrieved:", {
-  id: ctCart.id,
-  version: ctCart.version,
-  customerId: ctCart.customerId,
-  anonymousId: ctCart.anonymousId,
-  customerEmail: ctCart.customerEmail
-});
-
-const paymentAmount = await this.ctCartService.getPaymentAmount({
-  cart: ctCart,
-});
-log.info("Payment amount calculated:", paymentAmount);
-
-const ctPayment = await this.ctPaymentService.createPayment({
-  amountPlanned: paymentAmount,
-  paymentMethodInfo: {
-	paymentInterface: getPaymentInterfaceFromContext() || "mock",
-  },
-  paymentStatus: {
-    interfaceCode: 'test',
-    interfaceText: 'data',
-  },
-  ...(ctCart.customerId && {
-	customer: { typeId: "customer", id: ctCart.customerId },
-  }),
-  ...(!ctCart.customerId &&
-	ctCart.anonymousId && {
-	  anonymousId: ctCart.anonymousId,
-	}),
-});
-log.info("CT Payment created:", {
-  id: ctPayment.id,
-  amountPlanned: ctPayment.amountPlanned
-});
-
-await this.ctCartService.addPayment({
-  resource: { id: ctCart.id, version: ctCart.version },
-  paymentId: ctPayment.id,
-});
-
-const pspReference = randomUUID().toString();
-const updatedPayment = await this.ctPaymentService.updatePayment({
-  id: ctPayment.id,
-  pspReference,
-  paymentMethod: 'test',
-  transaction: {
-	type: "Authorization",
-	amount: ctPayment.amountPlanned,
-	interactionId: pspReference,
-	state: 'Success',
-  },
-});
     } catch (error) {
       log.error("Failed to fetch transaction details from Novalnet:", error);
       throw new Error("Payment verification failed");
@@ -659,17 +602,56 @@ const updatedPayment = await this.ctPaymentService.updatePayment({
       sessionId
     });
 
-
+    const paymentAmount = await this.ctCartService.getPaymentAmount({
+      cart: ctCart,
+    });
+    log.info("Payment amount calculated:", paymentAmount);
     
     const paymentInterface = getPaymentInterfaceFromContext() || "mock";
     log.info("Payment interface:", paymentInterface);
     
+    const ctPayment = await this.ctPaymentService.createPayment({
+      amountPlanned: paymentAmount,
+      paymentMethodInfo: {
+        paymentInterface,
+      },
+      ...(ctCart.customerId && {
+        customer: { typeId: "customer", id: ctCart.customerId },
+      }),
+      ...(!ctCart.customerId &&
+        ctCart.anonymousId && {
+          anonymousId: ctCart.anonymousId,
+        }),
+    });
+    log.info("CT Payment created:", {
+      id: ctPayment.id,
+      amountPlanned: ctPayment.amountPlanned
+    });
 
+    await this.ctCartService.addPayment({
+      resource: { id: ctCart.id, version: ctCart.version },
+      paymentId: ctPayment.id,
+    });
 
+    const pspReference = randomUUID().toString();
+    const updatedPayment = await this.ctPaymentService.updatePayment({
+      id: ctPayment.id,
+      pspReference,
+      paymentMethod: request.data.paymentMethod.type,
+      transaction: {
+        type: "Authorization",
+        amount: ctPayment.amountPlanned,
+        interactionId: pspReference,
+        state: this.convertPaymentResultCode(request.data.paymentOutcome),
+      },
+    });
+
+    const paymentRef = updatedPayment.id;
     const paymentCartId = ctCart.id;
     const orderNumber = getFutureOrderNumberFromContext() ?? "";
 
     const url = new URL("/success", processorURL);
+    url.searchParams.append("paymentReference", paymentRef);
     url.searchParams.append("ctsid", sessionId);
     url.searchParams.append("orderNumber", orderNumber);
     const returnUrl = url.toString();
@@ -721,7 +703,7 @@ const updatedPayment = await this.ctPaymentService.updatePayment({
       },
       custom: {
         input1: "paymentRef",
-        inputval1: String(ReturnurlContext ?? "no paymentRef"),
+        inputval1: String(paymentRef ?? "no paymentRef"),
         input2: "ReturnurlContexts",
         inputval2: String(ReturnurlContext ?? "no merchantReturnURL"),
         input3: "currencyCode",
@@ -785,7 +767,7 @@ const updatedPayment = await this.ctPaymentService.updatePayment({
 
     log.info("=== IDEAL PAYMENT SUCCESS ===, returning txn_secret:", txnSecret);
     return {
-      paymentReference: redirectResult,
+      paymentReference: paymentRef,
       txnSecret: redirectResult,
     };
   }
