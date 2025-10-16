@@ -46,31 +46,31 @@ deployAs:
           required: true
         - key: NOVALNET_WEBHOOK_URL
           description: Novalnet webhook URL for payment notifications
-          required: true
+          required: false
         - key: NOVALNET_INVOICE_TEST_MODE
           description: Enable test mode for Invoice payments (0=Live, 1=Test)
           required: false
         - key: NOVALNET_INVOICE_DUE_DATE
           description: Due date in days for Invoice payments
-          required: true
+          required: false
         - key: NOVALNET_INVOICE_PAYMENT_ACTION
           description: Payment action for Invoice (payment/authorize)
           required: true
         - key: NOVALNET_INVOICE_PAYMENT_ACTION_MINIMUM_AMOUNT
           description: Minimum amount for Invoice payment action
-          required: true
+          required: false
         - key: NOVALNET_PREPAYMENT_TEST_MODE
           description: Enable test mode for Prepayment (0=Live, 1=Test)
-          required: true
+          required: false
         - key: NOVALNET_PREPAYMENT_DUE_DATE
           description: Due date in days for Prepayment
-          required: true
+          required: false
         - key: NOVALNET_PREPAYMENT_PAYMENT_ACTION
           description: Payment action for Prepayment (payment/authorize)
           required: true
         - key: NOVALNET_PREPAYMENT_PAYMENT_ACTION_MINIMUM_AMOUNT
           description: Minimum amount for Prepayment action
-          required: true
+          required: false
         - key: MERCHANT_RETURN_URL
           description: Merchant return URL for payment completion
           required: false
