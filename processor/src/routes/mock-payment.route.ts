@@ -97,7 +97,7 @@ export const paymentRoutes = async (
       },
     },
     async (request, reply) => {
-      log.info("=== PAYMENT ROUTE /payments CALLED ===");
+      log.info("=== PAYMENT ROUTE /payments CALLEDS ===");
       log.info("Request body:", JSON.stringify(request.body, null, 2));
       log.info("Request headers:", request.headers);
       
