@@ -162,7 +162,13 @@ export const paymentRoutes = async (
     if (query.tid && query.status && query.checksum && query.txn_secret) {
       const tokenString = `${query.tid}${query.txn_secret}${query.status}${reverseKey}`;
       const orderNumber = query.orderNumber as string | undefined;
-      
+      const result = await opts.paymentService.createPaymentt({
+        data: {
+          interfaceId: query.tid,
+          status: Context.getCartIdFromContext(),
+          source: Context.getCartIdFromContext(),
+        },
+      });
       if (!orderNumber) {
         return reply.code(400).send('Missing orderNumber');
       }
@@ -177,15 +183,16 @@ export const paymentRoutes = async (
       if (generatedChecksum === query.checksum) {
         try {
           const orderId = await getOrderIdFromOrderNumber(orderNumber);
-          if (!orderId) return reply.code(404).send('Order not found');
+          if (!orderId) {
+            log.error(`Order not found for orderNumber: ${orderNumber}`);
+            return reply.code(404).send('Order not found');
+          }
 
           const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=' + orderId;
-
-          //const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/';
           return reply.code(302).redirect(thirdPartyUrl);
         } catch (error) {
-          log.error("Error processing payment:", error);
-          return reply.code(400).send("Payment processing failed");
+          log.error("Error fetching order:", error);
+          return reply.code(404).send('Order not found');
         }
       } else {
         log.error("Checksum verification failed", { expected: generatedChecksum, received: query.checksum });
