@@ -22,7 +22,7 @@ import { PaymentModificationStatus } from "../dtos/operations/payment-intents.dt
 import packageJSON from "../../package.json";
 
 import { AbstractPaymentService } from "./abstract-payment.service";
-import { getTransaction, saveTransaction } from '../services/transactionService';
+import { getTransaction, saveTransaction } from './transactionService';
 import { getConfig } from "../config/config";
 import { appLogger, paymentSDK } from "../payment-sdk";
 import {
@@ -504,7 +504,8 @@ export class MockPaymentService extends AbstractPaymentService {
     const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid ?? "N/A"}\nTest Order`;
     const saveTransactions = await saveTransaction(parsedResponse?.transaction?.tid, parsedResponse);
     const getTransactions = await getTransaction(parsedResponse?.transaction?.tid);
-
+    log.info("saveTransaction details", saveTransactions);
+    log.info("getTransactions details:", getTransactions);
     let bankDetails = "";
     if (parsedResponse?.transaction?.bank_details) {
       bankDetails = `Please transfer the amount of ${parsedResponse.transaction.amount} to the following account.\nAccount holder: ${parsedResponse.transaction.bank_details.account_holder}\nIBAN: ${parsedResponse.transaction.bank_details.iban}\nBIC: ${parsedResponse.transaction.bank_details.bic}\nBANK NAME: ${parsedResponse.transaction.bank_details.bank_name}\nBANK PLACE: ${parsedResponse.transaction.bank_details.bank_place}\nPlease use the following payment reference for your money transfer:\nPayment Reference 1: ${parsedResponse.transaction.tid}`;
