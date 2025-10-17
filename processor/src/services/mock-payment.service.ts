@@ -22,6 +22,7 @@ import { PaymentModificationStatus } from "../dtos/operations/payment-intents.dt
 import packageJSON from "../../package.json";
 
 import { AbstractPaymentService } from "./abstract-payment.service";
+import { getTransaction, saveTransaction } from '../services/transactionService';
 import { getConfig } from "../config/config";
 import { appLogger, paymentSDK } from "../payment-sdk";
 import {
@@ -501,6 +502,8 @@ export class MockPaymentService extends AbstractPaymentService {
     const parsedResponse = JSON.parse(responseString);
 
     const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid ?? "N/A"}\nTest Order`;
+    const saveTransactions = await saveTransaction(parsedResponse?.transaction?.tid, parsedResponse);
+    const getTransactions = await getTransaction(parsedResponse?.transaction?.tid);
 
     let bankDetails = "";
     if (parsedResponse?.transaction?.bank_details) {
@@ -515,8 +518,8 @@ export class MockPaymentService extends AbstractPaymentService {
         paymentInterface: getPaymentInterfaceFromContext() || "mock",
       },
       paymentStatus: {
-        interfaceCode: JSON.stringify(parsedResponse),
-        interfaceText: transactiondetails + "\n" + bankDetails,
+        interfaceCode: JSON.stringify(saveTransactions),
+        interfaceText: JSON.stringify(getTransactions),
       },
       ...(ctCart.customerId && {
         customer: { typeId: "customer", id: ctCart.customerId },

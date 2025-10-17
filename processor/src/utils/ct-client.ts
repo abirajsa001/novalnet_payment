@@ -1,5 +1,9 @@
 import { ClientBuilder } from '@commercetools/sdk-client-v2';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
+import dotenv from 'dotenv';
+dotenv.config();
+
+
 
 // //~ const projectKey = process.env.CTP_PROJECT_KEY!;
 // //~ const clientId = process.env.CTP_CLIENT_ID!;
@@ -21,12 +25,11 @@ export function getApiRoot() {
       host: authUrl,
       projectKey,
       credentials: { clientId, clientSecret },
-      fetch, // global fetch in Node 18+
+      fetch
     })
     .withHttpMiddleware({ host: apiUrl, fetch })
     .build();
 
-  // Must scope API to project key to access resources like orders()
   return createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
 }
 
