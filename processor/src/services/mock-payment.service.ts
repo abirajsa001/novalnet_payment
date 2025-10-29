@@ -304,68 +304,10 @@ export class MockPaymentService extends AbstractPaymentService {
     }
     const paymentRef = responseData?.custom?.paymentRef ?? "";
 
-    const ctPayment = await this.ctPaymentService.getPayment({
-      id: paymentRef,
-    });
-
-    const novalnetTid = responseData?.transaction?.tid || parsedData?.interfaceId;
-    
-    let paymentDetails = `Novalnet Transaction ID: ${novalnetTid}\nPayment Status: ${responseData?.transaction?.status_text || "Completed"}`;
-
-    if (responseData?.transaction?.bank_details) {
-      const bankInfo = responseData.transaction.bank_details;
-      paymentDetails += `\n\nBank Transfer Details:\nAccount holder: ${bankInfo.account_holder}\nIBAN: ${bankInfo.iban}\nBIC: ${bankInfo.bic}\nBank: ${bankInfo.bank_name}\nBank Place: ${bankInfo.bank_place}\nPayment Reference: ${novalnetTid}`;
-    }
-    
-    const interactionFields: Record<string, any> = {
-      novalnetTid: novalnetTid,
-      paymentStatus: responseData?.transaction?.status_text || "Completed",
-      transactionAmount: responseData?.transaction?.amount?.toString() || "",
-      currency: responseData?.transaction?.currency || ""
-    };
-
-    if (responseData?.transaction?.bank_details) {
-      const bankInfo = responseData.transaction.bank_details;
-      interactionFields.bankAccountHolder = bankInfo.account_holder || "";
-      interactionFields.bankIban = bankInfo.iban || "";
-      interactionFields.bankBic = bankInfo.bic || "";
-      interactionFields.bankName = bankInfo.bank_name || "";
-      interactionFields.bankPlace = bankInfo.bank_place || "";
-      interactionFields.paymentReference = novalnetTid;
-    }
-
-    let paymentDetailsText = `Novalnet TID: ${novalnetTid} | Status: ${responseData?.transaction?.status_text || "Completed"}`;
-    
-    if (responseData?.transaction?.bank_details) {
-      const bankInfo = responseData.transaction.bank_details;
-      paymentDetailsText += ` | Bank: ${bankInfo.account_holder} - ${bankInfo.iban} (${bankInfo.bic}) - ${bankInfo.bank_name}, ${bankInfo.bank_place}`;
-    }
-
-    const updatedPayment = await this.ctPaymentService.updatePayment({
-      id: ctPayment.id,
-      pspReference: novalnetTid,
-      paymentMethod: `novalnet-${responseData?.transaction?.payment_type?.toLowerCase() || 'ideal'}`,
-      transaction: {
-        type: "Authorization",
-        amount: ctPayment.amountPlanned,
-        interactionId: novalnetTid,
-        state: "Success"
-      },
-    });
-
-    const finalPayment = updatedPayment;
-
-    log.info("Payment updated with Novalnet details:", {
-      paymentId: finalPayment.id,
-      interactionFields,
-      novalnetResponse: responseData
-    });
-
-    const redirectUrl = new URL(merchantReturnUrl);
-    redirectUrl.searchParams.append("paymentReference", finalPayment.id);
+    log.info("Payment updated with Novalnet details:");
 
     return {
-      paymentReference: finalPayment.id,
+      paymentReference: paymentRef,
     };
   }
 
