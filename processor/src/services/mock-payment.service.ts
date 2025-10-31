@@ -32,6 +32,7 @@ import {
   PaymentMethodType,
   PaymentOutcome,
   PaymentResponseSchemaDTO,
+
 } from "../dtos/mock-payment.dto";
 import {
   getCartIdFromContext,
@@ -46,12 +47,16 @@ import {
 } from "../dtos/operations/transaction.dto";
 import { log } from "../libs/logger";
 import * as Context from "../libs/fastify/context/context";
+import { ExtendedUpdatePayment } from './types/payment-extension';
+
 
 type NovalnetConfig = {
   testMode: string;
   paymentAction: string;
   dueDate: string;
 };
+
+
 
 function getNovalnetConfigValues(
   type: string,
@@ -456,10 +461,6 @@ export class MockPaymentService extends AbstractPaymentService {
       paymentMethodInfo: {
         paymentInterface: getPaymentInterfaceFromContext() || "mock",
       },
-      paymentStatus: {
-        interfaceCode: JSON.stringify(parsedResponse),
-        interfaceText: transactiondetails + "\n" + bankDetails,
-      },
       ...(ctCart.customerId && {
         customer: { typeId: "customer", id: ctCart.customerId },
       }),
@@ -475,17 +476,25 @@ export class MockPaymentService extends AbstractPaymentService {
     });
 
     const pspReference = randomUUID().toString();
+
+    const paymentStatus = {
+      interfaceCode: 'test-data',
+      interfaceText: 'data-test',
+    };
+
     const updatedPayment = await this.ctPaymentService.updatePayment({
       id: ctPayment.id,
       pspReference,
       paymentMethod: request.data.paymentMethod.type,
+      paymentStatus, 
       transaction: {
         type: "Authorization",
         amount: ctPayment.amountPlanned,
         interactionId: pspReference,
         state: this.convertPaymentResultCode(request.data.paymentOutcome),
       },
-    });
+    } as ExtendedUpdatePayment);
+    
 
     return {
       paymentReference: updatedPayment.id,
