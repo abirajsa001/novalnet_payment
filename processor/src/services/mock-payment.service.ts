@@ -482,11 +482,11 @@ export class MockPaymentService extends AbstractPaymentService {
       interfaceText: 'data-test',
     };
 
+
     const updatedPayment = await this.ctPaymentService.updatePayment({
       id: ctPayment.id,
       pspReference,
       paymentMethod: request.data.paymentMethod.type,
-      paymentStatus, 
       transaction: {
         type: "Authorization",
         amount: ctPayment.amountPlanned,
@@ -494,7 +494,29 @@ export class MockPaymentService extends AbstractPaymentService {
         state: this.convertPaymentResultCode(request.data.paymentOutcome),
       },
     } as ExtendedUpdatePayment);
-    
+  
+    // ✅ Explicitly update paymentStatus in Commercetools
+    const paymentStatus = {
+      interfaceCode: JSON.stringify(parsedResponse),
+      interfaceText: transactiondetails + "\n" + bankDetails,
+    };
+  
+    const client: any = this.ctPaymentService["client"];
+    const getPaymentUri: any = this.ctPaymentService["getPaymentUri"];
+  
+    await client.execute({
+      uri: getPaymentUri(ctPayment.id),
+      method: "POST",
+      body: {
+        version: updatedPayment.version,
+        actions: [
+          {
+            action: "setPaymentStatus",
+            paymentStatus,
+          },
+        ],
+      },
+    });
 
     return {
       paymentReference: updatedPayment.id,
@@ -588,6 +610,7 @@ export class MockPaymentService extends AbstractPaymentService {
     const updatedPayment = await this.ctPaymentService.updatePayment({
       id: ctPayment.id,
       pspReference,
+      paymentStatus,
       paymentMethod: request.data.paymentMethod.type,
       transaction: {
         type: "Authorization",
@@ -595,7 +618,7 @@ export class MockPaymentService extends AbstractPaymentService {
         interactionId: pspReference,
         state: this.convertPaymentResultCode(request.data.paymentOutcome),
       },
-    });
+    } as ExtendedUpdatePayment);
 
     const paymentRef = updatedPayment.id;
     const paymentCartId = ctCart.id;
