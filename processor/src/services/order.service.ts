@@ -43,11 +43,11 @@ export async function getOrderByOrderNumber(orderNumber: string): Promise<any | 
       .get()
       .execute();
 
-    console.log('Mock API response:', response.body);
+    log.info('Mock API response:', response.body);
 
     return response.body;
   } catch (error: any) {
-    console.error('Error fetching order (mock):', error);
+    log.info('Error fetching order (mock):', error);
     return null;
   }
 }
