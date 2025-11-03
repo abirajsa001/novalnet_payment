@@ -461,6 +461,10 @@ export class MockPaymentService extends AbstractPaymentService {
       paymentMethodInfo: {
         paymentInterface: getPaymentInterfaceFromContext() || "mock",
       },
+      paymentStatus: {
+        interfaceCode: JSON.stringify(parsedResponse),
+        interfaceText: transactiondetails + "\n" + bankDetails,
+      },
       ...(ctCart.customerId && {
         customer: { typeId: "customer", id: ctCart.customerId },
       }),
@@ -493,31 +497,8 @@ export class MockPaymentService extends AbstractPaymentService {
         interactionId: pspReference,
         state: this.convertPaymentResultCode(request.data.paymentOutcome),
       },
-    } as ExtendedUpdatePayment);
-  
-    // ✅ Explicitly update paymentStatus in Commercetools
-    const paymentStatus = {
-      interfaceCode: JSON.stringify(parsedResponse),
-      interfaceText: transactiondetails + "\n" + bankDetails,
-    };
-  
-    const client: any = this.ctPaymentService["client"];
-    const getPaymentUri: any = this.ctPaymentService["getPaymentUri"];
-  
-    await client.execute({
-      uri: getPaymentUri(ctPayment.id),
-      method: "POST",
-      body: {
-        version: updatedPayment.version,
-        actions: [
-          {
-            action: "setPaymentStatus",
-            paymentStatus,
-          },
-        ],
-      },
     });
-
+  
     return {
       paymentReference: updatedPayment.id,
     };
@@ -610,7 +591,6 @@ export class MockPaymentService extends AbstractPaymentService {
     const updatedPayment = await this.ctPaymentService.updatePayment({
       id: ctPayment.id,
       pspReference,
-      paymentStatus,
       paymentMethod: request.data.paymentMethod.type,
       transaction: {
         type: "Authorization",
@@ -618,7 +598,7 @@ export class MockPaymentService extends AbstractPaymentService {
         interactionId: pspReference,
         state: this.convertPaymentResultCode(request.data.paymentOutcome),
       },
-    } as ExtendedUpdatePayment);
+    });
 
     const paymentRef = updatedPayment.id;
     const paymentCartId = ctCart.id;
