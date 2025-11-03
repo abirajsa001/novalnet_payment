@@ -481,12 +481,6 @@ export class MockPaymentService extends AbstractPaymentService {
 
     const pspReference = randomUUID().toString();
 
-    const paymentStatus = {
-      interfaceCode: 'test-data',
-      interfaceText: 'data-test',
-    };
-
-
     const updatedPayment = await this.ctPaymentService.updatePayment({
       id: ctPayment.id,
       pspReference,
