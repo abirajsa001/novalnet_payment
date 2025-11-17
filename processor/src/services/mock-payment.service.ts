@@ -642,60 +642,9 @@ export class MockPaymentService extends AbstractPaymentService {
       sessionId
     });
 
-    const paymentAmount = await this.ctCartService.getPaymentAmount({
-      cart: ctCart,
-    });
-    log.info("Payment amount calculated:", paymentAmount);
-    
-    const paymentInterface = getPaymentInterfaceFromContext() || "mock";
-    log.info("Payment interface:", paymentInterface);
-    
-    const ctPayment = await this.ctPaymentService.createPayment({
-      amountPlanned: paymentAmount,
-      paymentMethodInfo: {
-        paymentInterface,
-      },
-      paymentStatus: {
-        interfaceCode: 'test',
-        interfaceText: 'demo',
-      },
-      ...(ctCart.customerId && {
-        customer: { typeId: "customer", id: ctCart.customerId },
-      }),
-      ...(!ctCart.customerId &&
-        ctCart.anonymousId && {
-          anonymousId: ctCart.anonymousId,
-        }),
-    });
-    log.info("CT Payment created:", {
-      id: ctPayment.id,
-      amountPlanned: ctPayment.amountPlanned
-    });
-
-    await this.ctCartService.addPayment({
-      resource: { id: ctCart.id, version: ctCart.version },
-      paymentId: ctPayment.id,
-    });
-
-    const pspReference = randomUUID().toString();
-    const updatedPayment = await this.ctPaymentService.updatePayment({
-      id: ctPayment.id,
-      pspReference,
-      paymentMethod: request.data.paymentMethod.type,
-      transaction: {
-        type: "Authorization",
-        amount: ctPayment.amountPlanned,
-        interactionId: pspReference,
-        state: this.convertPaymentResultCode(request.data.paymentOutcome),
-      },
-    });
-
-    const paymentRef = updatedPayment.id;
-    const paymentCartId = ctCart.id;
     const orderNumber = getFutureOrderNumberFromContext() ?? "";
 
     const url = new URL("/success", processorURL);
-    url.searchParams.append("paymentReference", paymentRef);
     url.searchParams.append("ctsid", sessionId);
     url.searchParams.append("orderNumber", orderNumber);
     const returnUrl = url.toString();
@@ -746,8 +695,8 @@ export class MockPaymentService extends AbstractPaymentService {
         skip_pages: ["CONFIRMATION_PAGE", "SUCCESS_PAGE", "PAYMENT_PAGE"],
       },
       custom: {
-        input1: "paymentRef",
-        inputval1: String(paymentRef ?? "no paymentRef"),
+        input1: "ReturnurlContext",
+        inputval1: String(ReturnurlContext ?? "no ReturnurlContext"),
         input2: "ReturnurlContexts",
         inputval2: String(ReturnurlContext ?? "no merchantReturnURL"),
         input3: "currencyCode",
@@ -811,7 +760,7 @@ export class MockPaymentService extends AbstractPaymentService {
 
     log.info("=== IDEAL PAYMENT SUCCESS ===, returning txn_secret:", txnSecret);
     return {
-      paymentReference: paymentRef,
+      paymentReference: orderNumber,
       txnSecret: redirectResult,
     };
   }
