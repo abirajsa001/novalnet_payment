@@ -175,13 +175,7 @@ export const paymentRoutes = async (
         .digest("hex");
       
       if (generatedChecksum === query.checksum) {
-        try {
-          const result = await opts.paymentService.createPaymentt({
-            data: {
-              interfaceId: query.tid,
-            },
-          }); 
-
+        try {   
           const orderId = await getOrderIdFromOrderNumber(orderNumber);
           if (!orderId) return reply.code(404).send('Order not found');
 
