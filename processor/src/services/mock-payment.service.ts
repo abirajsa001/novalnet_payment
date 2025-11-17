@@ -296,9 +296,10 @@ export class MockPaymentService extends AbstractPaymentService {
     const merchantReturnUrl = merchantReturnUrlFromContext || config.merchantReturnUrl;
   
     // Prepare payload for Novalnet transaction/details endpoint
+    const tidFromIncoming = parsedData?.interfaceId ?? parsedData?.tid ?? "";
     const novalnetPayload = {
       transaction: {
-        tid: parsedData?.interfaceId ?? "",
+        tid: tidFromIncoming,
       },
     };
   
@@ -323,72 +324,161 @@ export class MockPaymentService extends AbstractPaymentService {
       throw new Error("Payment verification failed");
     }
   
-    const paymentRef: string = responseData?.custom?.paymentRef ?? "";
-
-    const cartId = getCartIdFromContext();
-
-    log.info("cartId detailss:", cartId);
-    if (!cartId) {
-      log.error("No cart id available in context when updating payment with Novalnet detailss.");
-      throw new Error("Cart not found in context");
+    const tid = responseData?.transaction?.tid ?? tidFromIncoming;
+    const paymentRef: string = responseData?.custom?.paymentRef ?? parsedData?.custom?.paymentRef ?? "";
+  
+    log.info("Novalnet transaction details:", {
+      tid,
+      paymentRef,
+      responseDataSummary: {
+        payment_type: responseData?.transaction?.payment_type,
+        amount: responseData?.transaction?.amount,
+      },
+    });
+  
+    // === Resolve commercetools payment & cartId ===
+    let ctPayment: any = null;
+    let cartId: string | undefined;
+  
+    // 1) Try to find existing payment by custom field novalnetTid
+    if (tid) {
+      try {
+        // Assumes ctPaymentService.searchPayments({ where }) exists - adapt if your API differs
+        const where = `custom(fields("novalnetTid" = "${tid}"))`;
+        const searchResult = await this.ctPaymentService.searchPayments?.({ where }) ?? [];
+        if (Array.isArray(searchResult) && searchResult.length > 0) {
+          ctPayment = searchResult[0];
+          log.info("Found existing CT payment by novalnetTid", { paymentId: ctPayment.id, key: ctPayment.key });
+          cartId = ctPayment?.custom?.fields?.cartId ?? ctPayment?.key;
+        } else {
+          log.info("No CT payment found by novalnetTid", { tid });
+        }
+      } catch (err) {
+        log.warn("Payment search by novalnetTid failed (continuing with fallbacks):", err);
+      }
     }
   
-    const ctCartRaw = await this.ctCartService.getCart({ id: cartId });
-    log.info("ctCartRaw details:", ctCartRaw);
+    // 2) Fallbacks: check novalnet response or incoming payload for cartId
+    if (!cartId) {
+      cartId =
+        responseData?.custom?.cartId ||
+        responseData?.custom?.fields?.cartId ||
+        parsedData?.custom?.cartId ||
+        parsedData?.cartId ||
+        parsedData?.cart?.id ||
+        undefined;
+    }
+  
+    // 3) If we still have no cartId, fail with a clear message guiding the fix
+    if (!cartId) {
+      log.error(
+        "cartId not found. Ensure you store cartId on the CT payment (payment.custom.fields.cartId or payment.key) when creating the payment."
+      );
+      throw new Error(
+        "Cart ID not found. Save the cart ID (cartId) to the commercetools payment at creation (custom field or key) so callbacks can resolve it."
+      );
+    }
+  
+    // === Load cart, amount, etc. ===
+    let ctCartRaw: any;
+    try {
+      ctCartRaw = await this.ctCartService.getCart({ id: cartId });
+      log.info("ctCartRaw details:", ctCartRaw);
+    } catch (err) {
+      log.error("Failed to load cart with id", cartId, err);
+      throw new Error("Cart not found");
+    }
     const ctCart = typeof ctCartRaw === "string" ? JSON.parse(ctCartRaw) : ctCartRaw;
-    log.info("ctCart details:", ctCart);
-    const paymentAmount = await this.ctCartService.getPaymentAmount({
-      cart: ctCart,
-    });
+    log.info("ctCart details:", { id: ctCart?.id, version: ctCart?.version });
+  
+    const paymentAmount = await this.ctCartService.getPaymentAmount({ cart: ctCart });
     log.info("Payment amount details:", paymentAmount);
-    
+  
     const paymentInterface = getPaymentInterfaceFromContext() || "mock";
     log.info("Payment interface detailss:", paymentInterface);
-    
-    const ctPayment = await this.ctPaymentService.createPayment({
-      amountPlanned: paymentAmount,
-      paymentMethodInfo: {
-        paymentInterface,
-      },
-      paymentStatus: {
-        interfaceCode: 'test',
-        interfaceText: 'demo',
-      },
-      ...(ctCart.customerId && {
-        customer: { typeId: "customer", id: ctCart.customerId },
-      }),
-      ...(!ctCart.customerId &&
-        ctCart.anonymousId && {
-          anonymousId: ctCart.anonymousId,
-        }),
-    });
-    log.info("CT Payment created detailss:", {
-      id: ctPayment.id,
-      amountPlanned: ctPayment.amountPlanned
-    });
-
-    await this.ctCartService.addPayment({
-      resource: { id: ctCart.id, version: ctCart.version },
-      paymentId: ctPayment.id,
-    });
-    // create pspReference and update CT payment with transaction info
-    const pspReference = randomUUID();
-    const updatedPayment = await this.ctPaymentService.updatePayment({
-      id: ctPayment.id,
-      pspReference,
-      paymentMethod: responseData?.transaction?.payment_type ?? "",
-      transaction: {
-        type: "Authorization",
-        amount: ctPayment.amountPlanned,
-        interactionId: pspReference,
-        state: "Success",
-      },
-    } as any); 
   
-
+    // === If no CT payment found earlier, create one and persist mapping (cartId, novalnetTid) ===
+    if (!ctPayment) {
+      const createPayload: any = {
+        key: cartId, // helpful for fast retrieval
+        amountPlanned: paymentAmount,
+        paymentMethodInfo: {
+          paymentInterface,
+        },
+        paymentStatus: {
+          interfaceCode: "test",
+          interfaceText: "demo",
+        },
+        custom: {
+          type: { key: "novalnetPaymentCustomType", typeId: "type" }, // ensure this custom type exists in CT
+          fields: {
+            cartId,
+            novalnetTid: tid ?? "",
+            paymentRef: paymentRef ?? "",
+          },
+        },
+        ...(ctCart.customerId && { customer: { typeId: "customer", id: ctCart.customerId } }),
+        ...(!ctCart.customerId && ctCart.anonymousId && { anonymousId: ctCart.anonymousId }),
+      };
+  
+      try {
+        ctPayment = await this.ctPaymentService.createPayment(createPayload);
+        log.info("CT Payment created details:", { id: ctPayment.id, key: ctPayment.key });
+        // attach payment to cart
+        await this.ctCartService.addPayment({
+          resource: { id: ctCart.id, version: ctCart.version },
+          paymentId: ctPayment.id,
+        });
+      } catch (err) {
+        log.error("Failed to create CT payment:", err);
+        throw new Error("Failed to create payment");
+      }
+    } else {
+      try {
+        const actions: any[] = [];
+        if ((ctPayment?.custom?.fields?.novalnetTid ?? "") !== (tid ?? "")) {
+          actions.push({ action: "setCustomField", name: "novalnetTid", value: tid ?? "" });
+        }
+        if ((ctPayment?.custom?.fields?.paymentRef ?? "") !== (paymentRef ?? "")) {
+          actions.push({ action: "setCustomField", name: "paymentRef", value: paymentRef ?? "" });
+        }
+        if (actions.length > 0) {
+          await this.ctPaymentService.updatePayment?.({
+            id: ctPayment.id,
+            actions,
+          });
+          log.info("Updated existing CT payment custom fields", { id: ctPayment.id, actionsCount: actions.length });
+        }
+      } catch (err) {
+        log.warn("Failed to update CT payment custom fields (non-fatal):", err);
+      }
+    }
+  
+    const pspReference = randomUUID();
+    try {
+      const txUpdatePayload: any = {
+        id: ctPayment.id,
+        pspReference,
+        paymentMethod: responseData?.transaction?.payment_type ?? "",
+        transaction: {
+          type: "Authorization",
+          amount: ctPayment.amountPlanned,
+          interactionId: pspReference,
+          state: "Success",
+        },
+      } as any;
+  
+      await this.ctPaymentService.updatePayment(txUpdatePayload);
+      log.info("CT payment transaction updated", { id: ctPayment.id, pspReference });
+    } catch (err) {
+      log.error("Failed to update CT payment transaction info:", err);
+      throw new Error("Failed to update payment transaction");
+    }
+  
     log.info("paymentRef details:", paymentRef);
     return { paymentReference: paymentRef };
   }
+  
   
   public async createPayment(
     request: CreatePaymentRequest,
