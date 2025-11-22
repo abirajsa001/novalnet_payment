@@ -827,7 +827,7 @@ if (String(request.data.paymentMethod.type).toUpperCase() === "CREDITCARD") {
 
   private convertPaymentResultCode(resultCode: PaymentOutcome): string {
     switch (resultCode) {
-      case PaymentOutcome.AUTHORIZED:
+      case PaymentOutcome.AUTHORIZED: 
         return "Success";
       case PaymentOutcome.REJECTED:
         return "Failure";
