@@ -4,6 +4,7 @@ import {
   type HttpMiddlewareOptions,
 } from "@commercetools/sdk-client-v2";
 
+
 import {
   createApiBuilderFromCtpClient,
 } from "@commercetools/platform-sdk";
@@ -54,4 +55,31 @@ export function getApiRoot() {
 }
 
 
+// //~ const projectKey = process.env.CTP_PROJECT_KEY!;
+// //~ const clientId = process.env.CTP_CLIENT_ID!;
+// //~ const clientSecret = process.env.CTP_CLIENT_SECRET!;
+// //~ const authUrl = process.env.CTP_AUTH_URL!;
+// //~ const apiUrl = process.env.CTP_API_URL!;
 
+
+// export function getApiRoot() {
+//   return {
+//     orders: () => ({
+//       withOrderNumber: ({ orderNumber }: { orderNumber: string }) => ({
+//         get: () => ({
+//           execute: async () => {
+//             console.log(`Mock fetching order for orderNumber: ${orderNumber}`);
+//             // Simulate an API response
+//             return {
+//               body: {
+//                 id: 'mock-order-id-123',
+//                 orderNumber,
+//                 status: 'Mocked',
+//               },
+//             };
+//           },
+//         }),
+//       }),
+//     }),
+//   };
+// }
