@@ -24,7 +24,7 @@ import {
     .withHttpMiddleware(httpOptions)
     .build();
   
-  const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
+  export const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
     projectKey: config.projectKey,
   });
   

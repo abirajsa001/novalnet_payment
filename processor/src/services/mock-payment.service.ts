@@ -49,6 +49,7 @@ import * as Context from "../libs/fastify/context/context";
 import { ExtendedUpdatePayment } from './types/payment-extension';
 import { createTransactionCommentsType } from '../utils/custom-fields';
 import { projectApiRoot } from '../utils/ct-client';
+import { CustomObjectService } from "./ct-custom-object.service"; 
 
 type NovalnetConfig = {
   testMode: string;
@@ -825,6 +826,29 @@ const pspReference = randomUUID().toString();
     log.info('comment-updated');
     log.info(comment);
     log.info('comment-updated-after');
+
+    const paymentIdValue = ctPayment.id;
+    const container = "nn-private-data";
+    const key = `${paymentId}-${pspReference}`;
+    log.info(key);
+    await customObjectService.upsert(container, key, {
+      deviceId: "device-1234",
+      riskScore: 42,
+      merchantNote: "Checked by connector",
+      fraudStatus: "approved",
+      extraInfo: { ip: "127.0.0.1" },
+    });
+    log.info('value are stored');
+    const obj = await customObjectService.get(container, key);
+    if (obj) {
+      log.info("Stored data:", obj.body.value);
+    }
+    log.info(obj.body.value);
+    log.info('Value are getted');
+    log.info(obj.body);
+    log.info(JSON.stringify(obj.body, null, 2));
+    log.info(JSON.stringify(obj, null, 2));
+
     // return payment id (ctPayment was created earlier; no inline/custom update)
     return {
       paymentReference: ctPayment.id,
