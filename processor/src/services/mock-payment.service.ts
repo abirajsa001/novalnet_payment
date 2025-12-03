@@ -49,7 +49,8 @@ import * as Context from "../libs/fastify/context/context";
 import { ExtendedUpdatePayment } from './types/payment-extension';
 import { createTransactionCommentsType } from '../utils/custom-fields';
 import { projectApiRoot } from '../utils/ct-client';
-import { CustomObjectService } from "./ct-custom-object.service"; 
+import customObjectService from "./ct-custom-object.service";
+
 
 type NovalnetConfig = {
   testMode: string;
@@ -827,27 +828,54 @@ const pspReference = randomUUID().toString();
     log.info(comment);
     log.info('comment-updated-after');
 
-    const paymentIdValue = ctPayment.id;
-    const container = "nn-private-data";
-    const key = `${paymentId}-${pspReference}`;
-    log.info(key);
-    await customObjectService.upsert(container, key, {
-      deviceId: "device-1234",
-      riskScore: 42,
-      merchantNote: "Checked by connector",
-      fraudStatus: "approved",
-      extraInfo: { ip: "127.0.0.1" },
-    });
-    log.info('value are stored');
-    const obj = await customObjectService.get(container, key);
-    if (obj) {
-      log.info("Stored data:", obj.body.value);
-    }
-    log.info(obj.body.value);
-    log.info('Value are getted');
-    log.info(obj.body);
-    log.info(JSON.stringify(obj.body, null, 2));
-    log.info(JSON.stringify(obj, null, 2));
+	// inside your function
+	try {
+	  const paymentIdValue = ctPayment.id;
+	  const container = "nn-private-data";
+	  const key = `${paymentIdValue}-${pspReference}`;
+
+	  log.info("Storing sensitive data under custom object key:", key);
+
+	  // upsert returns the SDK response for create/update (you can inspect if needed)
+	  const upsertResp = await customObjectService.upsert(container, key, {
+		deviceId: "device-1234",
+		riskScore: 42,
+		merchantNote: "Checked by connector",
+		fraudStatus: "approved",
+		extraInfo: { ip: "127.0.0.1" },
+	  });
+
+	  log.info("CustomObject upsert done");
+
+	  // get returns the found object (or null). The object has .value
+	  const obj = await customObjectService.get(container, key);
+	log.info('Value are getted');
+	log.info(JSON.stringify(obj, null, 2) ?? 'noobjnull');
+	  if (!obj) {
+		log.warn("CustomObject missing after upsert (unexpected)", { container, key });
+	  } else {
+		// obj.value contains the stored data
+		const stored = obj.value;
+
+		// DON'T log raw sensitive data in production. Example: mask deviceId
+		const maskedDeviceId = stored.deviceId ? `${stored.deviceId.slice(0, 6)}…` : undefined;
+		log.info("Stored custom object (masked):", {
+		  container: obj.container,
+		  key: obj.key,
+		  version: obj.version,
+		  deviceId: maskedDeviceId,
+		  riskScore: stored.riskScore, // if non-sensitive you may log
+		});
+
+
+		// If you really need the full payload for debugging (dev only), stringify carefully:
+		// log.debug("Stored full payload (dev only):", JSON.stringify(stored, null, 2));
+	  }
+	} catch (err) {
+	  log.error("Error storing / reading CustomObject", { error: (err as any).message ?? err });
+	  throw err; // or handle as appropriate
+	}
+
 
     // return payment id (ctPayment was created earlier; no inline/custom update)
     return {
