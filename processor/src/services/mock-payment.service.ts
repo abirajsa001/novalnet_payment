@@ -867,7 +867,7 @@ const pspReference = randomUUID().toString();
 		  riskScore: stored.riskScore, // if non-sensitive you may log
 		});
     log.info(stored.riskScore);
-    log.info(deviceId);
+    log.info(maskedDeviceId);
 		// log.debug("Stored full payload (dev only):", JSON.stringify(stored, null, 2));
 	  }
 	} catch (err) {
