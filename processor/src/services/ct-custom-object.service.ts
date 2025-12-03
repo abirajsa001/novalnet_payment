@@ -96,7 +96,7 @@ export class CustomObjectService {
   }
 
   async storeSensitiveForPayment(paymentId: string, interactionId: string, data: Record<string, any>) {
-    if (!paymentId) throw new Error("paymentId required");
+    if (!paymentId) throw new Error("paymentId required");  
     if (!interactionId) throw new Error("interactionId required");
     const key = this.buildKey(paymentId, interactionId);
     return this.upsert(this.DEFAULT_CONTAINER, key, data);
