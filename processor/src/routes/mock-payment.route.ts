@@ -140,7 +140,7 @@ export const paymentRoutes = async (
       const resp = await opts.paymentService.createPayment({
         data: request.body,
       });
-      if(resp?.novalnetResponse?.transaction?.status == 'FAILURE') {
+      if(resp?.transactionStatus == 'FAILURE') {
         const baseUrl = "https://poc-novalnetpayments.frontend.site/checkout";
         return reply.code(302).redirect(baseUrl);
       }

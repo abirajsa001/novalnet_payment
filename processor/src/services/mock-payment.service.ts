@@ -1005,12 +1005,15 @@ const pspReference = randomUUID().toString();
 	  log.error("Error storing / reading CustomObject", { error: (err as any).message ?? err });
 	  throw err; // or handle as appropriate
 	}
-  const transactionStatus = parsedResponse?.transaction?.status
+  const statusValue = parsedResponse?.transaction?.status;
+  const statusTextValue = parsedResponse?.transaction?.status_text;
 
     // return payment id (ctPayment was created earlier; no inline/custom update)
     return {
       paymentReference: ctPayment.id,
       novalnetResponse: parsedResponse,  
+      transactionStatus: statusValue,  
+      transactionStatusText: statusTextValue,  
     };
   }
 
