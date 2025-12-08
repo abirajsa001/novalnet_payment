@@ -337,6 +337,11 @@ export class MockPaymentService extends AbstractPaymentService {
     log.info("Payment transactionComments for redirect:", transactionComments);
     log.info("ctPayment id for redirect:", parsedData?.ctPaymentId);
     log.info("psp reference for redirect:", pspReference);
+
+    if(responseData?.transaction?.status == 'FAILURE'){
+      throw new Error(responseData?.result?.status_text ?? 'Transaction failure');
+    }
+
 	const raw = await this.ctPaymentService.getPayment({ id: parsedData.ctPaymentId } as any);
 	const payment = (raw as any)?.body ?? raw;
   const version = payment.version;
@@ -857,7 +862,9 @@ const pspReference = randomUUID().toString();
     log.info("Payment transactionComments for direct:", transactionComments);
     log.info("ctPayment id for direct:", ctPayment.id);
     log.info("psp reference for direct:", pspReference);
-
+    if(parsedResponse?.transaction?.status == 'FAILURE'){
+      throw new Error(parsedResponse?.result?.status_text ?? 'Transaction failure');
+    }
     // ---------------------------
     // CREATE TRANSACTION (NO CUSTOM)
     // ---------------------------
