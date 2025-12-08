@@ -308,7 +308,7 @@ export class MockPaymentService extends AbstractPaymentService {
     if (!tx) throw new Error("Transaction not found");
     const txId = tx.id;
     if (!txId) throw new Error('Transaction missing id');
-    const transactionComments = `Novalnet Transaction ID:\nPayment Type:\nTestOrder`;
+    const transactionComments = `Novalnet Transaction ID: ${parsedData.tid ?? "NN/A"}\nPayment Type: ${parsedData.payment_type ?? "NN/A"}\n${parsedData.status_text ?? "NN/A"}`;
     log.info(txId);
     log.info(parsedData.ctPaymentID);
     log.info(transactionComments);
