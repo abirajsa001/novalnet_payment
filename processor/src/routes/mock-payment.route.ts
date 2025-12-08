@@ -219,6 +219,9 @@ export const paymentRoutes = async (
       orderNumber?: string;
       ctPaymentID?: string;
       pspReference?: string;
+      tid?: string;
+      status_text?: string;
+      payment_type?: string;
     };
   
     const baseUrl = "https://poc-novalnetpayments.frontend.site/checkout";
@@ -240,9 +243,29 @@ export const paymentRoutes = async (
       redirectUrl.searchParams.set("pspReference", query.pspReference);
     }
   
-    // Let frontend know this is a failed redirect payment
-    redirectUrl.searchParams.set("redirect_status", "failed");
-    return reply.code(302).redirect(redirectUrl.toString());
+    try {
+      const requestData = {
+        paymentReference: query.paymentReference,
+        ctsid: query.ctsid,
+        orderNumber: query.orderNumber,
+        ctPaymentID: query.ctPaymentID,
+        pspReference: query.pspReference,
+        tid: query.tid ?? 'empty-tid',
+        status_text: query.status_text ?? 'empty-status-text',
+        payment_type: query.payment_type ?? 'empty-payment-type',
+      };
+    
+      // Convert to JSON string
+      const jsonBody = JSON.stringify(requestData);
+    
+      const result = await opts.paymentService.failureResponse({
+        data: jsonBody,  // send JSON string
+      });
+      return reply.code(302).redirect(redirectUrl.toString());
+    } catch (error) {
+      log.error("Error processing payment:", error);
+      return reply.code(400).send("Payment processing failed");
+    }
   });
   
 

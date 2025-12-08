@@ -291,6 +291,49 @@ export class MockPaymentService extends AbstractPaymentService {
     return billingAddress;
   }
 
+  public async failureResponse({ data }: { data: any }) {
+    const parsedData = typeof data === "string" ? JSON.parse(data) : data;
+    const config = getConfig();
+    await createTransactionCommentsType();
+    log.info("Failure Response inserted");
+    log.info(parsedData.tid);
+    log.info(parsedData.status_text);
+    log.info(parsedData.payment_type);
+    const raw = await this.ctPaymentService.getPayment({ id: parsedData.ctPaymentID } as any);
+    const payment = (raw as any)?.body ?? raw;
+    const version = payment.version;
+    const tx = payment.transactions?.find((t: any) =>
+      t.interactionId === parsedData.pspReference
+    );
+    if (!tx) throw new Error("Transaction not found");
+    const txId = tx.id;
+    if (!txId) throw new Error('Transaction missing id');
+    const transactionComments = `Novalnet Transaction ID:\nPayment Type:\nTestOrder`;
+    log.info(txId);
+    log.info(parsedData.ctPaymentID);
+    log.info(transactionComments);
+    
+    const updatedPayment = await projectApiRoot
+    .payments()
+    .withId({ ID: parsedData.ctPaymentID })
+    .post({
+      body: {
+        version,
+        actions: [
+          {
+            action: "setTransactionCustomField",
+            transactionId: txId,
+            name: "transactionComments",
+            value: transactionComments,
+          },
+        ],
+      },
+    })
+    .execute();
+
+  }  
+
+
   public async createPaymentt({ data }: { data: any }) {
     const parsedData = typeof data === "string" ? JSON.parse(data) : data;
     const config = getConfig();
@@ -337,11 +380,6 @@ export class MockPaymentService extends AbstractPaymentService {
     log.info("Payment transactionComments for redirect:", transactionComments);
     log.info("ctPayment id for redirect:", parsedData?.ctPaymentId);
     log.info("psp reference for redirect:", pspReference);
-
-    if(responseData?.transaction?.status == 'FAILURE'){
-      throw new Error(responseData?.result?.status_text ?? 'Transaction failure');
-    }
-
 	const raw = await this.ctPaymentService.getPayment({ id: parsedData.ctPaymentId } as any);
 	const payment = (raw as any)?.body ?? raw;
   const version = payment.version;
@@ -444,13 +482,11 @@ export class MockPaymentService extends AbstractPaymentService {
     return {
       paymentReference: paymentRef,
     };
-    }
+  }
 
 public async updateTxComment(paymentId: string, txId: string, comment: string) {
-
   const raw = await this.ctPaymentService.getPayment({ id: paymentId } as any);
   const payment = (raw as any)?.body ?? raw;
-
   const ctClient = (this.ctPaymentService as any).client;
   const version = payment.version;
 
@@ -862,9 +898,7 @@ const pspReference = randomUUID().toString();
     log.info("Payment transactionComments for direct:", transactionComments);
     log.info("ctPayment id for direct:", ctPayment.id);
     log.info("psp reference for direct:", pspReference);
-    if(parsedResponse?.transaction?.status == 'FAILURE'){
-      throw new Error(parsedResponse?.result?.status_text ?? 'Transaction failure');
-    }
+
     // ---------------------------
     // CREATE TRANSACTION (NO CUSTOM)
     // ---------------------------
@@ -971,7 +1005,10 @@ const pspReference = randomUUID().toString();
 	  log.error("Error storing / reading CustomObject", { error: (err as any).message ?? err });
 	  throw err; // or handle as appropriate
 	}
-
+  if(parsedResponse?.transaction?.status == 'FAILURE') {
+    const baseUrl = "https://poc-novalnetpayments.frontend.site/checkout";
+    return reply.code(302).redirect(baseUrl);
+  }
 
     // return payment id (ctPayment was created earlier; no inline/custom update)
     return {
@@ -1087,7 +1124,7 @@ const pspReference = randomUUID().toString();
       resource: { id: ctCart.id, version: ctCart.version },
       paymentId: ctPayment.id,
     });
-
+ 
     // Generate transaction comments
     const transactionComments = `Novalnet Transaction ID: ${"N/A"}\nPayment Type: ${"N/A"}\nStatus: ${"N/A"}`;
     const pspReference = randomUUID().toString();
