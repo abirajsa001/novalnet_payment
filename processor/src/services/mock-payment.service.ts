@@ -1005,14 +1005,12 @@ const pspReference = randomUUID().toString();
 	  log.error("Error storing / reading CustomObject", { error: (err as any).message ?? err });
 	  throw err; // or handle as appropriate
 	}
-  if(parsedResponse?.transaction?.status == 'FAILURE') {
-    const baseUrl = "https://poc-novalnetpayments.frontend.site/checkout";
-    window.location.href = baseUrl;
-  }
+  const transactionStatus = parsedResponse?.transaction?.status
 
     // return payment id (ctPayment was created earlier; no inline/custom update)
     return {
       paymentReference: ctPayment.id,
+      novalnetResponse: parsedResponse,  
     };
   }
 
