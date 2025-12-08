@@ -1007,7 +1007,7 @@ const pspReference = randomUUID().toString();
 	}
   if(parsedResponse?.transaction?.status == 'FAILURE') {
     const baseUrl = "https://poc-novalnetpayments.frontend.site/checkout";
-    return reply.code(302).redirect(baseUrl);
+    window.location.href = baseUrl;
   }
 
     // return payment id (ctPayment was created earlier; no inline/custom update)
