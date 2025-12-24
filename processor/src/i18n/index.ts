@@ -2,13 +2,13 @@ import en from "./en.json";
 import de from "./de.json";
 
 /**
- * Supported locales in the shop
- * Add more here when needed
+ * Supported shop locales
+ * Add new languages here only
  */
 export type SupportedLocale = "en" | "de";
 
 /**
- * Translation dictionary
+ * Translation dictionaries
  */
 export const translations: Record<SupportedLocale, any> = {
   en,
@@ -16,18 +16,27 @@ export const translations: Record<SupportedLocale, any> = {
 };
 
 /**
+ * Normalize raw locale string (from order.locale, headers, etc.)
+ * Always returns a SupportedLocale
+ */
+export function normalizeLocale(locale?: string | null): SupportedLocale {
+  if (locale === "de") return "de";
+  return "en"; // default fallback
+}
+
+/**
  * Translate helper
  *
- * @param locale - shop language (en, de, ...)
+ * @param locale - normalized locale (en, de)
  * @param key - dot notation key (payment.transactionId)
- * @param params - dynamic placeholders
+ * @param params - placeholder replacements
  */
 export function t(
   locale: SupportedLocale,
   key: string,
   params: Record<string, string> = {}
 ): string {
-  const dict = translations[locale] ?? translations.en;
+  const dict = translations[locale];
 
   let text =
     key

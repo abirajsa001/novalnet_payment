@@ -58,7 +58,7 @@ import { ExtendedUpdatePayment } from './types/payment-extension';
 import { createTransactionCommentsType } from '../utils/custom-fields';
 import { projectApiRoot } from '../utils/ct-client';
 import customObjectService from "./ct-custom-object.service";
-
+import { normalizeLocale } from "../i18n/locale";
 
 type NovalnetConfig = {
   testMode: string;
@@ -66,7 +66,7 @@ type NovalnetConfig = {
   dueDate: string;
   minimumAmount: string;
   enforce3d: string;
-  displayInline: string;
+  displayInline: string;c 
 };
 
 function getNovalnetConfigValues(
