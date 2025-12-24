@@ -6,7 +6,8 @@
       "refundInitiated": "Rückerstattung von {{amount}} eingeleitet",
       "transactionId": "Novalnet Transaktions-ID: {{tid}}",
       "paymentType": "Zahlungsart: {{type}}",
-      "testMode": "Testmodus"
+      "testMode": "Testmodus",
+      "liveMode":"Livemodus"
     }
   }
   
