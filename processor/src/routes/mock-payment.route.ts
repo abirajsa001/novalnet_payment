@@ -307,7 +307,7 @@ fastify.post<{ Body: PaymentRequestSchemaDTO }>(
   });
   
   fastify.get("/callback", async (request, reply) => {
-    return reply.send("sucess");
+    return reply.send("success");
   });
 
   fastify.post<{ Body: any }>('/webhook', async (req, reply) => {

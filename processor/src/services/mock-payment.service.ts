@@ -511,6 +511,28 @@ export class MockPaymentService extends AbstractPaymentService {
     log.info("Payment transactionComments for redirect:", transactionComments);
     log.info("ctPayment id for redirect:", parsedData?.ctPaymentId);
     log.info("psp reference for redirect:", pspReference);
+    const supportedLocales = ["en", "de"];
+
+const tid = responseData?.transaction?.tid ?? "N/A";
+const paymentType = responseData?.transaction?.payment_type ?? "N/A";
+const isTestMode = responseData?.transaction?.test_mode === 1;
+
+const localizedTransactionComments = supportedLocales.reduce(
+  (acc, locale) => {
+    const lines = [
+      t(locale, "payment.transactionId", { tid }),
+      t(locale, "payment.paymentType", { type: paymentType }),
+      isTestMode
+        ? t(locale, "payment.testMode")
+        : t(locale, "payment.liveMode"),
+    ];
+
+    acc[locale] = lines.join("\n");
+    return acc;
+  },
+  {} as Record<string, string>
+);
+
 	const raw = await this.ctPaymentService.getPayment({ id: parsedData.ctPaymentId } as any);
 	const payment = (raw as any)?.body ?? raw;
   const version = payment.version;
@@ -535,7 +557,7 @@ export class MockPaymentService extends AbstractPaymentService {
           action: "setTransactionCustomField",
           transactionId: txId,
           name: "transactionComments",
-          value: transactionComments,
+          value: localizedTransactionComments,
         },
         {
           action: "setStatusInterfaceCode",
@@ -557,7 +579,8 @@ export class MockPaymentService extends AbstractPaymentService {
   log.info('comment-updated');
   log.info(comment);
   log.info('comment-updated-after');
-  
+  const locale = order.locale ?? "en";
+
   	// inside your function
 	try {
 	  const paymentIdValue = parsedData.ctPaymentId;

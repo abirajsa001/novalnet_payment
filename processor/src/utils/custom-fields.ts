@@ -49,7 +49,7 @@ import {
             {
               name: "transactionComments",
               label: { en: "Transaction Comments" },
-              type: { name: "String" },
+              type: { name: "LocalizedString" },
               required: false,
             },
           ],
@@ -84,7 +84,7 @@ import {
             {
               name: "transactionCommentss",
               label: { en: "Transaction Commentss" },
-              type: { name: "String" },
+              type: { name: "LocalizedString" },
               required: false,
             },
           ],

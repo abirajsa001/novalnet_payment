@@ -1,0 +1,12 @@
+{
+    "payment": {
+      "authorized": "Payment authorized successfully",
+      "pending": "Payment is pending",
+      "failed": "Payment failed",
+      "refundInitiated": "Refund of {{amount}} initiated",
+      "transactionId": "Novalnet Transaction ID: {{tid}}",
+      "paymentType": "Payment Type: {{type}}",
+      "testMode": "Test mode"
+    }
+  }
+  
