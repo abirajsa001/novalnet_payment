@@ -1,0 +1,112 @@
+# -----------------------------
+# Node / NPM / Yarn
+# -----------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+.pnpm-store/
+
+# -----------------------------
+# Build Output
+# -----------------------------
+dist/
+build/
+out/
+.coverage/
+.vite/
+.cache/
+.tmp/
+temp/
+tmp/
+
+# -----------------------------
+# TypeScript
+# -----------------------------
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# -----------------------------
+# Environment Files
+# -----------------------------
+.env
+.env.*
+!.env.example
+
+# -----------------------------
+# Logs
+# -----------------------------
+logs/
+*.log
+*.log.*
+debug.log
+error.log
+
+# -----------------------------
+# OS Files
+# -----------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# -----------------------------
+# IDE / Editor Files
+# -----------------------------
+# VSCode
+.vscode/
+.history/
+*.code-workspace
+
+# JetBrains (WebStorm / IntelliJ)
+.idea/
+*.iml
+out/
+
+# -----------------------------
+# Frontend Build Artifacts
+# -----------------------------
+# If using React/Vite/Webpack
+*.local
+*.cache
+.cache-loader/
+.sass-cache/
+.parcel-cache/
+.next/
+.nuxt/
+storybook-static/
+storybook-build/
+
+# -----------------------------
+# Testing
+# -----------------------------
+coverage/
+.nyc_output/
+jest-html-reporters-*
+.playwright/
+.test-results/
+
+# -----------------------------
+# Misc
+# -----------------------------
+*.swp
+*.swo
+*~
+*.bak
+
+# Ignore generated API files (if any)
+generated/
+Generated/
+
+# Ignore connector publish bundles (your CT extension builds)
+connector-dist/
