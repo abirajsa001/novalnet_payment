@@ -58,7 +58,8 @@ import { ExtendedUpdatePayment } from './types/payment-extension';
 import { createTransactionCommentsType } from '../utils/custom-fields';
 import { projectApiRoot } from '../utils/ct-client';
 import customObjectService from "./ct-custom-object.service";
-import { t, normalizeLocale } from "../i18n";
+import { t, normalizeLocale, SupportedLocale } from "../i18n";
+
 
 type NovalnetConfig = {
   testMode: string;
@@ -511,11 +512,13 @@ export class MockPaymentService extends AbstractPaymentService {
     log.info("Payment transactionComments for redirect:", transactionComments);
     log.info("ctPayment id for redirect:", parsedData?.ctPaymentId);
     log.info("psp reference for redirect:", pspReference);
-    const supportedLocales = ["en", "de"];
+
 
 const tid = responseData?.transaction?.tid ?? "N/A";
 const paymentType = responseData?.transaction?.payment_type ?? "N/A";
 const isTestMode = responseData?.transaction?.test_mode === 1;
+
+const supportedLocales: SupportedLocale[] = ["en", "de"];
 
 const localizedTransactionComments = supportedLocales.reduce(
   (acc, locale) => {
@@ -530,8 +533,9 @@ const localizedTransactionComments = supportedLocales.reduce(
     acc[locale] = lines.join("\n");
     return acc;
   },
-  {} as Record<string, string>
+  {} as Record<SupportedLocale, string>
 );
+
 
 	const raw = await this.ctPaymentService.getPayment({ id: parsedData.ctPaymentId } as any);
 	const payment = (raw as any)?.body ?? raw;
