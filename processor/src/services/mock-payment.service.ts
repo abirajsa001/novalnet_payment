@@ -58,7 +58,7 @@ import { ExtendedUpdatePayment } from './types/payment-extension';
 import { createTransactionCommentsType } from '../utils/custom-fields';
 import { projectApiRoot } from '../utils/ct-client';
 import customObjectService from "./ct-custom-object.service";
-import { normalizeLocale } from "../i18n/locale";
+import { t, normalizeLocale } from "../i18n";
 
 type NovalnetConfig = {
   testMode: string;
@@ -66,7 +66,7 @@ type NovalnetConfig = {
   dueDate: string;
   minimumAmount: string;
   enforce3d: string;
-  displayInline: string;c 
+  displayInline: string;
 };
 
 function getNovalnetConfigValues(
@@ -579,7 +579,6 @@ const localizedTransactionComments = supportedLocales.reduce(
   log.info('comment-updated');
   log.info(comment);
   log.info('comment-updated-after');
-  const locale = order.locale ?? "en";
 
   	// inside your function
 	try {
