@@ -462,211 +462,203 @@ export class MockPaymentService extends AbstractPaymentService {
     return result;
   }
   
-  
-
   public async createPaymentt({ data }: { data: any }) {
-    const parsedData = typeof data === "string" ? JSON.parse(data) : data;
-    const config = getConfig();
-    await createTransactionCommentsType();
-    log.info("getMerchantReturnUrlFromContext from context:", getMerchantReturnUrlFromContext());
-    const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
-
-    const novalnetPayload = {
-      transaction: {
-        tid: parsedData?.interfaceId ?? "",
-      },
-    };
-
-    let responseData: any;
     try {
-      const novalnetResponse = await fetch(
-        "https://payport.novalnet.de/v2/transaction/details",
-        {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-NN-Access-Key': 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
-          },
-          body: JSON.stringify(novalnetPayload),
-        },
-      );
-
-      if (!novalnetResponse.ok) {
-        throw new Error(`Novalnet API error: ${novalnetResponse.status}`);
+      log.info("➡️ ENTER createPaymentt");
+  
+      // ---------- 1. Parse input ----------
+      const parsedData = typeof data === "string" ? JSON.parse(data) : data;
+  
+      if (!parsedData?.ctPaymentId) {
+        throw new Error("Missing ctPaymentId in createPaymentt");
       }
-
-      responseData = await novalnetResponse.json();
-    } catch (error) {
-      log.error("Failed to fetch transaction details from Novalnet:", error);
-      throw new Error("Payment verification failed");
-    }
-    const paymentRef = responseData?.custom?.paymentRef ?? "";
-    const pspReference = parsedData?.pspReference;
-    const testModeText = responseData?.transaction?.test_mode == 1 ? 'Test Order' : '';
-    const status = responseData?.transaction?.status;
-    const state = status === 'PENDING' || status === 'ON_HOLD' ? 'Pending' : status === 'CONFIRMED' ? 'Success' : status === 'CANCELLED' ? 'Canceled': 'Failure';
-    const transactionComments = `Novalnet Transaction ID: ${responseData?.transaction?.tid ?? "NN/A"}\nPayment Type: ${responseData?.transaction?.payment_type ?? "NN/A"}\n${testModeText ?? "NN/A"}`;
-    const statusCode = responseData?.transaction?.status_code ?? '';
-    log.info("Payment created with Novalnet details for redirect:");
-    log.info("Payment transactionComments for redirect:", transactionComments);
-    log.info("ctPayment id for redirect:", parsedData?.ctPaymentId);
-    log.info("psp reference for redirect:", pspReference);
-
-
-const tid = responseData?.transaction?.tid ?? "N/A";
-const paymentType = responseData?.transaction?.payment_type ?? "N/A";
-const isTestMode = responseData?.transaction?.test_mode === 1;
-
-const supportedLocales: SupportedLocale[] = ["en", "de"];
-
-const localizedTransactionComments = supportedLocales.reduce(
-  (acc, locale) => {
-    const lines = [
-      t(locale, "payment.transactionId", { tid }),
-      t(locale, "payment.paymentType", { type: paymentType }),
-      isTestMode
-        ? t(locale, "payment.testMode")
-        : t(locale, "payment.liveMode"),
-    ];
-
-    acc[locale] = lines.join("\n");
-    return acc;
-  },
-  {} as Record<SupportedLocale, string>
-);
-
-
-	const raw = await this.ctPaymentService.getPayment({ id: parsedData.ctPaymentId } as any);
-	const payment = (raw as any)?.body ?? raw;
-  const version = payment.version;
-	const tx = payment.transactions?.find((t: any) =>
-	  t.interactionId === parsedData.pspReference
-	);
-	if (!tx) throw new Error("Transaction not found");
-	const txId = tx.id;
-	if (!txId) throw new Error('Transaction missing id');
   
-	log.info(txId);
-  log.info(parsedData.ctPaymentId);
-  log.info(JSON.stringify(localizedTransactionComments, null, 2));
+      const config = getConfig();
+      await createTransactionCommentsType();
   
-  const actions: any[] = [
-  // ✅ REMOVE custom type (TS-safe)
-  {
-    action: "setTransactionCustomType",
-    transactionId: txId,
-  },
-
-  // ✅ RE-ATTACH updated type
-  {
-    action: "setTransactionCustomType",
-    transactionId: txId,
-    type: {
-      key: "novalnet-transaction-comments",
-      typeId: "type",
-    },
-  },
-
-  // ✅ SET localized field
-  {
-    action: "setTransactionCustomField",
-    transactionId: txId,
-    name: "transactionCommentsLocalized",
-    value: localizedTransactionComments, // LocalizedString
-  },
-
-  {
-    action: "setStatusInterfaceCode",
-    interfaceCode: String(statusCode),
-  },
-  {
-    action: "changeTransactionState",
-    transactionId: txId,
-    state,
-  },
-];
-
-
-await projectApiRoot
-  .payments()
-  .withId({ ID: parsedData.ctPaymentId })
-  .post({
-    body: {
-      version,
-      actions,
-    },
-  })
-  .execute();
-
-
-  const comment = await this.getTransactionComment(
-    parsedData.ctPaymentId,
-    parsedData.pspReference
-  );
-  log.info('comment-updated');
-  log.info(comment);
-  log.info('comment-updated-after');
-
-  	// inside your function
-	try {
-	  const paymentIdValue = parsedData.ctPaymentId;
-	  const pspReferenceValue = parsedData.pspReference;
-	  const container = "nn-private-data";
-	  const key = `${paymentIdValue}-${pspReferenceValue}`;
-
-	  log.info("Storing sensitive data under custom object key:", key);
-
-	  // upsert returns the SDK response for create/update (you can inspect if needed)
-	  const upsertResp = await customObjectService.upsert(container, key, {
-		deviceId: "device-1234",
-		riskScore: 42,
-		orderNo: responseData?.transaction?.order_no ?? '',
-		tid: responseData?.transaction?.tid ?? '',
-		paymentMethod:  responseData?.transaction?.payment_type ?? '',
-		cMail:  responseData?.customer?.email ?? '',
-		status:  responseData?.transaction?.status ?? '',
-		totalAmount: responseData?.transaction?.amount ?? '',
-		callbackAmount: 0,
-    additionalInfo:{
-      comments:transactionComments ?? '',
+      const merchantReturnUrl =
+        getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
+  
+      log.info("Merchant return URL:", merchantReturnUrl);
+  
+      // ---------- 2. Call Novalnet ----------
+      const novalnetPayload = {
+        transaction: {
+          tid: parsedData?.interfaceId ?? "",
+        },
+      };
+  
+      let responseData: any;
+  
+      try {
+        const novalnetResponse = await fetch(
+          "https://payport.novalnet.de/v2/transaction/details",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              "X-NN-Access-Key": process.env.NOVALNET_ACCESS_KEY!,
+            },
+            body: JSON.stringify(novalnetPayload),
+          }
+        );
+  
+        if (!novalnetResponse.ok) {
+          throw new Error(`Novalnet API error: ${novalnetResponse.status}`);
+        }
+  
+        responseData = await novalnetResponse.json();
+      } catch (err) {
+        log.error("Novalnet fetch failed", err);
+        throw new Error("Payment verification failed");
+      }
+  
+      // ---------- 3. Extract values ----------
+      const pspReference = parsedData.pspReference;
+      if (!pspReference) {
+        throw new Error("Missing pspReference");
+      }
+  
+      const tid = responseData?.transaction?.tid ?? "N/A";
+      const paymentType = responseData?.transaction?.payment_type ?? "N/A";
+      const isTestMode = responseData?.transaction?.test_mode === 1;
+  
+      const status = responseData?.transaction?.status;
+      const state =
+        status === "PENDING" || status === "ON_HOLD"
+          ? "Pending"
+          : status === "CONFIRMED"
+          ? "Success"
+          : status === "CANCELLED"
+          ? "Canceled"
+          : "Failure";
+  
+      const statusCode = responseData?.transaction?.status_code ?? "";
+  
+      // ---------- 4. Build localized comments ----------
+      const supportedLocales: SupportedLocale[] = ["en", "de"];
+  
+      const localizedTransactionComments = supportedLocales.reduce(
+        (acc, locale) => {
+          acc[locale] = [
+            t(locale, "payment.transactionId", { tid }),
+            t(locale, "payment.paymentType", { type: paymentType }),
+            isTestMode
+              ? t(locale, "payment.testMode")
+              : t(locale, "payment.liveMode"),
+          ].join("\n");
+          return acc;
+        },
+        {} as Record<SupportedLocale, string>
+      );
+  
+      log.info(
+        "Localized transaction comments:",
+        JSON.stringify(localizedTransactionComments, null, 2)
+      );
+  
+      // ---------- 5. Fetch Payment ----------
+      const raw = await this.ctPaymentService.getPayment({
+        id: parsedData.ctPaymentId,
+      } as any);
+  
+      const payment = (raw as any)?.body ?? raw;
+      const version = payment.version;
+  
+      if (!payment?.transactions?.length) {
+        throw new Error("No transactions on payment");
+      }
+  
+      const tx = payment.transactions.find(
+        (t: any) => t.interactionId === pspReference
+      );
+  
+      if (!tx?.id) {
+        throw new Error("Transaction not found for PSP reference");
+      }
+  
+      const txId = tx.id;
+  
+      // ---------- 6. Update Payment ----------
+      const actions: any[] = [
+        // detach type (schema refresh)
+        {
+          action: "setTransactionCustomType",
+          transactionId: txId,
+        },
+        // reattach correct type
+        {
+          action: "setTransactionCustomType",
+          transactionId: txId,
+          type: {
+            key: "novalnet-transaction-comments",
+            typeId: "type",
+          },
+        },
+        // set localized field
+        {
+          action: "setTransactionCustomField",
+          transactionId: txId,
+          name: "transactionCommentsLocalized",
+          value: localizedTransactionComments,
+        },
+        {
+          action: "setStatusInterfaceCode",
+          interfaceCode: String(statusCode),
+        },
+        {
+          action: "changeTransactionState",
+          transactionId: txId,
+          state,
+        },
+      ];
+  
+      await projectApiRoot
+        .payments()
+        .withId({ ID: parsedData.ctPaymentId })
+        .post({
+          body: {
+            version,
+            actions,
+          },
+        })
+        .execute();
+  
+      log.info("Payment updated successfully");
+  
+      // ---------- 7. Store private data ----------
+      try {
+        const container = "nn-private-data";
+        const key = `${parsedData.ctPaymentId}-${pspReference}`;
+  
+        await customObjectService.upsert(container, key, {
+          tid,
+          paymentMethod: paymentType,
+          status,
+          orderNo: responseData?.transaction?.order_no ?? "",
+          cMail: responseData?.customer?.email ?? "",
+          additionalInfo: {
+            comments: localizedTransactionComments,
+          },
+        });
+  
+        log.info("CustomObject stored:", key);
+      } catch (err) {
+        log.error(" CustomObject error", err);
+        throw err;
+      }
+  
+      // ---------- 8. Final return ----------
+      return {
+        paymentReference: responseData?.custom?.paymentRef ?? "",
+      };
+    } catch (err) {
+      log.error(" createPaymentt FAILED", err);
+      throw err;
     }
-	  });
-
-	  log.info("CustomObject upsert done");
-
-	  // get returns the found object (or null). The object has .value
-	  const obj = await customObjectService.get(container, key);
-	  log.info('Value are getted');
-	  log.info(JSON.stringify(obj, null, 2) ?? 'noobjnull');
-	  if (!obj) {
-		log.warn("CustomObject missing after upsert (unexpected)", { container, key });
-	  } else {
-		// obj.value contains the stored data
-		const stored = obj.value;
-		const maskedDeviceId = stored.deviceId ? `${stored.deviceId.slice(0, 6)}…` : undefined;
-		log.info("Stored custom object (masked):", {
-		  container: obj.container,
-		  key: obj.key,
-		  version: obj.version,
-		  deviceId: maskedDeviceId,
-		  riskScore: stored.riskScore, 
-		});
-		log.info(stored.tid);
-		log.info(stored.status);
-		log.info(stored.cMail);
-    log.info(stored.additionalInfo.comments);
-
-	  }
-	} catch (err) {
-	  log.error("Error storing / reading CustomObject", { error: (err as any).message ?? err });
-	  throw err; // or handle as appropriate
-	}
-	
-    return {
-      paymentReference: paymentRef,
-    };
   }
+  
 
   public async createPayment(
     request: CreatePaymentRequest,
