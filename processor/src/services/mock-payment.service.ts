@@ -558,12 +558,24 @@ const localizedTransactionComments = supportedLocales.reduce(
     body: {
       version,
       actions: [
+        //  REQUIRED FIRST
+        {
+          action: "setTransactionCustomType",
+          transactionId: txId,
+          type: {
+            key: "novalnet-transaction-comments",
+            typeId: "type",
+          },
+        },
+
+        //  THEN set localized field
         {
           action: "setTransactionCustomField",
           transactionId: txId,
-          name: "transactionCommentsLocalized", // ✅ must exist on type
-          value: localizedTransactionComments, // ✅ LocalizedString
+          name: "transactionCommentsLocalized",
+          value: localizedTransactionComments,
         },
+
         {
           action: "setStatusInterfaceCode",
           interfaceCode: String(statusCode),
@@ -577,6 +589,7 @@ const localizedTransactionComments = supportedLocales.reduce(
     },
   })
   .execute();
+
 
   const comment = await this.getTransactionComment(
     parsedData.ctPaymentId,
