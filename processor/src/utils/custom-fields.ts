@@ -44,7 +44,7 @@ import {
         body: {
           key: "novalnet-transaction-comments",
           name: { en: "Novalnet Transaction Comments" },
-          resourceTypeIds: ["transaction"],
+          resourceTypeIds: ["payment"],
           fieldDefinitions: [
             {
               name: "transactionComments",
