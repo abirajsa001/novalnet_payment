@@ -44,7 +44,7 @@ import {
         body: {
           key: "novalnet-transaction-comments",
           name: { en: "Novalnet Transaction Comments" },
-          resourceTypeIds: ["payment"],
+          resourceTypeIds: ["transaction"],
           fieldDefinitions: [
             {
               name: "transactionComments",
@@ -66,39 +66,36 @@ import {
     } catch (error) {
       console.error("Error creating custom field type:", error);
     }
-  };
-  
 
-  export const createTransactionCommentsTypes = async () => {
-    try {
-      const typeExists = await apiRoot
-        .types()
-        .withKey({ key: "novalnet-transaction-commentss" })
-        .get()
-        .execute()
-        .catch(() => null);
+    const type = existing.body;
+
+    const hasField = type.fieldDefinitions.some(
+      f => f.name === "transactionCommentsLocalized"
+    );
   
-  if (!typeExists) {
-    await apiRoot
-      .types()
-      .post({
-        body: {
-          key: "novalnet-transaction-commentss",
-          name: { en: "Novalnet Transaction Commentss" },
-          resourceTypeIds: ["transactions"],
-          fieldDefinitions: [
-            {
-              name: "transactionCommentss",
-              label: { en: "Transaction Commentss" },
-              type: { name: "String" },
-              required: false,
-            },
-          ],
-        },
-      })
-      .execute();
-  }
-    } catch (error) {
-      console.error("Error creating custom field types:", error);
+    if (!hasField) {
+      // ADD Field to existing type
+      await apiRoot
+        .types()
+        .withId({ ID: type.id })
+        .post({
+          body: {
+            version: type.version,
+            actions: [
+              {
+                action: "addFieldDefinition",
+                fieldDefinition: {
+                  name: "transactionCommentsLocalized",
+                  label: { en: "Transaction Comments (Localized)" },
+                  type: { name: "LocalizedString" },
+                  required: false,
+                },
+              },
+            ],
+          },
+        })
+        .execute();
+      log.info("Added localized field to transaction type");
     }
+
   };
