@@ -549,7 +549,7 @@ const localizedTransactionComments = supportedLocales.reduce(
   
 	log.info(txId);
   log.info(parsedData.ctPaymentId);
-  log.info(transactionComments);
+  log.info(localizedTransactionComments);
   const updatedPayment = await projectApiRoot
   .payments()
   .withId({ ID: parsedData.ctPaymentId })
@@ -561,7 +561,7 @@ const localizedTransactionComments = supportedLocales.reduce(
           action: "setTransactionCustomField",
           transactionId: txId,
           name: "transactionComments",
-          value: localizedTransactionComments,
+          value: transactionComments,
         },
         {
           action: "setStatusInterfaceCode",
@@ -572,6 +572,12 @@ const localizedTransactionComments = supportedLocales.reduce(
           transactionId: txId,
           state: state,
         },
+        {
+          action: "setTransactionCustomField",
+          transactionId: txId,
+          name: "transactionCommentsLocalized",
+          value: localizedTransactionComments,
+        }
       ],
     },
   })
@@ -2134,14 +2140,14 @@ public async updatePaymentStatusByPaymentId(
         amount: amountPlanned,
         type: TRANSACTION_AUTHORIZATION_TYPE,
         state: transactionState,
-        interactionId: pspReference,
+        interactionId: pspReference, 
       },
     });
 
     if (isBelowSuccessStateThreshold) {
       return {
         transactionStatus: {
-          errors: [],
+          errors: [], 
           state: "Pending",
         },
       };
