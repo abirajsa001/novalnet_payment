@@ -551,45 +551,50 @@ const localizedTransactionComments = supportedLocales.reduce(
   log.info(parsedData.ctPaymentId);
   log.info(JSON.stringify(localizedTransactionComments, null, 2));
   
-  const updatedPayment = await projectApiRoot
+  const actions: any[] = [
+  // ✅ REMOVE custom type (TS-safe)
+  {
+    action: "setTransactionCustomType",
+    transactionId: txId,
+  },
+
+  // ✅ RE-ATTACH updated type
+  {
+    action: "setTransactionCustomType",
+    transactionId: txId,
+    type: {
+      key: "novalnet-transaction-comments",
+      typeId: "type",
+    },
+  },
+
+  // ✅ SET localized field
+  {
+    action: "setTransactionCustomField",
+    transactionId: txId,
+    name: "transactionCommentsLocalized",
+    value: localizedTransactionComments, // LocalizedString
+  },
+
+  {
+    action: "setStatusInterfaceCode",
+    interfaceCode: String(statusCode),
+  },
+  {
+    action: "changeTransactionState",
+    transactionId: txId,
+    state,
+  },
+];
+
+
+await projectApiRoot
   .payments()
   .withId({ ID: parsedData.ctPaymentId })
   .post({
     body: {
       version,
-      actions: [
-        {
-          action: "setTransactionCustomType",
-          transactionId: txId,
-          type: null,
-        },
-
-        {
-          action: "setTransactionCustomType",
-          transactionId: txId,
-          type: {
-            key: "novalnet-transaction-comments",
-            typeId: "type",
-          },
-        },
-
-        {
-          action: "setTransactionCustomField",
-          transactionId: txId,
-          name: "transactionCommentsLocalized",
-          value: localizedTransactionComments,
-        },
-
-        {
-          action: "setStatusInterfaceCode",
-          interfaceCode: String(statusCode),
-        },
-        {
-          action: "changeTransactionState",
-          transactionId: txId,
-          state,
-        },
-      ],
+      actions,
     },
   })
   .execute();
