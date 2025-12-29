@@ -549,7 +549,8 @@ const localizedTransactionComments = supportedLocales.reduce(
   
 	log.info(txId);
   log.info(parsedData.ctPaymentId);
-  log.info(localizedTransactionComments);
+  log.info(JSON.stringify(localizedTransactionComments, null, 2));
+  
   const updatedPayment = await projectApiRoot
   .payments()
   .withId({ ID: parsedData.ctPaymentId })
@@ -560,28 +561,23 @@ const localizedTransactionComments = supportedLocales.reduce(
         {
           action: "setTransactionCustomField",
           transactionId: txId,
-          name: "transactionComments",
-          value: transactionComments,
+          name: "transactionCommentsLocalized", // ✅ must exist on type
+          value: localizedTransactionComments, // ✅ LocalizedString
         },
         {
           action: "setStatusInterfaceCode",
-          interfaceCode: String(statusCode)
+          interfaceCode: String(statusCode),
         },
         {
-          action: 'changeTransactionState',
+          action: "changeTransactionState",
           transactionId: txId,
-          state: state,
+          state,
         },
-        {
-          action: "setTransactionCustomField",
-          transactionId: txId,
-          name: "transactionCommentsLocalized",
-          value: localizedTransactionComments,
-        }
       ],
     },
   })
   .execute();
+
   const comment = await this.getTransactionComment(
     parsedData.ctPaymentId,
     parsedData.pspReference
