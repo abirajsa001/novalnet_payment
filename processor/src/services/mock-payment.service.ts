@@ -558,7 +558,12 @@ const localizedTransactionComments = supportedLocales.reduce(
     body: {
       version,
       actions: [
-        //  REQUIRED FIRST
+        {
+          action: "setTransactionCustomType",
+          transactionId: txId,
+          type: null,
+        },
+
         {
           action: "setTransactionCustomType",
           transactionId: txId,
@@ -568,7 +573,6 @@ const localizedTransactionComments = supportedLocales.reduce(
           },
         },
 
-        //  THEN set localized field
         {
           action: "setTransactionCustomField",
           transactionId: txId,
