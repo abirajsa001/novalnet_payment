@@ -466,11 +466,10 @@ export class MockPaymentService extends AbstractPaymentService {
     try {
       log.info("createPaymentt");
       const parsedData = typeof data === "string" ? JSON.parse(data) : data;
-  
       if (!parsedData?.ctPaymentId) {
         throw new Error("Missing ctPaymentId in createPaymentt");
       }
-  
+      
       const config = getConfig();
       await createTransactionCommentsType();
   
@@ -486,15 +485,16 @@ export class MockPaymentService extends AbstractPaymentService {
       let responseData: any;
       const accessKey = String(getConfig()?.novalnetPublicKey ?? "");
       const reverseKey =  accessKey.split("").reverse().join("");
-
+      const lang = parsedData?.lang;
       const locale =  navigator?.language?.split("-")[0] ?? "no-lang1";
       log.info('locale-lang');
+      log.info(lang);
       log.info(locale);
       log.info(accessKey);
       log.info(reverseKey);
       const language = locale?.split("-")[0] ?? "no-lang2";
       log.info(language);
-      
+
       try {
         const novalnetResponse = await fetch(
           "https://payport.novalnet.de/v2/transaction/details",
@@ -1845,12 +1845,12 @@ public async updatePaymentStatusByPaymentId(
     return formatDateTime();
   }
 
-  
   public async createPayments(
     request: CreatePaymentRequest,
   ): Promise<PaymentResponseSchemaDTO> {
     log.info("Request data:", JSON.stringify(request.data, null, 2));
     const type = String(request.data?.paymentMethod?.type ?? "INVOICE");
+    const lang = String(request.data?.lang);
     log.info("Payment type:", type);
     log.info(getFutureOrderNumberFromContext());
     const config = getConfig();
@@ -2053,6 +2053,8 @@ public async updatePaymentStatusByPaymentId(
         inputval4: String(parsedCart.customerEmail ?? "Email not available"),
         input5: "getFutureOrderNumberFromContext",
         inputval5: String(orderNumber ?? "getFutureOrderNumberFromContext"),
+        input6: "langUpdated",
+        inputval6: String(lang ?? 'no-lang'),
       },
     };
 

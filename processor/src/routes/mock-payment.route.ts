@@ -221,6 +221,7 @@ fastify.post<{ Body: PaymentRequestSchemaDTO }>(
             ctId: query.ctsid,
             ctPaymentId: query.ctPaymentID,
             pspReference: query.pspReference,
+            lang: query.lang,
           };
         
           // Convert to JSON string

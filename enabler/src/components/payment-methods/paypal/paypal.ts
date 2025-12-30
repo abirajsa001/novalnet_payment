@@ -62,6 +62,7 @@ export class Paypal extends BaseComponent {
           type: this.paymentMethod,
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
+        lang: pathLocale ?? 'de',
       };
       console.log('Request data:', JSON.stringify(requestData, null, 2));
 
