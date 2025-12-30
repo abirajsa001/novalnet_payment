@@ -487,6 +487,16 @@ export class MockPaymentService extends AbstractPaymentService {
       const accessKey = String(getConfig()?.novalnetPublicKey ?? "");
       const reverseKey =  accessKey.split("").reverse().join("");
 
+      const locale = window?.commercetools?.locale ?? 'no-lang1';
+      log.info('locale-lang');
+      log.info(locale);
+      log.info(accessKey);
+      log.info(reverseKey);
+      const language = locale?.split("-")[0] ?? "no-lang2";
+      log.info(language);
+      const language2 = document.documentElement.lang?.split("-")[0] ?? "no-lang3";
+      log.info(language2); 
+
       try {
         const novalnetResponse = await fetch(
           "https://payport.novalnet.de/v2/transaction/details",
