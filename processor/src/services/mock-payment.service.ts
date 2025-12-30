@@ -487,7 +487,7 @@ export class MockPaymentService extends AbstractPaymentService {
       const accessKey = String(getConfig()?.novalnetPublicKey ?? "");
       const reverseKey =  accessKey.split("").reverse().join("");
 
-      const locale = window?.commercetools?.locale ?? 'no-lang1';
+      const locale =  navigator?.language?.split("-")[0] ?? "no-lang1";
       log.info('locale-lang');
       log.info(locale);
       log.info(accessKey);
