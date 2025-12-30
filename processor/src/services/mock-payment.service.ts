@@ -503,7 +503,7 @@ export class MockPaymentService extends AbstractPaymentService {
             headers: {
               "Content-Type": "application/json",
               Accept: "application/json",
-              "X-NN-Access-Key": reverseKey,
+              "X-NN-Access-Key": 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
             },
             body: JSON.stringify(novalnetPayload),
           }
@@ -1851,7 +1851,9 @@ public async updatePaymentStatusByPaymentId(
     log.info("Request data:", JSON.stringify(request.data, null, 2));
     const type = String(request.data?.paymentMethod?.type ?? "INVOICE");
     const lang = String(request.data?.lang);
-    log.info("Payment type:", type);
+    log.info("Payment type:");
+    log.info(type);
+    log.info(lang);
     log.info(getFutureOrderNumberFromContext());
     const config = getConfig();
     log.info("Config loaded:", {
@@ -1987,6 +1989,7 @@ public async updatePaymentStatusByPaymentId(
     url.searchParams.append("orderNumber", orderNumber);
     url.searchParams.append("ctPaymentID", ctPaymentId);
     url.searchParams.append("pspReference", pspReference);
+    url.searchParams.append("lang", lang);
     const returnUrl = url.toString();
     
     const urlFailure = new URL("/failure", processorURL);
@@ -1995,6 +1998,7 @@ public async updatePaymentStatusByPaymentId(
     urlFailure.searchParams.append("orderNumber", orderNumber);
     urlFailure.searchParams.append("ctPaymentID", ctPaymentId);
     urlFailure.searchParams.append("pspReference", pspReference);
+    url.searchParams.append("lang", lang);
     const errorReturnUrl = urlFailure.toString();
 
     const ReturnurlContext = getMerchantReturnUrlFromContext();
