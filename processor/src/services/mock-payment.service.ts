@@ -580,29 +580,46 @@ export class MockPaymentService extends AbstractPaymentService {
   
       const txId = tx.id;
   
-      const actions = [
+      // ---------- 6. Update Payment ----------
+      const actions: any[] = [
+        // detach type (schema refresh)
         {
           action: "setTransactionCustomType",
-          transactionId: tx.id,
+          transactionId: txId,
+        },
+        // reattach correct type
+        {
+          action: "setTransactionCustomType",
+          transactionId: txId,
           type: {
             key: "novalnet-transaction-comments",
             typeId: "type",
           },
         },
+        // set localized field
         {
           action: "setTransactionCustomField",
-          transactionId: tx.id,
+          transactionId: txId,
           name: "transactionCommentsLocalized",
           value: localizedTransactionComments,
         },
+        {
+          action: "setStatusInterfaceCode",
+          interfaceCode: String(statusCode),
+        },
+        {
+          action: "changeTransactionState",
+          transactionId: txId,
+          state,
+        },
       ];
-    
+  
       await projectApiRoot
         .payments()
         .withId({ ID: parsedData.ctPaymentId })
         .post({
           body: {
-            version: payment.version,
+            version,
             actions,
           },
         })
