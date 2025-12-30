@@ -474,7 +474,7 @@ export class MockPaymentService extends AbstractPaymentService {
       const config = getConfig();
       await createTransactionCommentsType();
   
-      const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;  
+      const merchantReturnUrl = getMerchantReturnUrlFromContext() || config.merchantReturnUrl;
       log.info("Merchant return URL:", merchantReturnUrl);
   
       const novalnetPayload = {
@@ -494,10 +494,7 @@ export class MockPaymentService extends AbstractPaymentService {
       log.info(reverseKey);
       const language = locale?.split("-")[0] ?? "no-lang2";
       log.info(language);
-      const pathLocale = window.location.pathname.split("/")[1];
-      log.info(window.location.pathname);
-      log.info(pathLocale);
-
+      
       try {
         const novalnetResponse = await fetch(
           "https://payport.novalnet.de/v2/transaction/details",

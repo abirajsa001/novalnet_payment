@@ -52,7 +52,10 @@ export class Paypal extends BaseComponent {
     console.log('Environment:', this.environment);
     console.log('Processor URL:', this.processorUrl);
     console.log('Session ID:', this.sessionId);
-
+    console.log('asyncSubmit');
+    const pathLocale = window.location.pathname.split("/")[1];
+    console.log(window.location.href);
+    console.log(pathLocale);
     try {
       const requestData: PaymentRequestSchemaDTO = {
         paymentMethod: {
