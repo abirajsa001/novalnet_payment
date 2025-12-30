@@ -484,7 +484,7 @@ export class MockPaymentService extends AbstractPaymentService {
   
       let responseData: any;
       const accessKey = String(getConfig()?.novalnetPublicKey ?? "");
-      const reverseKey =  accessKey.split("").reverse().join("");
+      const base64Key =  btoa(accessKey);
       const lang = parsedData?.lang;
       const locale =  navigator?.language?.split("-")[0] ?? "no-lang1";
       log.info('locale-lang');
@@ -503,7 +503,7 @@ export class MockPaymentService extends AbstractPaymentService {
             headers: {
               "Content-Type": "application/json",
               Accept: "application/json",
-              "X-NN-Access-Key": 'YTg3ZmY2NzlhMmYzZTcxZDkxODFhNjdiNzU0MjEyMmM=',
+              "X-NN-Access-Key": base64Key,
             },
             body: JSON.stringify(novalnetPayload),
           }
@@ -564,10 +564,11 @@ export class MockPaymentService extends AbstractPaymentService {
         "Localized transaction comments:",
         JSON.stringify(localizedTransactionComments, null, 2)
       );
+
       log.info("Find the separate language based");
       log.info(localizedTransactionComments.en);
       log.info(localizedTransactionComments.de);
-      const testComment = localizedTransactionComments.en ?? localizedTransactionComments.de ?? 'emptyComment';
+      const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.en;
       // ---------- 5. Fetch Payment ----------
       const raw = await this.ctPaymentService.getPayment({
         id: parsedData.ctPaymentId,
@@ -611,7 +612,7 @@ export class MockPaymentService extends AbstractPaymentService {
           action: "setTransactionCustomField",
           transactionId: txId,
           name: "transactionComments",
-          value: testComment,
+          value: transactionComments,
         },
         {
           action: "setStatusInterfaceCode",
