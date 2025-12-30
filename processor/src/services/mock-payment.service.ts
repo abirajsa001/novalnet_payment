@@ -557,7 +557,10 @@ export class MockPaymentService extends AbstractPaymentService {
         "Localized transaction comments:",
         JSON.stringify(localizedTransactionComments, null, 2)
       );
-  
+      log.info("Find the separate language based");
+      log.info(localizedTransactionComments.en);
+      log.info(localizedTransactionComments.de);
+      const testComment = localizedTransactionComments.en ?? localizedTransactionComments.de ?? 'emptyComment';
       // ---------- 5. Fetch Payment ----------
       const raw = await this.ctPaymentService.getPayment({
         id: parsedData.ctPaymentId,
@@ -600,8 +603,8 @@ export class MockPaymentService extends AbstractPaymentService {
         {
           action: "setTransactionCustomField",
           transactionId: txId,
-          name: "transactionCommentsLocalized",
-          value: localizedTransactionComments,
+          name: "transactionComments",
+          value: testComment,
         },
         {
           action: "setStatusInterfaceCode",
