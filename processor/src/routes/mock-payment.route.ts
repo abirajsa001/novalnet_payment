@@ -194,6 +194,7 @@ fastify.post<{ Body: PaymentRequestSchemaDTO }>(
       orderNumber?: string;
       ctPaymentID?: string;
       pspReference?: string;
+      lang?: string;
     };
 
     const accessKey = String(getConfig()?.novalnetPublicKey ?? "");
