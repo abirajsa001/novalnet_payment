@@ -494,8 +494,9 @@ export class MockPaymentService extends AbstractPaymentService {
       log.info(reverseKey);
       const language = locale?.split("-")[0] ?? "no-lang2";
       log.info(language);
-      const language2 = document.documentElement.lang?.split("-")[0] ?? "no-lang3";
-      log.info(language2); 
+      const pathLocale = window.location.pathname.split("/")[1];
+      log.info(window.location.pathname);
+      log.info(pathLocale);
 
       try {
         const novalnetResponse = await fetch(
