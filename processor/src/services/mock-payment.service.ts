@@ -523,7 +523,10 @@ export class MockPaymentService extends AbstractPaymentService {
       const tid = responseData?.transaction?.tid ?? "N/A";
       const paymentType = responseData?.transaction?.payment_type ?? "N/A";
       const isTestMode = responseData?.transaction?.test_mode === 1;
-  
+      log.info('responsedata-tid');
+      log.info(tid);
+      log.info(paymentType);
+      log.info(JSON.stringify(responseData, null, 2));
       const status = responseData?.transaction?.status;
       const state =
         status === "PENDING" || status === "ON_HOLD"
