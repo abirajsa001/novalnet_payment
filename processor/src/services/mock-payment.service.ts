@@ -875,24 +875,34 @@ const pspReference = randomUUID().toString();
     const state = status === 'PENDING' || status === 'ON_HOLD' ? 'Pending' : status === 'CONFIRMED' ? 'Success' : status === 'CANCELLED' ? 'Canceled': 'Failure';
     const transactiondetails = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid ?? "NN/A"}\nPayment Type: ${parsedResponse?.transaction?.payment_type ?? "NN/A"}\n${testModeText ?? "NN/A"}`;
 
-    let bankDetails = "";
-    if (parsedResponse?.transaction?.bank_details) {
-      bankDetails = `Please transfer the amount of ${parsedResponse.transaction.amount} to the following account.\nAccount holder: ${parsedResponse.transaction.bank_details.account_holder}\nIBAN: ${parsedResponse.transaction.bank_details.iban}\nBIC: ${parsedResponse.transaction.bank_details.bic}\nBANK NAME: ${parsedResponse.transaction.bank_details.bank_name}\nBANK PLACE: ${parsedResponse.transaction.bank_details.bank_place}\nPlease use the following payment reference for your money transfer:\nPayment Reference 1: ${parsedResponse.transaction.tid}`;
-    }
+   
+    // -----------------------------
+    // Extract safely
+    // -----------------------------
+    const transactions = parsedResponse?.transaction;
 
-    // Generate transaction comments
-    const transactionComments = `${transactiondetails ?? "N/A"}\n${bankDetails ?? ""}`;
+    const amount = transactions?.amount;
+    const tid = transactions?.tid;
+    const paymentType = transactions?.payment_type;
+    const isTestMode = transactions?.test_mode === 1;
 
-    const amount = parsedResponse.transaction.amount;
-    const accountHolder = parsedResponse.transaction.bank_details.account_holder;
-    const iban = parsedResponse.transaction.bank_details.iban;
-    const bic = parsedResponse.transaction.bank_details.bic;
-    const bankName = parsedResponse.transaction.bank_details.bank_name;
-    const bankPlace = parsedResponse.transaction.bank_details.bank_place;
-    const tid = parsedResponse.transaction.tid;
+    const bankDetails = transactions?.bank_details;
 
-    const lang = String(request.data?.lang);
+    const accountHolder = bankDetails?.account_holder;
+    const iban = bankDetails?.iban;
+    const bic = bankDetails?.bic;
+    const bankName = bankDetails?.bank_name;
+    const bankPlace = bankDetails?.bank_place;
+
+    // -----------------------------
+    // Localization setup
+    // -----------------------------
+    const lang = String(request.data?.lang ?? "en") as SupportedLocale;
     const supportedLocales: SupportedLocale[] = ["en", "de"];
+
+    // -----------------------------
+    // Base transactions comments
+    // -----------------------------
     const localizedTransactionComments = supportedLocales.reduce(
       (acc, locale) => {
         acc[locale] = [
@@ -907,31 +917,46 @@ const pspReference = randomUUID().toString();
       {} as Record<SupportedLocale, string>
     );
 
-    const localizedTransactionComments = supportedLocales.reduce(
-      (acc, locale) => {
-        acc[locale] = [
-          t(locale, "payment.referenceText", { amount }), 
-          t(locale, "payment.accountHolder", { accountHolder }),
-          t(locale, "payment.iban", { iban }),
-          t(locale, "payment.bic", { bic }),
-          t(locale, "payment.bankName", { bankName }),
-          t(locale, "payment.bankPlace", { bankPlace }),
-          t(locale, "payment.transactionId", { tid }),
-        ].join("\n");
-        return acc;
-      },
-      {} as Record<SupportedLocale, string>
-    );
+    // -----------------------------
+    // Bank details comments (optional)
+    // -----------------------------
+    let localizedBankDetailsComment: Partial<Record<SupportedLocale, string>> = {};
 
+    if (bankDetails) {
+      localizedBankDetailsComment = supportedLocales.reduce(
+        (acc, locale) => {
+          acc[locale] = [
+            t(locale, "payment.referenceText", { amount }),
+            t(locale, "payment.accountHolder", { accountHolder }),
+            t(locale, "payment.iban", { iban }),
+            t(locale, "payment.bic", { bic }),
+            t(locale, "payment.bankName", { bankName }),
+            t(locale, "payment.bankPlace", { bankPlace }),
+            t(locale, "payment.transactionId", { tid }),
+          ].join("\n");
+          return acc;
+        },
+        {} as Record<SupportedLocale, string>
+      );
+    }
 
+    // -----------------------------
+    // Final language selection
+    // -----------------------------
+    let transactionComments = localizedTransactionComments[lang];
+
+    if (localizedBankDetailsComment[lang]) {
+      transactionComments += `\n\n${localizedBankDetailsComment[lang]}`;
+    }
+
+    // -----------------------------
+    // Debug logs
+    // -----------------------------
     log.info(
       "Localized transaction comments:",
       JSON.stringify(localizedTransactionComments, null, 2)
     );
-    log.info("Find the separate language based");
-    log.info(localizedTransactionComments.en);
-    log.info(localizedTransactionComments.de);
-    const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.en;
+    log.info("Final transaction comments:", transactionComments);
 
     log.info("Payment created with Novalnet details for direct:");
     log.info("Payment transactionComments for direct:", transactionComments);
@@ -1236,7 +1261,7 @@ if (!order) {
 
   public async handleTransactionCapture(webhook: any) {
     const { date, time } = await this.getFormattedDateTime();
-    const lang = "de";
+    const lang = "en";
     const supportedLocales: SupportedLocale[] = ["en", "de"];
     const localizedTransactionComments = supportedLocales.reduce(
       (acc, locale) => {
@@ -1299,7 +1324,7 @@ if (!order) {
 
   public async handleTransactionCancel(webhook: any) {
     const { date, time } = await this.getFormattedDateTime();
-    const lang = "de";
+    const lang = "en";
     const supportedLocales: SupportedLocale[] = ["en", "de"];
     const localizedTransactionComments = supportedLocales.reduce(
       (acc, locale) => {
@@ -1369,7 +1394,7 @@ if (!order) {
     const { date, time } = await this.getFormattedDateTime();
     const refundedAmount = webhook.transaction.refund.amount;
     const refundTID = webhook.transaction.refund.tid ?? '';
-    const lang = "de";
+    const lang = "en";
 
     const supportedLocales: SupportedLocale[] = ["en", "de"];
     const localizedTransactionComments = supportedLocales.reduce(
@@ -1428,7 +1453,7 @@ if (!order) {
 
   public async handleTransactionUpdate(webhook: any) {
     const orderDetails = await this.getOrderDetails(webhook);
-    const lang = "de";
+    const lang = "en";
     log.info('TRANSACTION_UPDATE');
     log.info(orderDetails.tid);
     let transactionComments = '';
@@ -1516,10 +1541,10 @@ if (!order) {
     const eventTID = webhook.event.tid;
     const transactionID = webhook.transaction.tid;
     const parentTID = webhook.event.parent_tid ?? eventTID;
-    const amount = webhook.transaction.amount / 100;
+    const amount = String(webhook.transaction.amount / 100);
     const currency = webhook.transaction.currency;
     const { date, time } = await this.getFormattedDateTime();
-    const lang = "de";
+    const lang = "en";
     const supportedLocales: SupportedLocale[] = ["en", "de"];
     const localizedTransactionComments = supportedLocales.reduce(
       (acc, locale) => {
@@ -1579,9 +1604,13 @@ if (!order) {
   }
 
   public async handleChargeback(webhook: any) {
+	const eventTID = webhook.event.tid;
+    const transactionID = webhook.transaction.tid;
+    const parentTID = webhook.event.parent_tid ?? eventTID;
+    const amount = String(webhook.transaction.amount / 100);
+    const currency = webhook.transaction.currency;
     const { date, time } = await this.getFormattedDateTime();
-
-    const lang = "de";
+    const lang = "en";
     const supportedLocales: SupportedLocale[] = ["en", "de"];
     const localizedTransactionComments = supportedLocales.reduce(
       (acc, locale) => {
@@ -1647,7 +1676,7 @@ if (!order) {
   public async handlePaymentReminder(webhook: any) {
     const { date, time } = await this.getFormattedDateTime();
     const reminderIndex = webhook.event.type.split('_')[2];
-    const lang = "de";
+    const lang = "en";
     const supportedLocales: SupportedLocale[] = ["en", "de"];
     const localizedTransactionComments = supportedLocales.reduce(
       (acc, locale) => {
@@ -1658,8 +1687,6 @@ if (!order) {
       },
       {} as Record<SupportedLocale, string>
     );
-    const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.de;
-
     const transactionComments = `\n Payment Reminder ${reminderIndex} has been sent to the customer. `;
     log.info("handle payment update");
 
