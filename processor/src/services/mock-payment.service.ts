@@ -563,11 +563,10 @@ export class MockPaymentService extends AbstractPaymentService {
         "Localized transaction comments:",
         JSON.stringify(localizedTransactionComments, null, 2)
       );
-
       log.info("Find the separate language based");
       log.info(localizedTransactionComments.en);
       log.info(localizedTransactionComments.de);
-      const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.en;
+      const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.de;
       // ---------- 5. Fetch Payment ----------
       const raw = await this.ctPaymentService.getPayment({
         id: parsedData.ctPaymentId,
@@ -883,6 +882,57 @@ const pspReference = randomUUID().toString();
 
     // Generate transaction comments
     const transactionComments = `${transactiondetails ?? "N/A"}\n${bankDetails ?? ""}`;
+
+    const amount = parsedResponse.transaction.amount;
+    const accountHolder = parsedResponse.transaction.bank_details.account_holder;
+    const iban = parsedResponse.transaction.bank_details.iban;
+    const bic = parsedResponse.transaction.bank_details.bic;
+    const bankName = parsedResponse.transaction.bank_details.bank_name;
+    const bankPlace = parsedResponse.transaction.bank_details.bank_place;
+    const tid = parsedResponse.transaction.tid;
+
+    const lang = String(request.data?.lang);
+    const supportedLocales: SupportedLocale[] = ["en", "de"];
+    const localizedTransactionComments = supportedLocales.reduce(
+      (acc, locale) => {
+        acc[locale] = [
+          t(locale, "payment.transactionId", { tid }),
+          t(locale, "payment.paymentType", { type: paymentType }),
+          isTestMode
+            ? t(locale, "payment.testMode")
+            : t(locale, "payment.liveMode"),
+        ].join("\n");
+        return acc;
+      },
+      {} as Record<SupportedLocale, string>
+    );
+
+    const localizedTransactionComments = supportedLocales.reduce(
+      (acc, locale) => {
+        acc[locale] = [
+          t(locale, "payment.referenceText", { amount }), 
+          t(locale, "payment.accountHolder", { accountHolder }),
+          t(locale, "payment.iban", { iban }),
+          t(locale, "payment.bic", { bic }),
+          t(locale, "payment.bankName", { bankName }),
+          t(locale, "payment.bankPlace", { bankPlace }),
+          t(locale, "payment.transactionId", { tid }),
+        ].join("\n");
+        return acc;
+      },
+      {} as Record<SupportedLocale, string>
+    );
+
+
+    log.info(
+      "Localized transaction comments:",
+      JSON.stringify(localizedTransactionComments, null, 2)
+    );
+    log.info("Find the separate language based");
+    log.info(localizedTransactionComments.en);
+    log.info(localizedTransactionComments.de);
+    const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.en;
+
     log.info("Payment created with Novalnet details for direct:");
     log.info("Payment transactionComments for direct:", transactionComments);
     log.info("ctPayment id for direct:", ctPayment.id);
@@ -1186,7 +1236,18 @@ if (!order) {
 
   public async handleTransactionCapture(webhook: any) {
     const { date, time } = await this.getFormattedDateTime();
-    const transactionComments = `The transaction has been confirmed on ${date} at ${time}`;
+    const lang = "de";
+    const supportedLocales: SupportedLocale[] = ["en", "de"];
+    const localizedTransactionComments = supportedLocales.reduce(
+      (acc, locale) => {
+        acc[locale] = [
+          t(locale, "webhook.captureComment", { date, time }),
+        ].join("\n");
+        return acc;
+      },
+      {} as Record<SupportedLocale, string>
+    );
+    const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.de;
     const status = webhook?.transaction?.status;
     const state = status === 'PENDING' || status === 'ON_HOLD' ? 'Pending' : status === 'CONFIRMED' ? 'Success' : status === 'CANCELLED' ? 'Canceled': 'Failure';
     log.info("handle payment update");
@@ -1238,7 +1299,18 @@ if (!order) {
 
   public async handleTransactionCancel(webhook: any) {
     const { date, time } = await this.getFormattedDateTime();
-    const transactionComments = `The transaction has been cancelled on ${date} at ${time}`;
+    const lang = "de";
+    const supportedLocales: SupportedLocale[] = ["en", "de"];
+    const localizedTransactionComments = supportedLocales.reduce(
+      (acc, locale) => {
+        acc[locale] = [
+          t(locale, "webhook.cancelComment", { date, time }),
+        ].join("\n");
+        return acc;
+      },
+      {} as Record<SupportedLocale, string>
+    );
+    const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.de;
     log.info("handle payment update");
     const status = webhook?.transaction?.status;
     const state = status === 'PENDING' || status === 'ON_HOLD' ? 'Pending' : status === 'CONFIRMED' ? 'Success' : status === 'CANCELLED' ? 'Canceled': 'Failure';
@@ -1297,6 +1369,19 @@ if (!order) {
     const { date, time } = await this.getFormattedDateTime();
     const refundedAmount = webhook.transaction.refund.amount;
     const refundTID = webhook.transaction.refund.tid ?? '';
+    const lang = "de";
+
+    const supportedLocales: SupportedLocale[] = ["en", "de"];
+    const localizedTransactionComments = supportedLocales.reduce(
+      (acc, locale) => {
+        acc[locale] = [
+          t(locale, "webhook.cancelComment", { date, time }),
+        ].join("\n");
+        return acc;
+      },
+      {} as Record<SupportedLocale, string>
+    );
+
     const transactionComments = refundTID
     ? `Refund has been initiated for the TID: ${eventTID} with the amount ${refundedAmount} ${currency}. New TID: ${refundTID} for the refunded amount.`
     : `Refund has been initiated for the TID: ${eventTID} with the amount ${refundedAmount} ${currency}.`;
@@ -1343,6 +1428,7 @@ if (!order) {
 
   public async handleTransactionUpdate(webhook: any) {
     const orderDetails = await this.getOrderDetails(webhook);
+    const lang = "de";
     log.info('TRANSACTION_UPDATE');
     log.info(orderDetails.tid);
     let transactionComments = '';
@@ -1433,7 +1519,18 @@ if (!order) {
     const amount = webhook.transaction.amount / 100;
     const currency = webhook.transaction.currency;
     const { date, time } = await this.getFormattedDateTime();
-    const transactionComments = `Credit has been successfully received for the TID: ${parentTID} with amount ${amount}${currency} on  ${date}${time}. Please refer PAID order details in our Novalnet Admin Portal for the TID: ${transactionID}.`;
+    const lang = "de";
+    const supportedLocales: SupportedLocale[] = ["en", "de"];
+    const localizedTransactionComments = supportedLocales.reduce(
+      (acc, locale) => {
+        acc[locale] = [
+          t(locale, "webhook.creditComment", { parentTID, amount, currency, date, time, transactionID}),
+        ].join("\n");
+        return acc;
+      },
+      {} as Record<SupportedLocale, string>
+    );
+    const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.de;
     log.info('CREDIT');
     log.info("handle transaction credit");
     const raw = await this.ctPaymentService.getPayment({ id: webhook.custom.inputval4 } as any);
@@ -1483,7 +1580,21 @@ if (!order) {
 
   public async handleChargeback(webhook: any) {
     const { date, time } = await this.getFormattedDateTime();
-    const transactionComments = `Novalnet Transaction ID: ${"NN/AA"}\nPayment Type: ${"NN/AA"}\nStatus: ${"NN/AA"}`;
+
+    const lang = "de";
+    const supportedLocales: SupportedLocale[] = ["en", "de"];
+    const localizedTransactionComments = supportedLocales.reduce(
+      (acc, locale) => {
+        acc[locale] = [
+          t(locale, "webhook.creditComment", { parentTID, amount, currency, date, time, transactionID}),
+        ].join("\n");
+        return acc;
+      },
+      {} as Record<SupportedLocale, string>
+    );
+    const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.de;
+    const transactionComment  = `The transaction status has been changed from on-hold to completed for the TID: ${eventTID} on ${date}${time}.`;
+
     log.info("handle chargeback");
     const raw = await this.ctPaymentService.getPayment({ id: webhook.custom.inputval4 } as any);
     const payment = (raw as any)?.body ?? raw;
@@ -1536,8 +1647,22 @@ if (!order) {
   public async handlePaymentReminder(webhook: any) {
     const { date, time } = await this.getFormattedDateTime();
     const reminderIndex = webhook.event.type.split('_')[2];
+    const lang = "de";
+    const supportedLocales: SupportedLocale[] = ["en", "de"];
+    const localizedTransactionComments = supportedLocales.reduce(
+      (acc, locale) => {
+        acc[locale] = [
+          t(locale, "webhook.paymentRemainderComment", { reminderIndex }),
+        ].join("\n");
+        return acc;
+      },
+      {} as Record<SupportedLocale, string>
+    );
+    const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.de;
+
     const transactionComments = `\n Payment Reminder ${reminderIndex} has been sent to the customer. `;
     log.info("handle payment update");
+
     const raw = await this.ctPaymentService.getPayment({ id: webhook.custom.inputval4 } as any);
     const payment = (raw as any)?.body ?? raw;
     const version = payment.version;

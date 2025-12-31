@@ -7,7 +7,31 @@
       "transactionId": "Novalnet Transaktions-ID: {{tid}}",
       "paymentType": "Zahlungsart: {{type}}",
       "testMode": "Testmodus",
-      "liveMode":"Livemodus"
+      "liveMode":"Livemodus",
+      "referenceText":"Please transfer the amount of {{amount}} to the following account",
+      "accountHolder":"Account holder:",
+      "iban":"IBAN:",
+      "bic":"BIC:",
+      "bankName":"BANK NAME",
+      "bankPlace":"BANK PLACE"
+    },
+    "webhook": {
+      "captureComment": "The transaction has been confirmed on {{date}} at {{time}}",
+      "cancelComment": "The transaction has been cancelled on {{date}} at {{time}}",
+      "creditComment": "Credit has been successfully received for the TID: {{parentTID}} with amount {{amount}} {{currency}} on  {{date}} {{time}}. Please refer PAID order details in our Novalnet Admin Portal for the TID: {{transactionID}}.",
+      "pending": "Payment is pending",
+      "failed": "Payment failed",
+      "refundInitiated": "Refund of {{amount}} initiated",
+      "transactionId": "Novalnet Transaction ID: {{tid}}",
+      "paymentType": "Payment Type: {{type}}",
+      "testMode": "Test mode",
+      "liveMode":"Live mode",
+      "referenceText":"Please transfer the amount of {{amount}} to the following account",
+      "accountHolder":"Account holder:",
+      "iban":"IBAN:",
+      "bic":"BIC:",
+      "bankName":"BANK NAME",
+      "bankPlace":"BANK PLACE"
     }
   }
   
