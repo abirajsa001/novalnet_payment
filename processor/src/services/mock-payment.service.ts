@@ -1617,7 +1617,7 @@ if (!order) {
     const localizedTransactionComments = supportedLocales.reduce(
       (acc, locale) => {
         acc[locale] = [
-          t(locale, "webhook.creditComment", { parentTID, amount, currency, date, time, transactionID}),
+          t(locale, "webhook.chargebackComment", { parentTID, amount, currency, date, time, transactionID}),
         ].join("\n");
         return acc;
       },
@@ -1883,7 +1883,11 @@ public async getRemoteAddress(
       .createHash('sha256')
       .update(token)
       .digest('hex');
+      log.info('token');
+      log.info(token);
       log.info('validateChecksum generatecehcsum created');
+      log.info(generatedChecksum);
+      log.info(payload.event.checksum);
     if (generatedChecksum !== payload.event.checksum) {
       throw new Error('Checksum validation failed');
     }
