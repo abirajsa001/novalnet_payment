@@ -1145,7 +1145,9 @@ if (!order) {
 
     // === VALIDATIONS (PHP equivalent)
     await this.validateRequiredParameters(webhook);
+    log.info('validateRequiredParameters checksum success');
     await this.validateChecksum(webhook);
+    log.info('validate checksum success');
     if (req) {
       await this.validateIpAddress(req);
     }
@@ -1773,13 +1775,14 @@ if (!order) {
   // ==================================================
 
   public async validateRequiredParameters(payload: any) {
+    log.info('validateRequiredParameters enter');
     const mandatory: Record<string, string[]> = {
       event: ['type', 'checksum', 'tid'],
       merchant: ['vendor', 'project'],
       result: ['status'],
       transaction: ['tid', 'payment_type', 'status'],
     };
-
+    log.info('validateRequiredParameters variable');
     for (const category of Object.keys(mandatory)) {
       if (!payload[category]) {
         throw new Error(`Missing category: ${category}`);
@@ -1791,9 +1794,11 @@ if (!order) {
         }
       }
     }
+    log.info('validateRequiredParameters done');
   }
 
 public async validateIpAddress(req: FastifyRequest): Promise<void> {
+  log.info('validateIpAddress enter');
   const novalnetHost = 'pay-nn.de';
 
   const { address: novalnetHostIP } = await dns.lookup(novalnetHost);
@@ -1806,10 +1811,9 @@ public async validateIpAddress(req: FastifyRequest): Promise<void> {
   const requestReceivedIP = await this.getRemoteAddress(req, novalnetHostIP);
   log.info('Novalnet Host IP:', novalnetHostIP);
   log.info('Request IP:', requestReceivedIP);
-
   if (novalnetHostIP !== requestReceivedIP) {
     throw new Error(
-      `Unauthorised access from the IP ${requestReceivedIP}`
+      `Unauthorized access from the IP ${requestReceivedIP}`
     );
   }
 }
@@ -1848,12 +1852,12 @@ public async getRemoteAddress(
       return value;
     }
   }
-
   return req.ip;
 }
 
   
   public validateChecksum(payload: any) {
+    log.info('validateChecksum enter');
       const accessKey = String(getConfig()?.novalnetPublicKey ?? "");
     if (!accessKey) {
       log.warn('NOVALNET_ACCESS_KEY not configured');
@@ -1864,7 +1868,7 @@ public async getRemoteAddress(
       payload.event.tid +
       payload.event.type +
       payload.result.status;
-
+      log.info('validateChecksum token created');
     if (payload.transaction?.amount) {
       token += payload.transaction.amount;
     }
@@ -1874,12 +1878,12 @@ public async getRemoteAddress(
     }
 
     token += accessKey.split('').reverse().join('');
-
+    log.info('validateChecksum token done');
     const generatedChecksum = crypto
       .createHash('sha256')
       .update(token)
       .digest('hex');
-
+      log.info('validateChecksum generatecehcsum created');
     if (generatedChecksum !== payload.event.checksum) {
       throw new Error('Checksum validation failed');
     }
