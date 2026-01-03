@@ -62,10 +62,10 @@ export class Paypal extends BaseComponent {
           type: this.paymentMethod,
         },
         paymentOutcome: PaymentOutcome.AUTHORIZED,
-        lang: pathLocale ?? 'de',
+        lang: pathLocale,
+        path: window.location.href,
       };
       console.log('Request data:', JSON.stringify(requestData, null, 2));
-
       console.log('Making API call to:', this.processorUrl + "/payments");
       const response = await fetch(this.processorUrl + "/payments", {
         method: "POST",
@@ -78,7 +78,7 @@ export class Paypal extends BaseComponent {
 
       console.log('Response status:', response.status);
       console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-      
+    
       if (!response.ok) {
         const errorText = await response.text();
         console.error('HTTP error response:', errorText);

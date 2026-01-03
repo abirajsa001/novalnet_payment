@@ -143,7 +143,7 @@ export const paymentRoutes = async (
       },
     },
     async (request, reply) => {
-      const resp = await opts.paymentService.createPayment({
+      const resp = await opts.paymentService.createDirectPayment({
         data: request.body,
       });
       if(resp?.transactionStatus == 'FAILURE') {
@@ -155,11 +155,7 @@ export const paymentRoutes = async (
   );
 
   fastify.post('/getconfig', async (req, reply) => {
-    // safe retrieval of client key
     const clientKey = String(getConfig()?.novalnetClientkey ?? '');
-
-    // send a JSON object matching expected shape
-    // Fastify will set Content-Type: application/json automatically for objects
     return reply.code(200).send({ paymentReference: clientKey });
   });
   
@@ -228,7 +224,7 @@ fastify.post<{ Body: PaymentRequestSchemaDTO }>(
           // Convert to JSON string
           const jsonBody = JSON.stringify(requestData);
         
-          const result = await opts.paymentService.createPaymentt({
+          const result = await opts.paymentService.createRedirectPayment({
             data: jsonBody,  // send JSON string
           });
         
@@ -236,8 +232,6 @@ fastify.post<{ Body: PaymentRequestSchemaDTO }>(
           if (!orderId) return reply.code(404).send('Order not found');
 
           const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=' + orderId;
-
-          //const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/';
           return reply.code(302).redirect(thirdPartyUrl);
         } catch (error) {
           log.error("Error processing payment:", error);
@@ -308,15 +302,9 @@ fastify.post<{ Body: PaymentRequestSchemaDTO }>(
     }
   });
   
-  fastify.get("/callback", async (request, reply) => {
-    return reply.send("sucess");
-  });
-
   fastify.post<{ Body: any }>('/webhook', async (req, reply) => {
     try {
       const body = req.body as Record<string, any> | any[];
-  
-      // normalize payload → always array
       const responseData = Array.isArray(body) ? body : [body];
   
       const webhook = responseData[0] as Record<string, any>;
@@ -326,15 +314,12 @@ fastify.post<{ Body: PaymentRequestSchemaDTO }>(
   
       // Call service
       const serviceResponse = await opts.paymentService.createWebhook(responseData);
-  
-      // Novalnet expects 200 OK
       return reply.code(200).send({
         success: true,
         data: serviceResponse,
       });
     } catch (error) {
       log.error(error);
-  
       return reply.code(500).send({ 
         success: false, 
         message: 'Webhook processing failed',
@@ -342,32 +327,4 @@ fastify.post<{ Body: PaymentRequestSchemaDTO }>(
     }
   });
   
-  
-  
-  
-  fastify.get<{
-    Querystring: PaymentRequestSchemaDTO;
-    Reply: PaymentResponseSchemaDTO;
-  }>(
-    "/payments",
-    {
-      preHandler: [opts.sessionHeaderAuthHook.authenticate()],
-      schema: {
-        querystring: PaymentRequestSchema,
-        response: {
-          200: PaymentResponseSchema,
-        },
-      },
-    },
-    async (request, reply) => {
-      const resp = await opts.paymentService.createPayment({
-        data: request.query,
-      });
-      const thirdPartyUrl =
-        "https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52";
-      // return reply.redirect(302, thirdPartyUrl);
-      return reply.code(302).redirect(thirdPartyUrl);
-      // return reply.status(200).send(resp);
-    },
-  );
 };

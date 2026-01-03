@@ -48,7 +48,10 @@ deployAs:
           description: Novalnet client key
           required: true
         - key: NOVALNET_WEBHOOK_URL
-          description: Novalnet webhook URL for payment notifications
+          description: Novalnet webhook URL 
+          required: false
+        - key: NOVALNET_WEBHOOK_TEST_MODE
+          description: Novalnet webhook Test Mode
           required: false
         - key: NOVALNET_INVOICE_TEST_MODE
           description: Enable test mode for Invoice payments (0=Live, 1=Test)

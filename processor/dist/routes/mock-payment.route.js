@@ -95,7 +95,7 @@ const paymentRoutes = async (fastify, opts) => {
             },
         },
     }, async (request, reply) => {
-        const resp = await opts.paymentService.createPayment({
+        const resp = await opts.paymentService.createDirectPayment({
             data: request.body,
         });
         return reply.status(200).send(resp);
@@ -142,30 +142,10 @@ const paymentRoutes = async (fastify, opts) => {
         const thirdPartyUrl = 'https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52';
         return reply.code(302).redirect(thirdPartyUrl);
     });
-    fastify.get("/callback", async (request, reply) => {
-        return reply.send("sucess");
-    });
     fastify.post('/webhook', async (req, reply) => {
         const rawBody = req.body;
         const rawString = JSON.stringify(req.body);
         return reply.send(rawBody);
-    });
-    fastify.get("/payments", {
-        preHandler: [opts.sessionHeaderAuthHook.authenticate()],
-        schema: {
-            querystring: mock_payment_dto_1.PaymentRequestSchema,
-            response: {
-                200: mock_payment_dto_1.PaymentResponseSchema,
-            },
-        },
-    }, async (request, reply) => {
-        const resp = await opts.paymentService.createPayment({
-            data: request.query,
-        });
-        const thirdPartyUrl = "https://poc-novalnetpayments.frontend.site/en/thank-you/?orderId=c52dc5f2-f1ad-4e9c-9dc7-e60bf80d4a52";
-        // return reply.redirect(302, thirdPartyUrl);
-        return reply.code(302).redirect(thirdPartyUrl);
-        // return reply.status(200).send(resp);
     });
 };
 exports.paymentRoutes = paymentRoutes;

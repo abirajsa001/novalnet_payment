@@ -244,7 +244,7 @@ describe("mock-payment.service", () => {
       .spyOn(DefaultPaymentService.prototype, "updatePayment")
       .mockReturnValue(Promise.resolve(mockGetPaymentResult));
 
-    const result = await mockPaymentService.createPayment(createPaymentOpts);
+    const result = await mockPaymentService.createDirectPayment(createPaymentOpts);
     expect(result?.paymentReference).toStrictEqual("123456");
   });
 
@@ -273,7 +273,7 @@ describe("mock-payment.service", () => {
       .spyOn(DefaultPaymentService.prototype, "updatePayment")
       .mockReturnValue(Promise.resolve(mockGetPaymentResult));
 
-    const result = await mockPaymentService.createPayment(createPaymentOpts);
+    const result = await mockPaymentService.createDirectPayment(createPaymentOpts);
     expect(result?.paymentReference).toStrictEqual("123456");
   });
 
@@ -305,7 +305,7 @@ describe("mock-payment.service", () => {
       .spyOn(DefaultPaymentService.prototype, "updatePayment")
       .mockReturnValue(Promise.resolve(mockGetPaymentResult));
 
-    const result = await mockPaymentService.createPayment(createPaymentOpts);
+    const result = await mockPaymentService.createDirectPayment(createPaymentOpts);
     expect(result?.paymentReference).toStrictEqual("123456");
   });
 

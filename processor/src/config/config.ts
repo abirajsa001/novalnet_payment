@@ -27,12 +27,12 @@ export const config = {
   mockEnvironment: process.env.MOCK_ENVIRONMENT,
 
   // Update with specific payment providers config
-  novalnetPublicKey: process.env.NOVALNET_PUBLIC_KEY || "",
+  novalnetPublicKey: process.env.NOVALNET_PUBLIC_KEY!,
   novalnetPrivateKey: process.env.NOVALNET_PRIVATE_KEY!,
   novalnetTariff: process.env.NOVALNET_TARIFF_KEY!,
   novalnetClientkey: process.env.NOVALNET_CLIENT_KEY!,
   novalnetWebhookURL: process.env.NOVALNET_WEBHOOK_URL!,
-
+  novalnetWebhookTestMode: ProcessingInstruction.env.NOVALNET_WEBHOOK_TEST_MODE!,
 
   merchanturl: process.env.MERCHANT_RETURN_URL || "",
   url: process.env.URL || "",

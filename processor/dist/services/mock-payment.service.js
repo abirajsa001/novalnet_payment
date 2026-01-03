@@ -249,7 +249,7 @@ class MockPaymentService extends abstract_payment_service_1.AbstractPaymentServi
         const billingAddress = cart.billingAddress;
         return billingAddress;
     }
-    async createPaymentt({ data }) {
+    async createRedirectPayment({ data }) {
         const parsedData = typeof data === "string" ? JSON.parse(data) : data;
         const config = (0, config_1.getConfig)();
         logger_1.log.info("getMerchantReturnUrlFromContext from context:", (0, context_1.getMerchantReturnUrlFromContext)());
