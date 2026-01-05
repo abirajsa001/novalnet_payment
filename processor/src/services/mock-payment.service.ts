@@ -775,11 +775,11 @@ const pspReference = randomUUID().toString();
 
     const ctCustomer: Customer = customerRes.body;
 
-    firstName = ctCustomer.firstName;
-    lastName = ctCustomer.lastName;
+    firstName = ctCustomer.firstName ?? "";
+    lastName = ctCustomer.lastName ?? "";
   } else {
-    firstName = ctCart.shippingAddress?.firstName;
-    lastName = ctCart.shippingAddress?.lastName;
+    firstName = ctCart.shippingAddress?.firstName ?? "";
+    lastName = ctCart.shippingAddress?.lastName ?? "";
   }
 
     const novalnetPayload = {
@@ -1340,7 +1340,7 @@ if (!order) {
       },
       {} as Record<SupportedLocale, string>
     );
-    const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.de;
+    const transactionComments = lang == 'de' ? localizedTransactionComments.de : localizedTransactionComments.en;
     log.info("handle payment update");
     const status = webhook?.transaction?.status;
     const state = status === 'PENDING' || status === 'ON_HOLD' ? 'Pending' : status === 'CONFIRMED' ? 'Success' : status === 'CANCELLED' ? 'Canceled': 'Failure';
@@ -1421,8 +1421,8 @@ if (!order) {
       },
       {} as Record<SupportedLocale, string>
     );
-    const refundComment = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.de;
-    const refundTIDComment = lang == 'en' ? localizedTransactionComment.en : localizedTransactionComment.de;
+    const refundComment = lang == 'de' ? localizedTransactionComments.de : localizedTransactionComments.en;
+    const refundTIDComment = lang == 'de' ? localizedTransactionComment.de : localizedTransactionComment.en;
     const transactionComments = refundTID ? refundTIDComment : refundComment;
     log.info("handle transaction refund");
     const raw = await this.ctPaymentService.getPayment({ id: webhook.custom.inputval4 } as any);
@@ -1472,19 +1472,20 @@ if (!order) {
     let parentTID = webhook.event.parent_tid ?? eventTID;
     let amount = String(webhook.transaction.amount / 100);
     let currency = webhook.transaction.currency;
+    let dueDate = webhook.transaction.due_date;
     let { date, time } = await this.getFormattedDateTime();
     let lang = "en";
     let supportedLocales: SupportedLocale[] = ["en", "de"];
 
 
     const amountUpdateComment = await this.localcomments("webhook.amountUpdateComment", { eventTID: eventTID, amount: amount, currency: currency });
-    const dueDateUpdateComment = await this.localcomments("webhook.dueDateUpdateComment", { eventTID: eventTID, amount: amount, currency: currency, dueDate:dueDate });
+    const dueDateUpdateComment = await this.localcomments("webhook.dueDateUpdateComment", { eventTID: eventTID, amount: amount, currency: currency, dueDate: dueDate });
 
     const orderDetails = await this.getOrderDetails(webhook);
     log.info('TRANSACTION_UPDATE');
     log.info(orderDetails.tid);
     let transactionComments = '';
-    let { date, time } = await this.getFormattedDateTime();
+
     if (['DUE_DATE', 'AMOUNT', 'AMOUNT_DUE_DATE'].includes(webhook.transaction.update_type)) {
        transactionComments = lang == 'en' ? amountUpdateComment.en : amountUpdateComment.de;
       if(webhook.transaction.due_date) {
@@ -1710,7 +1711,7 @@ if (!order) {
       },
       {} as Record<SupportedLocale, string>
     );
-    const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.de;
+    const transactionComments = lang == 'de' ? localizedTransactionComments.de : localizedTransactionComments.en;
     log.info("handle payment update");
 
     const raw = await this.ctPaymentService.getPayment({ id: webhook.custom.inputval4 } as any);
@@ -1765,10 +1766,8 @@ if (!order) {
       },
       {} as Record<SupportedLocale, string>
     );
-    const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.de;
+    const transactionComments = lang == 'de' ? localizedTransactionComments.de : localizedTransactionComments.en;
     log.info("handle collection submission");
-    const transactionComments = `The transaction has been submitted to the collection agency. Collection Reference: ${collectionReference}`;
-    log.info("handle payment update");
     const raw = await this.ctPaymentService.getPayment({ id: webhook.custom.inputval4 } as any);
     const payment = (raw as any)?.body ?? raw;
     const version = payment.version;
@@ -2401,39 +2400,37 @@ amountPlanned.centAmount < maxCentAmountIfSuccess;
   }
 
 
-  public async localcomments(
-    hook: any,
-    {
-      eventTID = "-",
-      parentTID = "-",
-      amount = "-",
-      currency = "-",
-      date = "-",
-      time = "-",
-      transactionID = "-",
-      dueDate = "-",
-    }: TransactionCommentParams
-  ) {
-    const supportedLocales: SupportedLocale[] = ["en", "de"];
-  
-    const localizedTransactionComments = supportedLocales.reduce(
-      (acc, locale) => {
-        acc[locale] = t(locale, hook, {
-          eventTID,
-          parentTID,
-          amount,
-          currency,
-          date,
-          time,
-          transactionID,
-          dueDate
-        });
-        return acc;
-      },
-      {} as Record<SupportedLocale, string>
-    );
-    return localizedTransactionComments;
-  }
-  
+public async localcomments(
+  hook: any,
+  params: TransactionCommentParams
+) {
+  const supportedLocales: SupportedLocale[] = ["en", "de"];
+
+  const normalized: Record<string, string> = {
+    eventTID: params.eventTID ?? "-",
+    parentTID: params.parentTID ?? "-",
+    amount:
+      params.amount !== null && params.amount !== undefined
+        ? String(params.amount)
+        : "-",
+    currency: params.currency ?? "-",
+    date: params.date ?? "-",
+    time: params.time ?? "-",
+    transactionID: params.transactionID ?? "-",
+    dueDate: params.dueDate ?? "-",
+  };
+
+  const localizedTransactionComments = supportedLocales.reduce(
+    (acc, locale) => {
+      acc[locale] = t(locale, hook, normalized);
+      return acc;
+    },
+    {} as Record<SupportedLocale, string>
+  );
+
+  return localizedTransactionComments;
+}
+
+
   
 }
