@@ -32,7 +32,7 @@ export const config = {
   novalnetTariff: process.env.NOVALNET_TARIFF_KEY!,
   novalnetClientkey: process.env.NOVALNET_CLIENT_KEY!,
   novalnetWebhookURL: process.env.NOVALNET_WEBHOOK_URL!,
-  novalnetWebhookTestMode: ProcessingInstruction.env.NOVALNET_WEBHOOK_TEST_MODE!,
+  novalnetWebhookTestMode: process.env.NOVALNET_WEBHOOK_TEST_MODE!,
 
   merchanturl: process.env.MERCHANT_RETURN_URL || "",
   url: process.env.URL || "",
