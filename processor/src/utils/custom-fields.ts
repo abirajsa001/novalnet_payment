@@ -65,52 +65,14 @@ export const createTransactionCommentsType = async (): Promise<void> => {
               type: { name: "String" },
               required: false,
             },
-            {
-              name: "transactionCommentsLocalized",
-              label: { en: "Transaction Comments" },
-              type: { name: "LocalizedString" },
-              required: false,
-            },
           ],
         },
       }).execute();
 
       console.info("Custom type created:", TYPE_KEY);
-      return; // ⬅️ IMPORTANT
+      return;
     }
 
-    // 2️⃣ UPDATE existing type
-    const type: Type = typeExists.body;
-
-    const hasField = type.fieldDefinitions?.some(
-      (f: FieldDefinition) =>
-        f.name === "transactionCommentsLocalized"
-    );
-
-    if (!hasField) {
-      await apiRoot
-        .types()
-        .withId({ ID: type.id })
-        .post({
-          body: {
-            version: type.version,
-            actions: [
-              {
-                action: "addFieldDefinition",
-                fieldDefinition: {
-                  name: "transactionCommentsLocalized",
-                  label: { en: "Transaction Comments (Localized)" },
-                  type: { name: "LocalizedString" },
-                  required: false,
-                },
-              },
-            ],
-          },
-        })
-        .execute();
-
-      console.info("Added localized field to transaction type");
-    }
   } catch (error) {
     console.error("Error creating custom field type:", error);
     throw error;
