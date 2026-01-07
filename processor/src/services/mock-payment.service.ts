@@ -555,7 +555,7 @@ export class MockPaymentService extends AbstractPaymentService {
       const statusCode = responseData?.transaction?.status_code ?? "";
   
 
-      const transactionComments = `Novalnet Transaction ID: ${"NN/AA"}\nPayment Type: ${"NN/AA"}\nStatus: ${"NN/AA"}`;
+      let transactionComments = `Novalnet Transaction ID: ${"NN/AA"}\nPayment Type: ${"NN/AA"}\nStatus: ${"NN/AA"}`;
       // ---------- 5. Fetch Payment ----------
       const raw = await this.ctPaymentService.getPayment({
         id: parsedData.ctPaymentId,
@@ -637,7 +637,7 @@ export class MockPaymentService extends AbstractPaymentService {
           orderNo: responseData?.transaction?.order_no ?? "",
           cMail: responseData?.customer?.email ?? "",
           additionalInfo: {
-            comments: localizedTransactionComments,
+            comments: transactionComments,
           },
         });
   
