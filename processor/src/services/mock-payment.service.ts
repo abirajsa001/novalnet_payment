@@ -598,7 +598,7 @@ export class MockPaymentService extends AbstractPaymentService {
             {
               action: 'changeTransactionState',
               transactionId: txId,
-              state: 'Pending',
+              state: 'Success',
             },
           ],
         },
