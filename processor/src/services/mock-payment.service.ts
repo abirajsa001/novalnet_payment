@@ -578,50 +578,32 @@ export class MockPaymentService extends AbstractPaymentService {
   
       const txId = tx.id;
   
-      // ---------- 6. Update Payment ----------
-      const actions: any[] = [
-        // detach type (schema refresh)
-        {
-          action: "setTransactionCustomType",
-          transactionId: txId,
+      const updatedPayment = await projectApiRoot
+      .payments()
+      .withId({ ID: parsedData.ctPaymentId })
+      .post({
+        body: {
+          version,
+          actions: [
+            {
+              action: "setTransactionCustomField",
+              transactionId: txId,
+              name: "transactionComments",
+              value: transactionComments,
+            },
+            {
+              action: "setStatusInterfaceCode",
+              interfaceCode: String(statusCode)
+            },
+            {
+              action: 'changeTransactionState',
+              transactionId: txId,
+              state: 'Pending',
+            },
+          ],
         },
-        // reattach correct type
-        {
-          action: "setTransactionCustomType",
-          transactionId: txId,
-          type: {
-            key: "novalnet-transaction-comments",
-            typeId: "type",
-          },
-        },
-        // set localized field
-        {
-          action: "setTransactionCustomField",
-          transactionId: txId,
-          name: "transactionComments",
-          value: transactionComments,
-        },
-        {
-          action: "setStatusInterfaceCode",
-          interfaceCode: String(statusCode),
-        },
-        {
-          action: "changeTransactionState",
-          transactionId: txId,
-          state,
-        },
-      ];
-  
-      await projectApiRoot
-        .payments()
-        .withId({ ID: parsedData.ctPaymentId })
-        .post({
-          body: {
-            version,
-            actions,
-          },
-        })
-        .execute();
+      })
+      .execute();
   
       log.info("Payment updated successfully");
   
@@ -877,11 +859,6 @@ const pspReference = randomUUID().toString();
     const bic = bankDetails?.bic;
     const bankName = bankDetails?.bank_name;
     const bankPlace = bankDetails?.bank_place;
-
-    // -----------------------------
-    // Localization setup
-    // -----------------------------
-    const lang = String(request.data?.lang ?? "en") as SupportedLocale;
 
     const transactionComments = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid ?? "NN/A"}\nPayment Type: ${parsedResponse?.transaction?.payment_type ?? "NN/A"}\n${testModeText ?? "NN/A"}`;
 
