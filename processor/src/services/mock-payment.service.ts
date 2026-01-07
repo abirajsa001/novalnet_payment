@@ -882,68 +882,8 @@ const pspReference = randomUUID().toString();
     // Localization setup
     // -----------------------------
     const lang = String(request.data?.lang ?? "en") as SupportedLocale;
-    const supportedLocales: SupportedLocale[] = ["en", "de"];
 
-    // -----------------------------
-    // Base transactions comments
-    // -----------------------------
-    const localizedTransactionComments = supportedLocales.reduce(
-      (acc, locale) => {
-        acc[locale] = [
-          t(locale, "payment.transactionId", { tid }),
-          t(locale, "payment.paymentType", { type: paymentType }),
-          isTestMode ? t(locale, "payment.testMode") : '',
-        ].join("\n");
-        return acc;
-      },
-      {} as Record<SupportedLocale, string>
-    );
-
-    // -----------------------------
-    // Bank details comments (optional)
-    // -----------------------------
-    let localizedBankDetailsComment: Partial<Record<SupportedLocale, string>> = {};
-
-    if (bankDetails) {
-      localizedBankDetailsComment = supportedLocales.reduce(
-        (acc, locale) => {
-          acc[locale] = [
-            t(locale, "payment.referenceText", { amount }),
-            t(locale, "payment.accountHolder", { accountHolder }),
-            t(locale, "payment.iban", { iban }),
-            t(locale, "payment.bic", { bic }),
-            t(locale, "payment.bankName", { bankName }),
-            t(locale, "payment.bankPlace", { bankPlace }),
-            t(locale, "payment.transactionId", { tid }),
-          ].join("\n");
-          return acc;
-        },
-        {} as Record<SupportedLocale, string>
-      );
-    }
-
-    // -----------------------------
-    // Final language selection
-    // -----------------------------
-    let transactionComments = localizedTransactionComments[lang];
-
-    if (localizedBankDetailsComment[lang]) {
-      transactionComments += `\n\n${localizedBankDetailsComment[lang]}`;
-    }
-
-    // -----------------------------
-    // Debug logs
-    // -----------------------------
-    log.info(
-      "Localized transaction comments:",
-      JSON.stringify(localizedTransactionComments, null, 2)
-    );
-    log.info("Final transaction comments:", transactionComments);
-
-    log.info("Payment created with Novalnet details for direct:");
-    log.info("Payment transactionComments for direct:", transactionComments);
-    log.info("ctPayment id for direct:", ctPayment.id);
-    log.info("psp reference for direct:", pspReference);
+    const transactionComments = `Novalnet Transaction ID: ${parsedResponse?.transaction?.tid ?? "NN/A"}\nPayment Type: ${parsedResponse?.transaction?.payment_type ?? "NN/A"}\n${testModeText ?? "NN/A"}`;
 
     // ---------------------------
     // CREATE TRANSACTION (NO CUSTOM)
