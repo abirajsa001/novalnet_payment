@@ -554,29 +554,8 @@ export class MockPaymentService extends AbstractPaymentService {
   
       const statusCode = responseData?.transaction?.status_code ?? "";
   
-      // ---------- 4. Build localized comments ----------
-      const supportedLocales: SupportedLocale[] = ["en", "de"];
-  
-      const localizedTransactionComments = supportedLocales.reduce(
-        (acc, locale) => {
-          acc[locale] = [
-            t(locale, "payment.transactionId", { tid }),
-            t(locale, "payment.paymentType", { type: paymentType }),
-            isTestMode ? t(locale, "payment.testMode") : '',
-          ].join("\n");
-          return acc;
-        },
-        {} as Record<SupportedLocale, string>
-      );
-  
-      log.info(
-        "Localized transaction comments:",
-        JSON.stringify(localizedTransactionComments, null, 2)
-      );
-      log.info("Find the separate language based");
-      log.info(localizedTransactionComments.en);
-      log.info(localizedTransactionComments.de);
-      const transactionComments = lang == 'en' ? localizedTransactionComments.en : localizedTransactionComments.de;
+
+      const transactionComments = `Novalnet Transaction ID: ${"NN/AA"}\nPayment Type: ${"NN/AA"}\nStatus: ${"NN/AA"}`;
       // ---------- 5. Fetch Payment ----------
       const raw = await this.ctPaymentService.getPayment({
         id: parsedData.ctPaymentId,
@@ -2157,11 +2136,11 @@ public async updatePaymentStatusByPaymentId(
     const paymentCartId = ctCart.id;
     const orderNumber   = getFutureOrderNumberFromContext() ?? "";
     const ctPaymentId   = ctPayment.id;
-  // 🔹 1) Prepare name variables
+  // 1) Prepare name variables
   let firstName = "";
   let lastName = "";
 
-  // 🔹 2) If the cart is linked to a CT customer, fetch it directly from CT
+  // 2) If the cart is linked to a CT customer, fetch it directly from CT
   if (ctCart.customerId) {
     const customerRes = await projectApiRoot
       .customers()
