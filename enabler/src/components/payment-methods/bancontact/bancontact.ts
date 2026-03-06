@@ -11,7 +11,7 @@ import {
   PaymentOutcome,
   PaymentRequestSchemaDTO,
 } from "../../../dtos/novalnet-payment.dto";
-import { BaseOptions } from "../../../payment-enabler/payment-enabler-mock";
+import { BaseOptions } from "../../../payment-enabler/novalnet-payment-enabler";
 import { checkoutFlow } from '@commercetools/checkout-browser-sdk';
 
 export class BancontactBuilder implements PaymentComponentBuilder {
