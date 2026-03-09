@@ -34,7 +34,7 @@ export const createTransactionCommentsType = async () => {
   try {
     await apiRoot
       .types()
-      .withKey({ key: "novalnet-transaction-comment" })
+      .withKey({ key: "novalnet-transaction-comments-v2" })
       .get()
       .execute();
     return; 
@@ -44,7 +44,7 @@ export const createTransactionCommentsType = async () => {
 
   await apiRoot.types().post({
     body: {
-      key: "novalnet-transaction-comment",
+      key: "novalnet-transaction-comments-v2",
       name: { en: "Novalnet Transaction Comments" },
       resourceTypeIds: ["transaction"],
       fieldDefinitions: [
