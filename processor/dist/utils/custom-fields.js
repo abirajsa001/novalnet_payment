@@ -37,7 +37,7 @@ const createTransactionCommentsType = async () => {
                 body: {
                     key: "novalnet-transaction-comments",
                     name: { en: "Novalnet Transaction Comments" },
-                    resourceTypeIds: ["payment"],
+                    resourceTypeIds: ["transaction"],
                     fieldDefinitions: [
                         {
                             name: "transactionComments",
@@ -60,7 +60,7 @@ const createTransactionCommentsTypes = async () => {
     try {
         const typeExists = await exports.apiRoot
             .types()
-            .withKey({ key: "novalnet-transaction-commentss" })
+            .withKey({ key: "novalnet-transaction-commentss" }) 
             .get()
             .execute()
             .catch(() => null);
