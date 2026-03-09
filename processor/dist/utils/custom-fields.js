@@ -26,7 +26,7 @@ const createTransactionCommentsType = async () => {
     try {
         const typeExists = await exports.apiRoot
             .types()
-            .withKey({ key: "novalnet-transaction-comments" })
+            .withKey({ key: "novalnet-transaction-comment" })
             .get()
             .execute()
             .catch(() => null);
@@ -35,7 +35,7 @@ const createTransactionCommentsType = async () => {
                 .types()
                 .post({
                 body: {
-                    key: "novalnet-transaction-comments",
+                    key: "novalnet-transaction-comment",
                     name: { en: "Novalnet Transaction Comments" },
                     resourceTypeIds: ["transaction"],
                     fieldDefinitions: [
@@ -60,7 +60,7 @@ const createTransactionCommentsTypes = async () => {
     try {
         const typeExists = await exports.apiRoot
             .types()
-            .withKey({ key: "novalnet-transaction-commentss" }) 
+            .withKey({ key: "novalnet-transaction-comment" }) 
             .get()
             .execute()
             .catch(() => null);
@@ -69,8 +69,8 @@ const createTransactionCommentsTypes = async () => {
                 .types()
                 .post({
                 body: {
-                    key: "novalnet-transaction-commentss",
-                    name: { en: "Novalnet Transaction Commentss" },
+                    key: "novalnet-transaction-comment",
+                    name: { en: "Novalnet Transaction Comments" },
                     resourceTypeIds: ["transactions"],
                     fieldDefinitions: [
                         {
