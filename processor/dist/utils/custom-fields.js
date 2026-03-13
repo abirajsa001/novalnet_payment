@@ -78,7 +78,7 @@ const createTransactionCommentsTypes = async () => {
                             label: { en: "Transaction Commentss" },
                             type: { name: "String" },
                             required: false,
-                        },
+                        },  
                     ],
                 },
             })
@@ -90,3 +90,4 @@ const createTransactionCommentsTypes = async () => {
     }
 };
 exports.createTransactionCommentsTypes = createTransactionCommentsTypes;
+ 
