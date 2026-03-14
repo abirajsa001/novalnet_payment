@@ -153,72 +153,84 @@ export type EnablerOptions = {
   ) => void;
 };
 
+type SupportedLocale = "en" | "de";
 /**
  * Represents the payment method code.
  */
-export enum PaymentMethod {
-  /* Apple Pay */
-  applepay = "applepay",
-  /* Bancontact card */
-  bancontactcard = "bcmc",
-  /* EPS */
-  eps = "eps",
-  /* Google Pay */
-  googlepay = "googlepay",
-  /* iDeal */
-  ideal = "ideal",
-  /* Invoice */
-  invoice = "invoice",
-  /* Klarna Pay Later */
-  klarna_pay_later = "klarna",
-  /* Klarna Pay Now */
-  klarna_pay_now = "klarna_paynow",
-  /* Klarna Pay Over Time */
-  klarna_pay_overtime = "klarna_account",
-  /* PayPal */
-  paypal = "paypal",
-  /* Prepayment */
-  prepayment = "prepayment",
-  /* GuaranteedInvoice */
-  GuaranteedInvoice = "GuaranteedInvoice",
-  /* GuaranteedSepa */
-  GuaranteedSepa = "GuaranteedSepa",
-  /* Ideal */
-  Ideal = "ideal",
-  /* TWINT */
-  twint = "twint",
-  /* SEPA */
-  sepa = "sepa",
-  /* ACH */
-  ach = "ach",
-  /* CREDIT CARD */
-  creditcard = "creditcard",
-  /* Online Bank Transfer */
-  onlinebanktransfer = "onlinebanktransfer",
-  /* Alipay */
-  alipay = "alipay",
-  /* Bancontact */
-  bancontact = "bancontact",
-  /* Blik */
-  blik = "blik",
-  /* MBWay */
-  mbway = "mbway",
-  /* Multibanco */
-  multibanco = "multibanco",
-  /* Payconiq */
-  payconiq = "payconiq",
-  /* Postfinance */
-  postfinance = "postfinance",
-  /* Postfinancecard */
-  postfinancecard = "postfinancecard",
-  /* przelewy24 */
-  przelewy24 = "przelewy24",
-  /* Trustly */
-  trustly = "trustly",
-  /* Wechatpay */
-  wechatpay = "wechatpay",  
-}
+export const PaymentMethodLabels: Record<
+  SupportedLocale,
+  Record<PaymentMethod, string>
+> = {
+  en: {
+    applepay: "Apple Pay",
+    bancontactcard: "Bancontact Card",
+    eps: "EPS",
+    googlepay: "Google Pay",
+    ideal: "iDEAL",
+    invoice: "Invoice",
+    klarna_pay_later: "Klarna Pay Later",
+    klarna_pay_now: "Klarna Pay Now",
+    klarna_pay_overtime: "Klarna Pay Over Time",
+    paypal: "PayPal",
+    prepayment: "Prepayment",
+    GuaranteedInvoice: "Guaranteed Invoice",
+    GuaranteedSepa: "Guaranteed SEPA Direct Debit",
+    Ideal: "iDEAL",
+    twint: "TWINT",
+    sepa: "Direct Debit SEPA",
+    ach: "ACH Direct Debit",
+    creditcard: "Credit Card",
+    onlinebanktransfer: "Online Bank Transfer",
+    alipay: "Alipay",
+    bancontact: "Bancontact",
+    blik: "BLIK",
+    mbway: "MB Way",
+    multibanco: "Multibanco",
+    payconiq: "Payconiq",
+    postfinance: "PostFinance",
+    postfinancecard: "PostFinance Card",
+    przelewy24: "Przelewy24",
+    trustly: "Trustly",
+    wechatpay: "WeChat Pay"
+  },
 
+  de: {
+    applepay: "Apple Pay",
+    bancontactcard: "Bancontact Karte",
+    eps: "EPS Überweisung",
+    googlepay: "Google Pay",
+    ideal: "iDEAL",
+    invoice: "Rechnung",
+    klarna_pay_later: "Klarna Rechnung",
+    klarna_pay_now: "Klarna Sofort bezahlen",
+    klarna_pay_overtime: "Klarna Ratenkauf",
+    paypal: "PayPal",
+    prepayment: "Vorkasse",
+    GuaranteedInvoice: "Garantierte Rechnung",
+    GuaranteedSepa: "Garantierte SEPA-Lastschrift",
+    Ideal: "iDEAL",
+    twint: "TWINT",
+    sepa: "SEPA-Lastschrift",
+    ach: "ACH-Lastschrift",
+    creditcard: "Kreditkarte",
+    onlinebanktransfer: "Online-Überweisung",
+    alipay: "Alipay",
+    bancontact: "Bancontact",
+    blik: "BLIK",
+    mbway: "MB Way",
+    multibanco: "Multibanco",
+    payconiq: "Payconiq",
+    postfinance: "PostFinance",
+    postfinancecard: "PostFinance Karte",
+    przelewy24: "Przelewy24",
+    trustly: "Trustly",
+    wechatpay: "WeChat Pay"
+  }
+};
+
+function getPaymentMethodLabel(method: PaymentMethod, locale: "en" | "de") {
+  return t(locale, `paymentMethods.${method}`);
+}
 /**
  * Represents the result of a payment.
  */

@@ -11,7 +11,7 @@ export enum PaymentMethodType {
   GUARANTEED_INVOICE = "GuaranteedInvoice",
   GUARANTEED_SEPA = "GuaranteedSepa",
   IDEAL = "ideal",
-  PAYPAL = "paypal",
+  PAYPAL = "Paypal",
   ONLINE_BANK_TRANSFER = "onlinebanktransfer",
   ALIPAY = "alipay",
   BANCONTACT = "bancontact",
@@ -26,7 +26,7 @@ export enum PaymentMethodType {
   TRUSTLY = "trustly",
   TWINT = "twint",
   WECHATPAY = "wechatpay",
-  SEPA = "sepa",
+  SEPA = "Direct Debit SEPA",
   ACH = "ach",
   CREDITCARD = "creditcard",
 }

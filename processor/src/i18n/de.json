@@ -25,8 +25,22 @@
       "onholdToComplete": "Der Status der Transaktion mit der TID: {{eventTID}} on {{date}} {{time}}. Uhr von ausstehend auf Abgeschlossen geändert",
       "confirmComments": "Die Buchung wurde am {{date}} um {{time}} Uhr bestätigt.",
       "cancelComments": "Die Transaktion wurde am {{date}} um {{time}} Uhr storniert."
+    },
+    "paymentMethods": {
+      "applepay": "Apple Pay",
+      "bcmc": "Bancontact",
+      "eps": "EPS Überweisung",
+      "googlepay": "Google Pay",
+      "ideal": "iDEAL",
+      "invoice": "Rechnung",
+      "paypal": "PayPal",
+      "prepayment": "Vorkasse",
+      "GuaranteedInvoice": "Garantierte Rechnung",
+      "GuaranteedSepa": "Garantierte SEPA",
+      "twint": "TWINT",
+      "Direct Debit SEPA": "SEPA Lastschrift",
+      "creditcard": "Kreditkarte"
     }
-
   }
   
   
