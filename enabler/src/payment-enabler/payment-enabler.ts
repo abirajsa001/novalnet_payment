@@ -4,7 +4,7 @@
 export type SupportedLocale = 'en' | 'de';
 
 /**
- * Keep flexible
+ * Payment method (string union can be extended later)
  */
 export type PaymentMethod = string;
 
@@ -17,7 +17,7 @@ export interface PaymentEnabler {
   ) => Promise<PaymentComponentBuilder>;
 
   createDropinBuilder: (
-    type: string
+    type: DropinType
   ) => Promise<PaymentDropinBuilder>;
 }
 
@@ -68,9 +68,11 @@ export type EnablerOptions = {
 };
 
 /**
- * ✅ SIMPLE OBJECT (no as const, no Record)
+ * Payment Method Labels (typed safely)
  */
-export const PaymentMethodLabels = {
+export const PaymentMethodLabels: {
+  [key in SupportedLocale]: { [method: string]: string };
+} = {
   en: {
     applepay: 'Apple Pay',
     bancontactcard: 'Bancontact Card',
@@ -137,18 +139,20 @@ export const PaymentMethodLabels = {
 };
 
 /**
- * ✅ VERY SAFE FUNCTION (no casting)
+ * Safe label getter (STRICT + SAFE)
  */
 export function getPaymentMethodLabel(
-  method: string,
+  method: PaymentMethod,
   locale?: SupportedLocale
 ): string {
-  const safeLocale = locale === 'de' ? 'de' : 'en';
+  const safeLocale: SupportedLocale =
+    locale === 'de' ? 'de' : 'en';
 
-  const localeLabels = PaymentMethodLabels[safeLocale];
+  const labels = PaymentMethodLabels[safeLocale];
 
-  if (localeLabels && localeLabels[method]) {
-    return localeLabels[method];
+  // strict safe check
+  if (method && Object.prototype.hasOwnProperty.call(labels, method)) {
+    return labels[method];
   }
 
   return method || 'Unknown';
@@ -176,7 +180,7 @@ export type ComponentOptions = {
 };
 
 /**
- * ✅ SIMPLE TYPE (no enum, no derived type)
+ * Drop-in Type (safe union)
  */
 export type DropinType = 'embedded' | 'hpp';
 
