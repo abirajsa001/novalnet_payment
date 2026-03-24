@@ -110,7 +110,7 @@ export interface PaymentComponentBuilder {
    */
   build(config: ComponentOptions): PaymentComponent;
 }
-
+type SupportedLocale = "en" | "de";
 /**
  * Represents the options for the payment enabler.
  */
@@ -153,7 +153,7 @@ export type EnablerOptions = {
   ) => void;
 };
 
-type SupportedLocale = "en" | "de";
+
 /**
  * Represents the payment method code.
  */
@@ -207,7 +207,6 @@ export const PaymentMethodLabels: Record<
     prepayment: "Vorkasse",
     GuaranteedInvoice: "Garantierte Rechnung",
     GuaranteedSepa: "Garantierte SEPA-Lastschrift",
-    Ideal: "iDEAL",
     twint: "TWINT",
     sepa: "SEPA-Lastschrift",
     ach: "ACH-Lastschrift",
