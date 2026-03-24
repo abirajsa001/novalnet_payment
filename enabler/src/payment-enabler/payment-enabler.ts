@@ -1,24 +1,24 @@
-// ✅ Move this to TOP (important)
-export type SupportedLocale = "en" | "de";
+/**
+ * Supported locales
+ */
+export type SupportedLocale = 'en' | 'de';
 
 /**
- * NOTE:
- * Keep PaymentMethod as string to avoid strict publish failures.
- * If you already have a strict type elsewhere, you can reuse it.
+ * Keep PaymentMethod flexible to avoid strict build failures
  */
 export type PaymentMethod = string;
 
 /**
- * Represents the payment enabler.
+ * Payment Enabler
  */
 export interface PaymentEnabler {
   createComponentBuilder: (
     type: string
-  ) => Promise<PaymentComponentBuilder | never>;
+  ) => Promise<PaymentComponentBuilder>;
 
   createDropinBuilder: (
     type: DropinType
-  ) => Promise<PaymentDropinBuilder | never>;
+  ) => Promise<PaymentDropinBuilder>;
 }
 
 /**
@@ -27,6 +27,7 @@ export interface PaymentEnabler {
 export interface PaymentComponent {
   mount(selector: string): void;
   submit(): void;
+
   showValidation?(): void;
   isValid?(): boolean;
 
@@ -61,98 +62,93 @@ export type EnablerOptions = {
   onComplete?: (result: PaymentResult) => void;
 
   onError?: (
-    error: any,
+    error: unknown,
     context?: { paymentReference?: string }
   ) => void;
 };
 
 /**
- * ✅ SAFE: Use Partial<Record<...>> to avoid strict mismatch failures
+ * Payment Method Labels
+ * ⚠️ No Record<> (important for commercetools)
  */
-export const PaymentMethodLabels: Record<
-  SupportedLocale,
-  Partial<Record<PaymentMethod, string>>
-> = {
+export const PaymentMethodLabels = {
   en: {
-    applepay: "Apple Pay",
-    bancontactcard: "Bancontact Card",
-    eps: "EPS",
-    googlepay: "Google Pay",
-    ideal: "iDEAL",
-    invoice: "Invoice",
-    klarna_pay_later: "Klarna Pay Later",
-    klarna_pay_now: "Klarna Pay Now",
-    klarna_pay_overtime: "Klarna Pay Over Time",
-    paypal: "PayPal",
-    prepayment: "Prepayment",
-    GuaranteedInvoice: "Guaranteed Invoice",
-    GuaranteedSepa: "Guaranteed SEPA Direct Debit",
-    twint: "TWINT",
-    sepa: "Direct Debit SEPA",
-    ach: "ACH Direct Debit",
-    creditcard: "Credit Card",
-    onlinebanktransfer: "Online Bank Transfer",
-    alipay: "Alipay",
-    bancontact: "Bancontact",
-    blik: "BLIK",
-    mbway: "MB Way",
-    multibanco: "Multibanco",
-    payconiq: "Payconiq",
-    postfinance: "PostFinance",
-    postfinancecard: "PostFinance Card",
-    przelewy24: "Przelewy24",
-    trustly: "Trustly",
-    wechatpay: "WeChat Pay"
+    applepay: 'Apple Pay',
+    bancontactcard: 'Bancontact Card',
+    eps: 'EPS',
+    googlepay: 'Google Pay',
+    ideal: 'iDEAL',
+    invoice: 'Invoice',
+    klarna_pay_later: 'Klarna Pay Later',
+    klarna_pay_now: 'Klarna Pay Now',
+    klarna_pay_overtime: 'Klarna Pay Over Time',
+    paypal: 'PayPal',
+    prepayment: 'Prepayment',
+    GuaranteedInvoice: 'Guaranteed Invoice',
+    GuaranteedSepa: 'Guaranteed SEPA Direct Debit',
+    twint: 'TWINT',
+    sepa: 'Direct Debit SEPA',
+    ach: 'ACH Direct Debit',
+    creditcard: 'Credit Card',
+    onlinebanktransfer: 'Online Bank Transfer',
+    alipay: 'Alipay',
+    bancontact: 'Bancontact',
+    blik: 'BLIK',
+    mbway: 'MB Way',
+    multibanco: 'Multibanco',
+    payconiq: 'Payconiq',
+    postfinance: 'PostFinance',
+    postfinancecard: 'PostFinance Card',
+    przelewy24: 'Przelewy24',
+    trustly: 'Trustly',
+    wechatpay: 'WeChat Pay'
   },
 
   de: {
-    applepay: "Apple Pay",
-    bancontactcard: "Bancontact Karte",
-    eps: "EPS Überweisung",
-    googlepay: "Google Pay",
-    ideal: "iDEAL",
-    invoice: "Rechnung",
-    klarna_pay_later: "Klarna Rechnung",
-    klarna_pay_now: "Klarna Sofort bezahlen",
-    klarna_pay_overtime: "Klarna Ratenkauf",
-    paypal: "PayPal",
-    prepayment: "Vorkasse",
-    GuaranteedInvoice: "Garantierte Rechnung",
-    GuaranteedSepa: "Garantierte SEPA-Lastschrift",
-    twint: "TWINT",
-    sepa: "SEPA-Lastschrift",
-    ach: "ACH-Lastschrift",
-    creditcard: "Kreditkarte",
-    onlinebanktransfer: "Online-Überweisung",
-    alipay: "Alipay",
-    bancontact: "Bancontact",
-    blik: "BLIK",
-    mbway: "MB Way",
-    multibanco: "Multibanco",
-    payconiq: "Payconiq",
-    postfinance: "PostFinance",
-    postfinancecard: "PostFinance Karte",
-    przelewy24: "Przelewy24",
-    trustly: "Trustly",
-    wechatpay: "WeChat Pay"
+    applepay: 'Apple Pay',
+    bancontactcard: 'Bancontact Karte',
+    eps: 'EPS Überweisung',
+    googlepay: 'Google Pay',
+    ideal: 'iDEAL',
+    invoice: 'Rechnung',
+    klarna_pay_later: 'Klarna Rechnung',
+    klarna_pay_now: 'Klarna Sofort bezahlen',
+    klarna_pay_overtime: 'Klarna Ratenkauf',
+    paypal: 'PayPal',
+    prepayment: 'Vorkasse',
+    GuaranteedInvoice: 'Garantierte Rechnung',
+    GuaranteedSepa: 'Garantierte SEPA-Lastschrift',
+    twint: 'TWINT',
+    sepa: 'SEPA-Lastschrift',
+    ach: 'ACH-Lastschrift',
+    creditcard: 'Kreditkarte',
+    onlinebanktransfer: 'Online-Überweisung',
+    alipay: 'Alipay',
+    bancontact: 'Bancontact',
+    blik: 'BLIK',
+    mbway: 'MB Way',
+    multibanco: 'Multibanco',
+    payconiq: 'Payconiq',
+    postfinance: 'PostFinance',
+    postfinancecard: 'PostFinance Karte',
+    przelewy24: 'Przelewy24',
+    trustly: 'Trustly',
+    wechatpay: 'WeChat Pay'
   }
-};
+} as const;
 
 /**
- * ✅ Safe label getter (no runtime crash)
+ * Safe label getter
  */
 export function getPaymentMethodLabel(
-  method: PaymentMethod,
+  method: string,
   locale?: SupportedLocale
-) {
-  const safeLocale: SupportedLocale =
-    locale === "de" ? "de" : "en";
+): string {
+  const safeLocale = locale === 'de' ? 'de' : 'en';
 
-  return (
-    PaymentMethodLabels[safeLocale][method] ||
-    method ||
-    "Unknown"
-  );
+  const labels = PaymentMethodLabels[safeLocale] as Record<string, string>;
+
+  return labels[method] || method || 'Unknown';
 }
 
 /**
@@ -177,12 +173,15 @@ export type ComponentOptions = {
 };
 
 /**
- * Drop-in Types
+ * DropinType (⚠️ avoid enum for commercetools)
  */
-export enum DropinType {
-  embedded = "embedded",
-  hpp = "hpp",
-}
+export const DropinType = {
+  embedded: 'embedded',
+  hpp: 'hpp'
+} as const;
+
+export type DropinType =
+  (typeof DropinType)[keyof typeof DropinType];
 
 /**
  * Drop-in Component
