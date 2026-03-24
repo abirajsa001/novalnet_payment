@@ -347,5 +347,3 @@ export interface PaymentDropinBuilder {
    */
   build(config: DropinOptions): DropinComponent;
 }
-===
-verify the locale syntax
