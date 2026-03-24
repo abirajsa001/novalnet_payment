@@ -4,7 +4,7 @@
 export type SupportedLocale = 'en' | 'de';
 
 /**
- * Keep PaymentMethod flexible to avoid strict build failures
+ * Keep flexible
  */
 export type PaymentMethod = string;
 
@@ -17,7 +17,7 @@ export interface PaymentEnabler {
   ) => Promise<PaymentComponentBuilder>;
 
   createDropinBuilder: (
-    type: DropinType
+    type: string
   ) => Promise<PaymentDropinBuilder>;
 }
 
@@ -68,8 +68,7 @@ export type EnablerOptions = {
 };
 
 /**
- * Payment Method Labels
- * ⚠️ No Record<> (important for commercetools)
+ * ✅ SIMPLE OBJECT (no as const, no Record)
  */
 export const PaymentMethodLabels = {
   en: {
@@ -135,10 +134,10 @@ export const PaymentMethodLabels = {
     trustly: 'Trustly',
     wechatpay: 'WeChat Pay'
   }
-} as const;
+};
 
 /**
- * Safe label getter
+ * ✅ VERY SAFE FUNCTION (no casting)
  */
 export function getPaymentMethodLabel(
   method: string,
@@ -146,9 +145,13 @@ export function getPaymentMethodLabel(
 ): string {
   const safeLocale = locale === 'de' ? 'de' : 'en';
 
-  const labels = PaymentMethodLabels[safeLocale] as Record<string, string>;
+  const localeLabels = PaymentMethodLabels[safeLocale];
 
-  return labels[method] || method || 'Unknown';
+  if (localeLabels && localeLabels[method]) {
+    return localeLabels[method];
+  }
+
+  return method || 'Unknown';
 }
 
 /**
@@ -173,15 +176,9 @@ export type ComponentOptions = {
 };
 
 /**
- * DropinType (⚠️ avoid enum for commercetools)
+ * ✅ SIMPLE TYPE (no enum, no derived type)
  */
-export const DropinType = {
-  embedded: 'embedded',
-  hpp: 'hpp'
-} as const;
-
-export type DropinType =
-  (typeof DropinType)[keyof typeof DropinType];
+export type DropinType = 'embedded' | 'hpp';
 
 /**
  * Drop-in Component
