@@ -27,7 +27,6 @@
     },
     "paymentMethods": {
       "applepay": "Apple Pay",
-      "bcmc": "Bancontact",
       "eps": "EPS",
       "googlepay": "Google Pay",
       "ideal": "iDEAL",
