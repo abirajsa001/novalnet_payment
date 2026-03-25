@@ -9,7 +9,6 @@ var PaymentOutcome;
 })(PaymentOutcome || (exports.PaymentOutcome = PaymentOutcome = {}));
 var PaymentMethodType;
 (function (PaymentMethodType) {
-    PaymentMethodType["CARD"] = "card";
     PaymentMethodType["INVOICE"] = "invoice";
     PaymentMethodType["PREPAYMENT"] = "prepayment";
     PaymentMethodType["GUARANTEED_INVOICE"] = "GuaranteedInvoice";

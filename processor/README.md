@@ -88,7 +88,7 @@ Authorization: Bearer <oauth token with manage_sessions scope>
     }
   },
   "metadata": {
-    "allowedPaymentMethods": ["card", "ideal", ...],
+    "allowedPaymentMethods": ["ideal", ...],
     "paymentInterface"?: "<payment interface that will be set on payment method info https://docs.commercetools.com/api/projects/payments#ctp:api:type:PaymentMethodInfo>"
   }
 }
