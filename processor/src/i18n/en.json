@@ -24,20 +24,6 @@
       "onholdToComplete": "The transaction status has been changed from on-hold to completed for the TID: {{eventTID}} on {{date}} {{time}}.",
       "confirmComments": "The transaction has been confirmed on {{date}} {{time}}.",
       "cancelComments": "The transaction has been canceled on {{date}} {{time}}."
-    },
-    "paymentMethods": {
-      "applepay": "Apple Pay",
-      "eps": "EPS",
-      "googlepay": "Google Pay",
-      "ideal": "iDEAL",
-      "invoice": "Invoice",
-      "paypal": "PayPal",
-      "prepayment": "Prepayment",
-      "GuaranteedInvoice": "Guaranteed Invoice",
-      "GuaranteedSepa": "Guaranteed SEPA",
-      "twint": "TWINT",
-      "Direct Debit SEPA": "SEPA Direct Debit",
-      "creditcard": "Credit Card"
     }
   }
   

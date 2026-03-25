@@ -158,57 +158,55 @@ export type EnablerOptions = {
  */
 export enum PaymentMethod {
   /* Apple Pay */
-  applepay = "applepay",
+  applepay = "Apple Pay",
   /* EPS */
   eps = "eps",
-  /* Google Pay */
-  googlepay = "googlepay",
   /* iDeal */
-  ideal = "ideal",
+  ideal = "iDEAL",
   /* Invoice */
-  invoice = "invoice",
+  invoice = "Invoice",
   /* PayPal */
-  paypal = "paypal",
+  paypal = "Paypal",
   /* Prepayment */
   Prepayment = "Prepayment",
   /* GuaranteedInvoice */
-  GuaranteedInvoice = "GuaranteedInvoice",
+  GuaranteedInvoice = "Invoice with payment guarantee",
   /* GuaranteedSepa */
-  GuaranteedSepa = "GuaranteedSepa",
+  GuaranteedSepa = "Direct debit SEPA with payment guarantee",
   /* Ideal */
-  Ideal = "ideal",
+  Ideal = "iDEAL",
   /* TWINT */
-  twint = "twint",
+  twint = "TWINT",
   /* SEPA */
   sepa = "Direct Debit SEPA",
   /* ACH */
-  ach = "ach",
+  ach = "Direct Debit ACH",
   /* CREDIT CARD */
-  creditcard = "creditcard",
+  creditcard = "Credit/Debit Cards",
   /* Online Bank Transfer */
-  onlinebanktransfer = "onlinebanktransfer",
+  onlinebanktransfer = "Online bank transfer",
   /* Alipay */
-  alipay = "alipay",
+  alipay = "Alipay",
   /* Bancontact */
-  bancontact = "bancontact",
+  bancontact = "Bancontact",
   /* Blik */
-  blik = "blik",
+  blik = "Blik",
   /* MBWay */
-  mbway = "mbway",
+  mbway = "MBWay",
   /* Multibanco */
-  multibanco = "multibanco",
+  multibanco = "Multibanco",
   /* Payconiq */
-  payconiq = "payconiq",
+  payconiq = "Payconiq",
   /* Postfinance */
-  postfinance = "postfinance",
+  postfinance = "PostFinance E-Finance",
   /* Postfinancecard */
-  postfinancecard = "postfinancecard",
+  postfinancecard = "PostFinance Card",
   /* przelewy24 */
-  przelewy24 = "przelewy24",
+  przelewy24 = "Przelewy24",
   /* Trustly */
-  trustly = "trustly",
+  trustly = "Trustly",
   /* Wechatpay */
-  wechatpay = "wechatpay",  
+  wechatpay = "WeChat Pay",  
 }
 
 /**
