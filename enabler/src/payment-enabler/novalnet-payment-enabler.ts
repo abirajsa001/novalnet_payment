@@ -23,15 +23,11 @@ import { AchBuilder } from "../components/payment-methods/ach/ach";
 import { CreditcardBuilder } from "../components/payment-methods/creditcard/creditcard";
 import { FakeSdk } from "../fake-sdk";
 import {
-  DropinType,
   EnablerOptions,
   PaymentComponentBuilder,
-  PaymentDropinBuilder,
   PaymentEnabler,
   PaymentResult,
 } from "./payment-enabler";
-import { DropinEmbeddedBuilder } from "../dropin/dropin-embedded";
-
 
 declare global {
   interface ImportMeta {
@@ -127,24 +123,4 @@ export class NovalnetPaymentEnabler implements PaymentEnabler {
     return new supportedMethods[type](baseOptions);
   }
 
-  async createDropinBuilder(
-    type: DropinType
-  ): Promise<PaymentDropinBuilder | never> {
-    const { baseOptions } = await this.setupData;
-
-    const supportedMethods = {
-      embedded: DropinEmbeddedBuilder,
-      // hpp: DropinHppBuilder,
-    };
-
-    if (!Object.keys(supportedMethods).includes(type)) {
-      throw new Error(
-        `Component type not supported: ${type}. Supported types: ${Object.keys(
-          supportedMethods
-        ).join(", ")}`
-      );
-    }
-
-    return new supportedMethods[type](baseOptions);
-  }
 }

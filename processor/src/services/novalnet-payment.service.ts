@@ -187,7 +187,6 @@ export class NovalnetPaymentService extends AbstractPaymentService {
 
   public async getSupportedPaymentComponents(): Promise<SupportedPaymentComponentsSchemaDTO> {
     return {
-      dropins: [],
       components: [
         { type: PaymentMethodType.INVOICE },
         { type: PaymentMethodType.PREPAYMENT },

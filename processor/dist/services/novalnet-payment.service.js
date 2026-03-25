@@ -137,7 +137,6 @@ class NovalnetPaymentService extends abstract_payment_service_1.AbstractPaymentS
     }
     async getSupportedPaymentComponents() {
         return {
-            dropins: [],
             components: [
                 { type: novalnet_payment_dto_1.PaymentMethodType.CARD },
                 { type: novalnet_payment_dto_1.PaymentMethodType.INVOICE },

@@ -1,13 +1,4 @@
 import { Static, Type } from '@sinclair/typebox';
-console.log('payment-componets.dto.ts');
-const DropinType = Type.Enum({
-  EMBEDDED: 'embedded',
-  HPP: 'hpp',
-});
-
-export const SupportedPaymentDropinsData = Type.Object({
-  type: DropinType,
-});
 
 export const SupportedPaymentComponentsData = Type.Object({
   type: Type.String(),
@@ -19,11 +10,6 @@ export const SupportedPaymentComponentsData = Type.Object({
  *
  * Example:
  * {
- *   "dropins": [
- *     {
- *       "type": "embedded"
- *     }
- *   ],
  *   "components": [
  *     {
  *       "type": "card"
@@ -35,7 +21,6 @@ export const SupportedPaymentComponentsData = Type.Object({
  * }
  */
 export const SupportedPaymentComponentsSchema = Type.Object({
-  dropins: Type.Array(SupportedPaymentDropinsData),
   components: Type.Array(SupportedPaymentComponentsData),
 });
 

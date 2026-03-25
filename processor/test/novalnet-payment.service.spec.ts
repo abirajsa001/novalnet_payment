@@ -110,7 +110,6 @@ const novalnetPaymentService =
     expect(result?.components[19]?.type).toStrictEqual("Direct Debit SEPA");
     expect(result?.components[20]?.type).toStrictEqual("Direct Debit ACH");
     expect(result?.components[21]?.type).toStrictEqual("Credit/Debit Cards");
-    expect(result?.dropins).toHaveLength(0);
   });
 
   test("getStatus", async () => {
