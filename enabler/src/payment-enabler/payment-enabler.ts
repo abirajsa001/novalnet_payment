@@ -159,7 +159,7 @@ export enum PaymentMethod {
   /* PayPal */
   paypal = "Paypal",
   /* Prepayment */
-  Prepayment = "Prepayment",
+  Prepayment = "prepayment",
   /* GuaranteedInvoice */
   GuaranteedInvoice = "Invoice with payment guarantee",
   /* GuaranteedSepa */
@@ -169,7 +169,7 @@ export enum PaymentMethod {
   /* TWINT */
   twint = "TWINT",
   /* SEPA */
-  sepa = "Direct Debit SEPA",
+  sepa = "sepa",
   /* ACH */
   ach = "Direct Debit ACH",
   /* CREDIT CARD */
