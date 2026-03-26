@@ -128,26 +128,24 @@
                     ? {}
                     : {
                         onPayButtonClick: async () => {
-                          // to be used for validation
                           const termsChecked =
-                            document.getElementById("termsCheckbox").checked;
+                            (document.getElementById("termsCheckbox") as HTMLInputElement)
+                              ?.checked;
+
                           if (!termsChecked) {
-                            event.preventDefault();
-                            alert(
-                              "You must agree to the terms and conditions."
-                            );
-                            return Promise.reject("error-occurred");
+                            alert("You must agree to the terms and conditions.");
+
+                            // ✅ DO NOT reject
+                            return false; // or Promise.resolve(false)
                           }
-                          return Promise.resolve(); // change to true, to test payment flow
+
+                          return true;
                         },
                       }),
                 });
 
                 if (builder.componentHasSubmit) {
-                  if (selectedValue === 'card' || selectedValue === 'purchaseorder') {
-                    component.mount("#container--external");
-                  }
-                  
+
                   const customButton = document.createElement("button");
                   customButton.textContent = "Pay with "+ selectedValue;
                   customButton.className = "btn btn-lg btn-primary btn-block";
