@@ -522,7 +522,7 @@ export class NovalnetPaymentService extends AbstractPaymentService {
           action: "setTransactionCustomType",
           transactionId: txId,
           type: {
-            key: "novalnet-transaction-comments", 
+            key: "novalnet-transaction-comments-v2", 
             typeId: "type",
           },
         },
@@ -987,7 +987,7 @@ export class NovalnetPaymentService extends AbstractPaymentService {
         custom: {
           type: {
             typeId: "type",
-            key: "novalnet-transaction-comments",
+            key: "novalnet-transaction-comments-v2",
           },
           fields: {
             transactionComments,
@@ -2232,7 +2232,7 @@ export class NovalnetPaymentService extends AbstractPaymentService {
       resource: { id: ctCart.id, version: ctCart.version },
       paymentId: ctPayment.id,
     });
-    
+
     const transactionComments = `Novalnet Transaction ID: ${"N/A"}\nPayment Type: ${"N/A"}\nStatus: ${"N/A"}`;
     const pspReference = randomUUID().toString();
 
@@ -2248,7 +2248,7 @@ export class NovalnetPaymentService extends AbstractPaymentService {
         custom: {
           type: {
             typeId: "type",
-            key: "novalnet-transaction-comments",
+            key: "novalnet-transaction-comments-v2",
           },
           fields: {
             transactionComments,
