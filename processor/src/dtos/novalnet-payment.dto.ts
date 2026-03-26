@@ -11,7 +11,7 @@ export enum PaymentMethodType {
   GUARANTEED_INVOICE = "Invoice with payment guarantee",
   GUARANTEED_SEPA = "Direct debit SEPA with payment guarantee",
   IDEAL = "iDEAL",
-  PAYPAL = "paypal",
+  PAYPAL = "Paypal",
   ONLINE_BANK_TRANSFER = "Online bank transfer",
   ALIPAY = "Alipay",
   BANCONTACT = "Bancontact",
