@@ -103,6 +103,29 @@ class NovalnetPaymentService extends abstract_payment_service_1.AbstractPaymentS
                     ctAuthorizationService: payment_sdk_1.paymentSDK.ctAuthorizationService,
                     projectKey: (0, config_1.getConfig)().projectKey,
                 }),
+                async () => {
+                    try {
+                        const paymentMethods = "card";
+                        return {
+                            name: "Mock Payment API",
+                            status: "UP",
+                            message: "Mock api is working",
+                            details: {
+                                paymentMethods,
+                            },
+                        };
+                    }
+                    catch (e) {
+                        return {
+                            name: "Mock Payment API",
+                            status: "DOWN",
+                            message: "The mock payment API is down for some reason. Please check the logs for more details.",
+                            details: {
+                                error: e,
+                            },
+                        };
+                    }
+                },
             ],
             metadataFn: async () => ({
                 name: package_json_1.default.name,

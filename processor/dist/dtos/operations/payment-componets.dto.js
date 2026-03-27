@@ -9,7 +9,17 @@ exports.SupportedPaymentComponentsData = typebox_1.Type.Object({
 /**
  * Supported payment components schema.
  *
- * 
+ * Example:
+ * {
+ *   "components": [
+ *     {
+ *       "type": "card"
+ *     },
+ *     {
+ *       "type": "applepay"
+ *     }
+ *   ]
+ * }
  */
 exports.SupportedPaymentComponentsSchema = typebox_1.Type.Object({
     components: typebox_1.Type.Array(exports.SupportedPaymentComponentsData),
