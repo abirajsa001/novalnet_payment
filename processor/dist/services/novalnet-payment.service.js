@@ -738,7 +738,7 @@ class NovalnetPaymentService extends abstract_payment_service_1.AbstractPaymentS
                 custom: {
                     type: {
                         typeId: "type",
-                        key: "novalnet-transaction-comments-v2",
+                        key: "novalnet-transaction-comments",
                     },
                     fields: {
                         transactionComments,
@@ -1641,7 +1641,7 @@ class NovalnetPaymentService extends abstract_payment_service_1.AbstractPaymentS
                 custom: {
                     type: {
                         typeId: "type",
-                        key: "novalnet-transaction-comments-v2",
+                        key: "novalnet-transaction-comments",
                     },
                     fields: {
                         transactionComments,
