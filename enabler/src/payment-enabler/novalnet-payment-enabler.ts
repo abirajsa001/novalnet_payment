@@ -11,7 +11,6 @@ import { BlikBuilder } from "../components/payment-methods/blik/blik";
 import { EpsBuilder } from "../components/payment-methods/eps/eps";
 import { MbwayBuilder } from "../components/payment-methods/mbway/mbway";
 import { MultibancoBuilder } from "../components/payment-methods/multibanco/multibanco";
-import { PayconiqBuilder } from "../components/payment-methods/payconiq/payconiq";
 import { PostfinanceBuilder } from "../components/payment-methods/postfinance/postfinance";
 import { PostfinancecardBuilder } from "../components/payment-methods/postfinancecard/postfinancecard";
 import { Przelewy24Builder } from "../components/payment-methods/przelewy24/przelewy24";
@@ -100,7 +99,6 @@ export class NovalnetPaymentEnabler implements PaymentEnabler {
       eps: EpsBuilder,
       mbway: MbwayBuilder,
       multibanco: MultibancoBuilder,
-      payconiq: PayconiqBuilder,
       postfinance: PostfinanceBuilder,
       postfinancecard: PostfinancecardBuilder,
       przelewy24: Przelewy24Builder,

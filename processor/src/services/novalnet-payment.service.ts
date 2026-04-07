@@ -1957,22 +1957,13 @@ export class NovalnetPaymentService extends AbstractPaymentService {
   ): Promise<string> {
     const headers = req.headers;
 
-    const ipKeys = [
-      "x-forwarded-host",
-      "x-forwarded-for",
-      "x-real-ip",
-      "x-client-ip",
-      "x-forwarded",
-      "x-cluster-client-ip",
-      "forwarded-for",
-      "forwarded",
-    ];
-
+    const ipKeys = ['HTTP_X_FORWARDED_HOST', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'HTTP_CLIENT_IP', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR'];
+  
     for (const key of ipKeys) {
       const value = headers[key] as string | undefined;
 
       if (value) {
-        if (key === "x-forwarded-for" || key === "x-forwarded-host") {
+        if (key === "HTTP_X_FORWARDED_FOR" || key === "HTTP_X_FORWARDED_HOST") {
           const forwardedIPs = value.split(",").map((ip) => ip.trim());
           return forwardedIPs.includes(novalnetHostIP)
             ? novalnetHostIP
@@ -2126,7 +2117,7 @@ export class NovalnetPaymentService extends AbstractPaymentService {
       cart: ctCart,
     });
     
-    	const deliveryStreet = this.splitStreetByComma(deliveryAddress?.streetName);
+  const deliveryStreet = this.splitStreetByComma(deliveryAddress?.streetName);
 	const billingStreet = this.splitStreetByComma(billingAddress?.streetName);
 
 	const deliveryAddressStreetName = deliveryStreet.streetName;

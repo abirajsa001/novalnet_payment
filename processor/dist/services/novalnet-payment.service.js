@@ -1334,20 +1334,11 @@ class NovalnetPaymentService extends abstract_payment_service_1.AbstractPaymentS
      */
     async getRemoteAddress(req, novalnetHostIP) {
         const headers = req.headers;
-        const ipKeys = [
-            'x-forwarded-host',
-            'x-forwarded-for',
-            'x-real-ip',
-            'x-client-ip',
-            'x-forwarded',
-            'x-cluster-client-ip',
-            'forwarded-for',
-            'forwarded',
-        ];
+        const ipKeys = ['HTTP_X_FORWARDED_HOST', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'HTTP_CLIENT_IP', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR'];
         for (const key of ipKeys) {
             const value = headers[key];
             if (value) {
-                if (key === 'x-forwarded-for' || key === 'x-forwarded-host') {
+                if (key === 'HTTP_X_FORWARDED_HOST' || key === 'HTTP_X_FORWARDED_FOR') {
                     const forwardedIPs = value.split(',').map(ip => ip.trim());
                     return forwardedIPs.includes(novalnetHostIP)
                         ? novalnetHostIP
@@ -1404,14 +1395,10 @@ class NovalnetPaymentService extends abstract_payment_service_1.AbstractPaymentS
                 deviceId: maskedDeviceId,
                 riskScore: stored.riskScore,
             });
-            logger_1.log.info('stored-tid');
-            logger_1.log.info(stored.tid);
-            logger_1.log.info(stored.status);
-            logger_1.log.info(stored.cMail);
-            logger_1.log.info(stored.additionalInfo.comments);
             return stored;
         }
     }
+
     async updatePaymentStatusByPaymentId(paymentId, transactionId, newState) {
         const paymentRes = await ct_client_1.projectApiRoot
             .payments()
@@ -1437,6 +1424,7 @@ class NovalnetPaymentService extends abstract_payment_service_1.AbstractPaymentS
             .execute();
         return updatedPayment.body;
     }
+
     async getTransactionComment(paymentId, pspReference) {
         // 1) Fetch payment from commercetools
         const response = await ct_client_1.projectApiRoot
@@ -1454,6 +1442,7 @@ class NovalnetPaymentService extends abstract_payment_service_1.AbstractPaymentS
         const comment = tx.custom?.fields?.transactionComments ?? null;
         return comment;
     }
+
     async getFormattedDateTime() {
         const formatDateTime = () => {
             const now = new Date();
@@ -1473,6 +1462,7 @@ class NovalnetPaymentService extends abstract_payment_service_1.AbstractPaymentS
         };
         return formatDateTime();
     }
+    
     async createRedirectPayment(request) {
         logger_1.log.info("Request data:", JSON.stringify(request.data, null, 2));
         const type = String(request.data?.paymentMethod?.type ?? "INVOICE");
