@@ -295,7 +295,6 @@ export class Creditcard extends BaseComponent {
           card_holder: {
             label: "Card holder name",
             place_holder: "Name on card",
-            error: "Please enter the valid card holder name",
           },
           card_number: {
             label: "Card number",
@@ -315,8 +314,6 @@ export class Creditcard extends BaseComponent {
       },
       customer: {
         email: this.email,
-        first_name: String(this.json.billingAddress.firstName),
-        last_name: String(this.json.billingAddress.lastName),
         billing: {
           street: String(this.json.billingAddress.streetName),
           city: String(this.json.billingAddress.city),
